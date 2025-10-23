@@ -1,0 +1,62 @@
+### Symptom Tracking API Tests
+### Base URL (adjust port as needed)
+@baseUrl = http://localhost:5175/api/v1/symptoms
+
+### Get all symptoms (basic - without severity options)
+GET {{baseUrl}}
+
+### Get all symptoms with severity options
+GET {{baseUrl}}?includeSeverity=true
+
+### Examples of what to expect:
+
+### Basic symptoms response (includeSeverity=false or omitted):
+# [
+#   {
+#     "id": 1,
+#     "name": "Anxiety",
+#     "severityType": 0
+#   },
+#   {
+#     "id": 2,
+#     "name": "Fever",
+#     "severityType": 1
+#   },
+#   {
+#     "id": 3,
+#     "name": "Pain",
+#     "severityType": 2
+#   }
+# ]
+
+### Symptoms with severity options response (includeSeverity=true):
+# [
+#   {
+#     "id": 1,
+#     "name": "Anxiety",
+#     "severityType": 0,
+#     "severityOptions": ["Mild", "Moderate", "Severe"]
+#   },
+#   {
+#     "id": 2,
+#     "name": "Fever",
+#     "severityType": 1,
+#     "severityOptions": ["No", "Yes"]
+#   },
+#   {
+#     "id": 3,
+#     "name": "Pain",
+#     "severityType": 2,
+#     "severityOptions": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+#   }
+# ]
+
+### SeverityType Enum Values:
+# 0 = MildModerateSevere
+# 1 = YesNo  
+# 2 = Scale1To10
+
+### Note: 
+# - When includeSeverity=false, the severityOptions property is not included in JSON
+# - When includeSeverity=true, the severityOptions property contains the available options
+# - The response type is now strongly-typed as SymptomResponse

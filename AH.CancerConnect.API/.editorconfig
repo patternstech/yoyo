@@ -1,0 +1,50 @@
+﻿[*.{cs,vb}]
+
+# IDE0130: Namespace does not match folder structure
+dotnet_diagnostic.IDE0130.severity = error
+
+# IDE0161: Convert to file-scoped namespace
+csharp_style_namespace_declarations = file_scoped:error
+dotnet_diagnostic.IDE0161.severity = error
+
+dotnet_diagnostic.CS1591.severity = none
+
+ indent_size = 4
+ indent_style = space
+ tab_width = 4
+ 
+ end_of_line = crlf
+ insert_final_newline = false
+ 
+ dotnet_separate_import_directive_groups = false
+ dotnet_sort_system_directives_first = false
+ 
+ dotnet_naming_rule.interface_should_start_with_i.symbols = interface
+ dotnet_naming_rule.interface_should_start_with_i.style = prefix_i
+ dotnet_naming_rule.interface_should_start_with_i.severity = error
+ 
+ dotnet_style_prefer_inferred_tuple_names = true
+ dotnet_style_prefer_inferred_anonymous_type_member_names = true
+ 
+dotnet_style_predefined_type_for_locals_parameters_members = true
+dotnet_style_predefined_type_for_member_access = true
+ 
+dotnet_style_qualification_for_event = false
+dotnet_style_qualification_for_field = false
+dotnet_style_qualification_for_method = false
+dotnet_style_qualification_for_property = false
+
+# SA1600: Elements should be documented
+dotnet_diagnostic.SA1600.severity = none
+
+# SA1633: File should have header
+dotnet_diagnostic.SA1633.severity = none
+
+# SA1101: Prefix local calls with this
+dotnet_diagnostic.SA1101.severity = none
+
+# SA1309: Field names should not begin with underscore
+dotnet_diagnostic.SA1309.severity = none
+
+# SA1200: Using directives should be placed correctly
+dotnet_diagnostic.SA1200.severity = none

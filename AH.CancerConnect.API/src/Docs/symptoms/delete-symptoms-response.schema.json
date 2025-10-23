@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/symptoms-api/v1/delete-symptoms-response.schema.json",
+  "title": "DELETE /api/v1/symptoms/{id} – Response",
+  "description": "Response after deleting a symptom entry.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "success": {
+      "type": "boolean",
+      "description": "Indicates whether the delete operation was successful."
+    },
+    "entryId": {
+      "type": "integer",
+      "description": "The unique identifier of the deleted symptom entry."
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of symptom details that were deleted (always 0 for delete operations)."
+    },
+    "validationErrors": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "description": "List of validation errors if any occurred during deletion.",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "success",
+    "entryId",
+    "count"
+  ]
+}

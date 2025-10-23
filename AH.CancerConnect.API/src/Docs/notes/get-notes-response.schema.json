@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/notes-api/v1/get-notes-response.schema.json",
+  "title": "GET /api/v1/notes – Response",
+  "description": "List of notes for a patient.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "integer",
+        "description": "Unique identifier of the note."
+      },
+      "patientId": {
+        "type": "integer",
+        "description": "Patient identifier who owns this note."
+      },
+      "dateCreated": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Date and time when the note was created in the system (ISO 8601 format)."
+      },
+      "title": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Title of the note."
+      },
+      "noteText": {
+        "type": "string",
+        "description": "The main content of the note."
+      },
+      "recordingPath": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Path to an associated audio recording file."
+      },
+      "dateAdded": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Date and time when the note was originally added (ISO 8601 format)."
+      }
+    },
+    "required": [
+      "id",
+      "patientId",
+      "dateCreated",
+      "noteText",
+      "dateAdded"
+    ]
+  }
+}

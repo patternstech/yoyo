@@ -1,0 +1,87 @@
+steps:
+- checkout: self
+  displayName: 'Checkout Code'
+
+- script: echo "Running CI Pipeline for $(Build.SourceBranch)"
+  displayName: 'Pipeline Triggered'
+
+- script: dotnet --list-sdks
+  displayName: 'List Installed .NET SDKs'
+
+- task: UseDotNet@2
+  displayName: 'Install .NET 8 SDK'
+  inputs:
+    packageType: 'sdk'
+    version: '8.0.x'
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
+- script: dotnet restore
+  displayName: 'Restore Dependencies'
+
+- script: dotnet build --configuration Release --no-restore
+  displayName: 'Build Solution'
+
+- task: SnykSecurityScan@1
+  displayName: 'Snyk Code Security Scan'
+  inputs:
+    serviceConnectionEndpoint: 'Snyk-Service-Connection'
+    testType: 'code'
+    organization: 'digitalexperience'
+    failOnIssues: false
+    monitorOnBuild: true
+    additionalArguments: '--all-projects'
+
+# Check if test projects exist
+- powershell: |
+    $testProjects = Get-ChildItem -Path $(Build.SourcesDirectory) -Recurse -Filter "*.Tests.csproj"
+    $testProjectsExist = $testProjects.Count -gt 0
+    Write-Host "##vso[task.setvariable variable=TestProjectsExist]$testProjectsExist"
+    
+    if ($testProjectsExist) {
+      Write-Host "Found test projects:"
+      foreach ($project in $testProjects) {
+        Write-Host "- $($project.FullName)"
+      }
+    } else {
+      Write-Host "No test projects found."
+    }
+  displayName: 'Check for Test Projects'
+
+# Run tests only if test projects exist
+- script: |
+    echo "Running unit tests..."
+    dotnet test $(Build.SourcesDirectory) --configuration Release --collect:"XPlat Code Coverage" --logger trx
+  displayName: 'Run Unit Tests'
+  condition: eq(variables['TestProjectsExist'], 'True')
+  env:
+    DB_CONNECTION_STRING: $(DB_CONNECTION_STRING)
+
+# Publish test results only if test projects exist
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results'
+  inputs:
+    testResultsFormat: 'VSTest'
+    testResultsFiles: '**/*.trx'
+    mergeTestResults: true
+    failTaskOnFailedTests: true
+    testRunTitle: 'Unit Test Results'
+  condition: eq(variables['TestProjectsExist'], 'True')
+
+# Publish code coverage only if test projects exist
+- task: PublishCodeCoverageResults@2
+  displayName: 'Publish Code Coverage Report'
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '$(Build.SourcesDirectory)/**/TestResults/**/coverage.cobertura.xml'
+  condition: eq(variables['TestProjectsExist'], 'True')
+
+- script: dotnet publish -c Release -o $(Build.ArtifactStagingDirectory)
+  displayName: 'Publish Build Artifacts'
+  env:
+    DB_CONNECTION_STRING: $(DB_CONNECTION_STRING)
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    pathToPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: 'drop'

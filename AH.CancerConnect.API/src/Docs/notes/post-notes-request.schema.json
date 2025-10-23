@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/notes-api/v1/post-notes-request.schema.json",
+  "title": "POST /api/v1/notes – Request",
+  "description": "Create a new note for a patient.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "patientId": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Patient identifier who owns this note."
+    },
+    "title": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 250,
+      "description": "Optional title for the note."
+    },
+    "noteText": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "The main content of the note."
+    },
+    "recordingPath": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500,
+      "description": "Optional path to an associated audio recording."
+    }
+  },
+  "required": [
+    "patientId",
+    "noteText"
+  ]
+}

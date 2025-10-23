@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/symptoms-api/v1/post-symptoms-request.schema.json",
+  "title": "POST /api/v1/symptoms – Request",
+  "description": "Create a new symptom entry for a patient.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "patientId": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Patient identifier who owns this symptom entry."
+    },
+    "note": {
+      "type": "string",
+      "description": "Additional notes or remarks about the symptom entry."
+    },
+    "entryDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date and time when the symptom entry was recorded (ISO 8601 format)."
+    },
+    "symptomDetails": {
+      "type": "array",
+      "minItems": 1,
+      "description": "List of symptom details being recorded in this entry.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "symptomId": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Identifier of the symptom being recorded."
+          },
+          "categoryId": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Category identifier that defines the severity scale type."
+          },
+          "symptomValue": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "The value or level of the symptom (e.g., 'Mild', 'Severe', '5', 'Yes')."
+          }
+        },
+        "required": [
+          "symptomId",
+          "categoryId",
+          "symptomValue"
+        ]
+      }
+    }
+  },
+  "required": [
+    "patientId",
+    "note",
+    "entryDate",
+    "symptomDetails"
+  ]
+}

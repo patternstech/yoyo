@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36414.22 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AH.CancerConnect.AdminAPI", "src\AH.CancerConnect.AdminAPI.csproj", "{15A9A6A9-7AA3-4014-BCB8-69CD0B4BE34F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{15A9A6A9-7AA3-4014-BCB8-69CD0B4BE34F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15A9A6A9-7AA3-4014-BCB8-69CD0B4BE34F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15A9A6A9-7AA3-4014-BCB8-69CD0B4BE34F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15A9A6A9-7AA3-4014-BCB8-69CD0B4BE34F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C7B14D6B-FD81-4764-B045-0E3F34045819}
+	EndGlobalSection
+EndGlobal

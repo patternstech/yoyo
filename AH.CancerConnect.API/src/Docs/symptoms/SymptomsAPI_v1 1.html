@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Symptoms API (v1) – Documentation</title>
+<style>
+  :root{
+    --bg:#0f1226;
+    --panel:#171b35;
+    --panel-2:#1e2347;
+    --text:#e6e9ff;
+    --muted:#aab0d4;
+    --accent:#7c5cff;
+    --accent-2:#12d6df;
+    --ok:#22c55e;
+    --warn:#f59e0b;
+    --err:#ef4444;
+    --code-bg:#0b0e23;
+    --border:#2a2f58;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+    background: linear-gradient(135deg, #0c0f22, #141942 50%, #0c0f22);
+    color:var(--text);
+    line-height:1.55;
+  }
+  header{
+    padding:48px 24px 24px;
+    text-align:center;
+  }
+  .badge{
+    display:inline-block;
+    padding:4px 10px;
+    font-size:12px;
+    border-radius:999px;
+    background:linear-gradient(90deg, var(--accent), var(--accent-2));
+    color:#0a0c1b;
+    font-weight:700;
+    letter-spacing:.4px;
+    margin-bottom:12px;
+  }
+  h1{
+    margin:0 0 8px 0;
+    font-size:32px;
+    letter-spacing:.3px;
+  }
+  .subtitle{
+    color:var(--muted);
+    margin-top:0;
+  }
+  .container{
+    margin:0 auto;
+    max-width:1000px;
+    padding:0 20px 64px;
+  }
+  .toc, .panel{
+    background:linear-gradient(180deg, var(--panel), var(--panel-2));
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  }
+  .grid{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:16px;
+  }
+  @media (min-width: 900px){
+    .grid{ grid-template-columns: 320px 1fr; }
+  }
+  .toc h3{
+    margin-top:0;
+    font-size:16px;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:1px;
+  }
+  .toc a{
+    display:block;
+    padding:10px 12px;
+    border-radius:12px;
+    color:var(--text);
+    text-decoration:none;
+    border:1px solid transparent;
+  }
+  .toc a:hover{
+    background:rgba(124,92,255,.12);
+    border-color:rgba(124,92,255,.35);
+  }
+  .endpoint{
+    border-left:4px solid var(--accent);
+    padding-left:16px;
+    margin:12px 0 6px;
+  }
+  .method{
+    font-weight:800;
+    font-size:12px;
+    padding:2px 8px;
+    border-radius:999px;
+    margin-right:8px;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    color:#0a0c1b;
+  }
+  .GET{ background:#60a5fa; }
+  .POST{ background:#34d399; }
+  .PUT{ background:#f59e0b; }
+  .DELETE{ background:#ef4444; }
+  .url{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; color:#dbe7ff; }
+  .muted{ color:var(--muted); }
+  .row{
+    display:grid; gap:16px; grid-template-columns:1fr; margin-top:12px;
+  }
+  @media (min-width: 900px){
+    .row{ grid-template-columns:1fr 1fr; }
+  }
+  .card{
+    background: rgba(255,255,255, .02);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:14px;
+  }
+  pre{
+    margin:0; overflow:auto; background:var(--code-bg);
+    padding:14px; border-radius:12px; border:1px solid var(--border);
+  }
+  code{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size:13px; }
+  .pill{
+    display:inline-block; padding:3px 8px; border:1px solid var(--border); border-radius:999px; margin-right:6px; font-size:12px;
+    color:var(--muted);
+  }
+  .kv{ display:grid; grid-template-columns: 180px 1fr; gap:8px; }
+  .kv div:nth-child(odd){ color:var(--muted); }
+  .footer{
+    text-align:center; color:var(--muted); margin-top:32px; font-size:13px;
+  }
+  .copy-btn{
+    float:right;
+    font-size:12px;
+    border:1px solid var(--border);
+    background:transparent;
+    color:var(--text);
+    padding:4px 8px;
+    border-radius:8px;
+    cursor:pointer;
+  }
+  .copy-btn:hover{ background: rgba(124,92,255,.15); }
+  .section-title{
+    margin-top:0;
+    display:flex; align-items:center; gap:10px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="badge">API v1</div>
+  <h1>Symptoms API</h1>
+  <p class="subtitle">Base URL: <code>/api/v1/symptoms</code></p>
+</header>
+
+<div class="container grid">
+  <nav class="toc">
+    <h3>Contents</h3>
+    <a href="#get-symptoms">GET – List Symptoms</a>
+    <a href="#post-symptoms">POST – Create Symptom Entry</a>
+    <a href="#put-symptoms">PUT – Update Symptom Entry</a>
+    <a href="#delete-symptoms">DELETE – Delete Symptom Entry</a>
+    <a href="#get-summary">GET – Symptom Summary</a>
+  </nav>
+
+  <main class="panel">
+    <!-- GET Symptoms -->
+    <section id="get-symptoms">
+      <div class="endpoint">
+        <span class="method GET">GET</span>
+        <span class="url">/api/v1/symptoms</span>
+      </div>
+      <p>Fetch the list of available symptoms with their severity options and categories.</p>
+      <div class="kv card">
+        <div>Input</div><div>None</div>
+        <div>Success</div><div class="pill">200 OK</div>
+        <div>Errors</div><div class="pill">500 Server Error</div>
+      </div>
+
+      <div class="row">
+        <div class="card">
+          <h3 class="section-title">Sample Response <button class="copy-btn" data-copy="get-symptoms-resp">Copy</button></h3>
+          <pre><code id="get-symptoms-resp">[
+  {
+    "id": 1,
+    "name": "fatigue",
+    "displayTitle": "Fatigue",
+    "description": "Feeling of tiredness or lack of energy",
+    "categories": [
+      {
+        "id": 1,
+        "name": "severity",
+        "displayValue": "Severity Level",
+        "availableValues": ["Mild", "Moderate", "Severe"]
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "nausea",
+    "displayTitle": "Nausea", 
+    "description": "Feeling of sickness with inclination to vomit",
+    "categories": [
+      {
+        "id": 2,
+        "name": "frequency",
+        "displayValue": "Frequency",
+        "availableValues": ["Yes", "No"]
+      }
+    ]
+  }
+]</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <hr style="border:0; border-top:1px solid var(--border); margin:24px 0;">
+
+    <!-- POST Symptoms -->
+    <section id="post-symptoms">
+      <div class="endpoint">
+        <span class="method POST">POST</span>
+        <span class="url">/api/v1/symptoms</span>
+      </div>
+      <p>Create a new symptom entry for a patient.</p>
+
+      <div class="card">
+        <h3 class="section-title">Body Parameters</h3>
+        <div class="kv">
+          <div>patientId (number, required)</div><div>The patient this entry belongs to (min: 1).</div>
+          <div>entryDate (string, required)</div><div>Date and time of the entry (ISO 8601 format).</div>
+          <div>note (string, required)</div><div>Additional notes or remarks about the symptom entry.</div>
+          <div>symptomDetails (array, required)</div><div>At least one symptom detail (min: 1 item).</div>
+          <div>&nbsp;&nbsp;• symptomId (number, required)</div><div>Identifier of the symptom (min: 1).</div>
+          <div>&nbsp;&nbsp;• categoryId (number, required)</div><div>Category identifier (min: 1).</div>
+          <div>&nbsp;&nbsp;• symptomValue (string, required)</div><div>The symptom value/level (max: 100 chars).</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="card">
+          <h3 class="section-title">Sample Request <button class="copy-btn" data-copy="post-symptoms-req">Copy</button></h3>
+          <pre><code id="post-symptoms-req">{
+  "patientId": 123,
+  "entryDate": "2025-10-13T14:30:00Z",
+  "note": "Feeling better today",
+  "symptomDetails": [
+    {
+      "symptomId": 1,
+      "categoryId": 1,
+      "symptomValue": "Mild"
+    },
+    {
+      "symptomId": 2,
+      "categoryId": 2,
+      "symptomValue": "No"
+    }
+  ]
+}</code></pre>
+        </div>
+        <div class="card">
+          <h3 class="section-title">Sample Response <button class="copy-btn" data-copy="post-symptoms-resp">Copy</button></h3>
+          <pre><code id="post-symptoms-resp">{
+  "success": true,
+  "entryId": 42,
+  "count": 2,
+  "validationErrors": null
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="kv card" style="margin-top:12px;">
+        <div>Success</div><div class="pill">200 OK</div>
+        <div>Errors</div><div class="pill">400 Bad Request</div>
+        <div></div><div class="pill">500 Server Error</div>
+      </div>
+    </section>
+
+    <hr style="border:0; border-top:1px solid var(--border); margin:24px 0;">
+
+    <!-- PUT Symptoms -->
+    <section id="put-symptoms">
+      <div class="endpoint">
+        <span class="method PUT">PUT</span>
+        <span class="url">/api/v1/symptoms</span>
+      </div>
+      <p>Update an existing symptom entry.</p>
+
+      <div class="card">
+        <h3 class="section-title">Body Parameters</h3>
+        <div class="kv">
+          <div>id (number, required)</div><div>Entry ID to update (min: 1).</div>
+          <div>patientId (number, required)</div><div>Owner patient ID (min: 1).</div>
+          <div>entryDate (string, required)</div><div>Updated date (ISO 8601 format).</div>
+          <div>note (string, required)</div><div>Updated remarks.</div>
+          <div>symptomDetails (array, required)</div><div>Full set of details to persist (min: 1 item).</div>
+          <div>&nbsp;&nbsp;• id (number, optional)</div><div>Detail row ID (null for new details).</div>
+          <div>&nbsp;&nbsp;• symptomId (number, required)</div><div>Symptom identifier (min: 1).</div>
+          <div>&nbsp;&nbsp;• categoryId (number, required)</div><div>Category identifier (min: 1).</div>
+          <div>&nbsp;&nbsp;• symptomValue (string, required)</div><div>Updated value/level (max: 100 chars).</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="card">
+          <h3 class="section-title">Sample Request <button class="copy-btn" data-copy="put-symptoms-req">Copy</button></h3>
+          <pre><code id="put-symptoms-req">{
+  "id": 42,
+  "patientId": 123,
+  "entryDate": "2025-10-13T15:00:00Z",
+  "note": "Updated note - symptoms worsened",
+  "symptomDetails": [
+    {
+      "id": 1,
+      "symptomId": 1,
+      "categoryId": 1,
+      "symptomValue": "Severe"
+    }
+  ]
+}</code></pre>
+        </div>
+        <div class="card">
+          <h3 class="section-title">Sample Response <button class="copy-btn" data-copy="put-symptoms-resp">Copy</button></h3>
+          <pre><code id="put-symptoms-resp">{
+  "success": true,
+  "entryId": 42,
+  "count": 1,
+  "validationErrors": null
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="kv card" style="margin-top:12px;">
+        <div>Success</div><div class="pill">200 OK</div>
+        <div>Errors</div><div class="pill">400 Bad Request</div>
+        <div></div><div class="pill">404 Not Found</div>
+        <div></div><div class="pill">500 Server Error</div>
+      </div>
+    </section>
+
+    <hr style="border:0; border-top:1px solid var(--border); margin:24px 0;">
+
+    <!-- DELETE Symptoms -->
+    <section id="delete-symptoms">
+      <div class="endpoint">
+        <span class="method DELETE">DELETE</span>
+        <span class="url">/api/v1/symptoms/{id}?patientId={patientId}</span>
+      </div>
+      <p>Delete a symptom entry.</p>
+
+      <div class="card">
+        <h3 class="section-title">Parameters</h3>
+        <div class="kv">
+          <div>id (number, path, required)</div><div>Entry ID to delete (range: 1 to max int).</div>
+          <div>patientId (number, query, required)</div><div>Patient ID for validation (range: 1 to max int).</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="card">
+          <h3 class="section-title">Sample Response <button class="copy-btn" data-copy="delete-symptoms-resp">Copy</button></h3>
+          <pre><code id="delete-symptoms-resp">{
+  "success": true,
+  "entryId": 42,
+  "count": 0,
+  "validationErrors": null
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="kv card" style="margin-top:12px;">
+        <div>Success</div><div class="pill">200 OK</div>
+        <div>Errors</div><div class="pill">400 Bad Request</div>
+        <div></div><div class="pill">404 Not Found</div>
+        <div></div><div class="pill">500 Server Error</div>
+      </div>
+    </section>
+
+    <hr style="border:0; border-top:1px solid var(--border); margin:24px 0;">
+
+    <!-- GET Summary -->
+    <section id="get-summary">
+      <div class="endpoint">
+        <span class="method GET">GET</span>
+        <span class="url">/api/v1/symptoms/summary?patientId={patientId}</span>
+      </div>
+      <p>Get symptom summary for a patient containing all symptom entries and their details.</p>
+
+      <div class="card">
+        <h3 class="section-title">Parameters</h3>
+        <div class="kv">
+          <div>patientId (number, query, required)</div><div>Patient ID to retrieve summary for (range: 1 to max int).</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="card">
+          <h3 class="section-title">Sample Response <button class="copy-btn" data-copy="get-summary-resp">Copy</button></h3>
+          <pre><code id="get-summary-resp">[
+  {
+    "id": 42,
+    "patientId": 123,
+    "note": "Feeling better today",
+    "entryDate": "2025-10-13T14:30:00Z",
+    "created": "2025-10-13T14:35:00Z",
+    "summary": "Patient reported mild fatigue",
+    "symptomDetails": [
+      {
+        "id": 1,
+        "symptomId": 1,
+        "symptomName": "Fatigue",
+        "categoryId": 1,
+        "categoryName": "Severity Level",
+        "symptomValue": "Mild"
+      }
+    ]
+  }
+]</code></pre>
+        </div>
+      </div>
+
+      <div class="kv card" style="margin-top:12px;">
+        <div>Success</div><div class="pill">200 OK</div>
+        <div>Errors</div><div class="pill">400 Bad Request</div>
+        <div></div><div class="pill">404 Not Found</div>
+        <div></div><div class="pill">500 Server Error</div>
+      </div>
+    </section>
+
+    <p class="footer">© Symptoms API v1 • Cancer Connect Platform</p>
+  </main>
+</div>
+
+<script>
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-copy');
+      const txt = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(txt).then(()=>{
+        const old = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(()=> btn.textContent = old, 1200);
+      });
+    });
+  });
+</script>
+</body>
+</html>

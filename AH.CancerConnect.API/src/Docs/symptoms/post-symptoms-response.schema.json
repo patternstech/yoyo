@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/symptoms-api/v1/post-symptoms-response.schema.json",
+  "title": "POST /api/v1/symptoms – Response",
+  "description": "Response after creating a new symptom entry.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "success": {
+      "type": "boolean",
+      "description": "Indicates whether the operation was successful."
+    },
+    "entryId": {
+      "type": "integer",
+      "description": "The unique identifier of the created symptom entry."
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of symptom details created in this entry."
+    },
+    "validationErrors": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "description": "List of validation errors if any occurred during creation.",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "success",
+    "entryId",
+    "count"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/todo-api/v1/patch-todo-toggle-response.schema.json",
+  "title": "PATCH /api/v1/todo/{id}/toggle – Response",
+  "description": "Response after toggling completion status of a ToDo item.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "success": {
+      "type": "boolean",
+      "description": "Indicates whether the toggle operation was successful."
+    },
+    "id": {
+      "type": "integer",
+      "description": "The unique identifier of the toggled ToDo item."
+    },
+    "validationErrors": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "description": "List of validation errors if any occurred during toggle.",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "success",
+    "id"
+  ]
+}

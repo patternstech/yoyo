@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/todo-api/v1/delete-todo-response.schema.json",
+  "title": "DELETE /api/v1/todo/{id} – Response",
+  "description": "Response after deleting a ToDo item.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "success": {
+      "type": "boolean",
+      "description": "Indicates whether the delete operation was successful."
+    },
+    "id": {
+      "type": "integer",
+      "description": "The unique identifier of the deleted ToDo item."
+    },
+    "validationErrors": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "description": "List of validation errors if any occurred during deletion.",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "success",
+    "id"
+  ]
+}

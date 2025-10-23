@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/notes-api/v1/put-notes-response.schema.json",
+  "title": "PUT /api/v1/notes – Response",
+  "description": "Response after updating an existing note.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "success": {
+      "type": "boolean",
+      "description": "Indicates whether the update operation was successful."
+    },
+    "id": {
+      "type": "integer",
+      "description": "The unique identifier of the updated note."
+    },
+    "validationErrors": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "description": "List of validation errors if any occurred during update.",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "success",
+    "id"
+  ]
+}

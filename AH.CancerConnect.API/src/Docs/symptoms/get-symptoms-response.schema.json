@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/symptoms-api/v1/get-symptoms-response.schema.json",
+  "title": "GET /api/v1/symptoms – Response",
+  "description": "List of symptoms with their category ID and available values.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "integer",
+        "description": "Unique identifier for the symptom."
+      },
+      "name": {
+        "type": "string",
+        "description": "Internal name of the symptom."
+      },
+      "displayTitle": {
+        "type": "string",
+        "description": "User-friendly display title for the symptom."
+      },
+      "description": {
+        "type": "string",
+        "description": "Detailed description of the symptom."
+      },
+      "categoryId": {
+        "type": "integer",
+        "description": "Category identifier for this symptom."
+      },
+      "availableValues": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "List of available values for this symptom's category."
+      }
+    },
+    "required": [
+      "id",
+      "name",
+      "displayTitle",
+      "description",
+      "categoryId",
+      "availableValues"
+    ]
+  }
+}

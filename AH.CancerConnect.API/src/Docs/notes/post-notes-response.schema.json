@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/notes-api/v1/post-notes-response.schema.json",
+  "title": "POST /api/v1/notes – Response",
+  "description": "Response after creating a new note.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "success": {
+      "type": "boolean",
+      "description": "Indicates whether the operation was successful."
+    },
+    "id": {
+      "type": "integer",
+      "description": "The unique identifier of the created note."
+    },
+    "validationErrors": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "description": "List of validation errors if any occurred during creation.",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "success",
+    "id"
+  ]
+}

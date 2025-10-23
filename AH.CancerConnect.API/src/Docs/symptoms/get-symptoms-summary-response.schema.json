@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/symptoms-api/v1/get-symptoms-summary-response.schema.json",
+  "title": "GET /api/v1/symptoms/summary – Response",
+  "description": "List of symptom entries with detailed information for a patient.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "integer",
+        "description": "Unique identifier of the symptom entry."
+      },
+      "patientId": {
+        "type": "integer",
+        "description": "Patient identifier who owns this symptom entry."
+      },
+      "note": {
+        "type": "string",
+        "description": "Additional notes or remarks about the symptom entry."
+      },
+      "entryDate": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Date and time when the symptom entry was recorded (ISO 8601 format)."
+      },
+      "created": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Date and time when the entry was created in the system (ISO 8601 format)."
+      },
+      "summary": {
+        "type": "string",
+        "description": "Auto-generated summary text of the symptom entry."
+      },
+      "symptomDetails": {
+        "type": "array",
+        "description": "List of individual symptom details within this entry.",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "integer",
+              "description": "Unique identifier of the symptom detail."
+            },
+            "symptomId": {
+              "type": "integer",
+              "description": "Identifier of the symptom."
+            },
+            "symptomName": {
+              "type": "string",
+              "description": "Display name of the symptom."
+            },
+            "categoryId": {
+              "type": "integer",
+              "description": "Category identifier that defines the severity scale type."
+            },
+            "categoryName": {
+              "type": "string",
+              "description": "Display name of the category."
+            },
+            "symptomValue": {
+              "type": "string",
+              "description": "The recorded value or level of the symptom."
+            }
+          },
+          "required": [
+            "id",
+            "symptomId",
+            "symptomName",
+            "categoryId",
+            "categoryName",
+            "symptomValue"
+          ]
+        }
+      }
+    },
+    "required": [
+      "id",
+      "patientId",
+      "note",
+      "entryDate",
+      "created",
+      "summary",
+      "symptomDetails"
+    ]
+  }
+}

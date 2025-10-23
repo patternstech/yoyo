@@ -1,0 +1,32 @@
+﻿# VS/IDE
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build output
+bin/
+obj/
+**/bin/
+**/obj/
+TestResults/
+[Aa]rtifacts/
+[Bb]uild/
+[Ll]ogs/
+
+# Packages / tools
+packages/
+*.nupkg
+*.snupkg
+*.psess
+*.vsp
+*.vspx
+
+# OS noise
+Thumbs.db
+.DS_Store
+
+# Frontend (if present)
+node_modules/
+dist/
