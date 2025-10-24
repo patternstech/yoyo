@@ -15,6 +15,8 @@ public class Provider
 
     public string ProviderId { get; set; } = string.Empty;
 
+    public string? Email { get; set; }
+
     public int? ProviderPoolId { get; set; }
 
     public bool IsActive { get; set; } = true;
@@ -65,6 +67,10 @@ public class ProviderRequest
     [StringLength(50, ErrorMessage = "Provider ID must be 50 characters or less")]
     public string ProviderId { get; set; } = string.Empty;
 
+    [EmailAddress(ErrorMessage = "Invalid email format")]
+    [StringLength(200, ErrorMessage = "Email must be 200 characters or less")]
+    public string? Email { get; set; }
+
     public int? ProviderPoolId { get; set; }
 
     public bool IsActive { get; set; } = true;
@@ -102,6 +108,13 @@ public class ProviderUpdateRequest
     [Required(ErrorMessage = "Provider ID is required")]
     [StringLength(50, ErrorMessage = "Provider ID must be 50 characters or less")]
     public string ProviderId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the provider's email address.
+    /// </summary>
+    [EmailAddress(ErrorMessage = "Invalid email format")]
+    [StringLength(200, ErrorMessage = "Email must be 200 characters or less")]
+    public string? Email { get; set; }
 
     /// <summary>
     /// Gets or sets the provider pool ID (optional).

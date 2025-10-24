@@ -70,6 +70,7 @@ public class CancerConnectDbContext : DbContext
             entity.Property(p => p.FirstName).IsRequired().HasMaxLength(100);
             entity.Property(p => p.LastName).IsRequired().HasMaxLength(100);
             entity.Property(p => p.ProviderId).IsRequired().HasMaxLength(50);
+            entity.Property(p => p.Email).HasMaxLength(200);
             entity.Property(p => p.ProviderPoolId);
             entity.Property(p => p.IsActive).IsRequired().HasDefaultValue(true);
             entity.Property(p => p.DateCreated).IsRequired();

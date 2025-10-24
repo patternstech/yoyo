@@ -34,6 +34,7 @@ public static class ProviderExtensions
             FirstName = provider.FirstName,
             LastName = provider.LastName,
             ProviderId = provider.ProviderId,
+            Email = provider.Email,
             ProviderPoolId = provider.ProviderPoolId,
             ProviderPoolName = provider.ProviderPool?.Name,
             IsActive = provider.IsActive,
@@ -53,6 +54,8 @@ public static class ProviderExtensions
         {
             FirstName = request.FirstName.Trim(),
             LastName = request.LastName.Trim(),
+            ProviderId = request.ProviderId.Trim(),
+            Email = request.Email?.Trim(),
             ProviderPoolId = request.ProviderPoolId,
             IsActive = request.IsActive,
             DateCreated = DateTime.UtcNow,
@@ -70,6 +73,7 @@ public static class ProviderExtensions
         provider.FirstName = request.FirstName.Trim();
         provider.LastName = request.LastName.Trim();
         provider.ProviderId = request.ProviderId.Trim();
+        provider.Email = request.Email?.Trim();
         provider.ProviderPoolId = request.ProviderPoolId;
         provider.IsActive = request.IsActive;
         provider.DateModified = DateTime.UtcNow;

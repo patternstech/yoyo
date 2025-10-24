@@ -13,6 +13,8 @@ public class ProviderDetailResponse
 
     public string ProviderId { get; set; } = string.Empty;
 
+    public string? Email { get; set; }
+
     public string FullName => $"{FirstName} {LastName}".Trim();
 
     public int? ProviderPoolId { get; set; }
