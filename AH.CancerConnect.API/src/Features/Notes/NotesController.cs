@@ -33,16 +33,10 @@ public class NotesController : ControllerBase
     /// <returns>Success response with note ID.</returns>
     [HttpPost]
     [ProducesResponseType<NoteResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> PostNote([FromBody] NoteRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            _logger.LogWarning("PostNote called with invalid model state");
-            return BadRequest(ModelState);
-        }
-
         _logger.LogDebug("PostNote called for patient {PatientId}", request.PatientId);
 
         var noteId = await _noteDataService.CreateNoteAsync(request);
@@ -63,17 +57,11 @@ public class NotesController : ControllerBase
     /// <returns>Success response with note ID.</returns>
     [HttpPut]
     [ProducesResponseType<NoteResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> PutNote([FromBody] NoteUpdateRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            _logger.LogWarning("PutNote called with invalid model state");
-            return BadRequest(ModelState);
-        }
-
         _logger.LogDebug("PutNote called for note {NoteId}", request.Id);
 
         var noteId = await _noteDataService.UpdateNoteAsync(request);

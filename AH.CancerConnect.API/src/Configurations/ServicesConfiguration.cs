@@ -19,6 +19,9 @@ public static class ServicesConfiguration
         {
             // Add global exception filter
             options.Filters.Add<GlobalExceptionFilter>();
+            
+            // Add validation filter for HTTP 422 responses
+            options.Filters.Add<ValidationFilter>();
         })
             .AddJsonOptions(options =>
             {

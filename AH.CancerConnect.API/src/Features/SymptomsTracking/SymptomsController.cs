@@ -52,15 +52,10 @@ public class SymptomsController : ControllerBase
     /// <returns>Success response with entry ID.</returns>
     [HttpPost]
     [ProducesResponseType<SymptomEntryResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> PostSymptoms([FromBody] SymptomEntryRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
         _logger.LogDebug("PostSymptomEntry called for patient {PatientId} with {Count} details", request.PatientId, request.SymptomDetails.Count);
 
         var entryId = await _symptomDataService.CreateSymptomEntryAsync(request);
@@ -83,16 +78,11 @@ public class SymptomsController : ControllerBase
     /// <returns>Success response with entry ID.</returns>
     [HttpPut]
     [ProducesResponseType<SymptomEntryResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> PutSymptoms([FromBody] SymptomEntryUpdateRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
         _logger.LogDebug("PutSymptomEntry called for entry {EntryId} with {Count} details", request.Id, request.SymptomDetails.Count);
 
         var entryId = await _symptomDataService.UpdateSymptomEntryAsync(request);
@@ -115,16 +105,11 @@ public class SymptomsController : ControllerBase
     /// <returns>Success response.</returns>
     [HttpDelete("{id}")]
     [ProducesResponseType<SymptomEntryResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteSymptoms([Range(1, int.MaxValue)] int id, [FromQuery][Range(1, int.MaxValue)] int patientId)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
         _logger.LogInformation("DeleteSymptomEntry called for entry {EntryId} and patient {PatientId}", id, patientId);
 
         await _symptomDataService.DeleteSymptomEntryAsync(id, patientId);
@@ -146,16 +131,11 @@ public class SymptomsController : ControllerBase
     /// <returns>List of all symptom entries with details for the patient.</returns>
     [HttpGet("summary")]
     [ProducesResponseType<IEnumerable<SymptomEntryDetailResponse>>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetSymptomSummary([FromQuery] SymptomSummaryRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
         _logger.LogDebug("GetSymptomSummary called for patient {PatientId}", request.PatientId);
 
         var summary = await _symptomDataService.GetSymptomSummaryAsync(request.PatientId);
