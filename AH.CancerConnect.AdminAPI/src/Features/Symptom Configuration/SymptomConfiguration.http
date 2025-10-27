@@ -1,0 +1,5 @@
+### Get all symptom configurations
+GET {{baseUrl}}/api/v1/symptom-configurations
+Accept: application/json
+
+###

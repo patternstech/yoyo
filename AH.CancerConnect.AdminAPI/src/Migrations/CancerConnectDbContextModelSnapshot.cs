@@ -36,6 +36,10 @@ namespace AH.CancerConnect.AdminAPI.Migrations
                     b.Property<DateTime>("DateModified")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Email")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -113,8 +117,8 @@ namespace AH.CancerConnect.AdminAPI.Migrations
                         new
                         {
                             Id = 1,
-                            DateCreated = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4075),
-                            DateModified = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4077),
+                            DateCreated = new DateTime(2025, 10, 24, 19, 0, 13, 138, DateTimeKind.Utc).AddTicks(6752),
+                            DateModified = new DateTime(2025, 10, 24, 19, 0, 13, 138, DateTimeKind.Utc).AddTicks(6754),
                             Description = "Primary care team for oncology patients",
                             IsActive = true,
                             Name = "Provider Pool A"
@@ -122,8 +126,8 @@ namespace AH.CancerConnect.AdminAPI.Migrations
                         new
                         {
                             Id = 2,
-                            DateCreated = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4078),
-                            DateModified = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4078),
+                            DateCreated = new DateTime(2025, 10, 24, 19, 0, 13, 138, DateTimeKind.Utc).AddTicks(6756),
+                            DateModified = new DateTime(2025, 10, 24, 19, 0, 13, 138, DateTimeKind.Utc).AddTicks(6757),
                             Description = "Surgical care team for cancer treatment",
                             IsActive = true,
                             Name = "Provider Pool B"
@@ -131,213 +135,11 @@ namespace AH.CancerConnect.AdminAPI.Migrations
                         new
                         {
                             Id = 3,
-                            DateCreated = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4080),
-                            DateModified = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4080),
+                            DateCreated = new DateTime(2025, 10, 24, 19, 0, 13, 138, DateTimeKind.Utc).AddTicks(6759),
+                            DateModified = new DateTime(2025, 10, 24, 19, 0, 13, 138, DateTimeKind.Utc).AddTicks(6760),
                             Description = "Radiation and chemotherapy specialist team",
                             IsActive = true,
                             Name = "Provider Pool C"
-                        });
-                });
-
-            modelBuilder.Entity("AH.CancerConnect.AdminAPI.Features.SymptomConfiguration.Symptom", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("DisplayTitle")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<bool>("Invalid")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Symptom", "ref", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
-                });
-
-            modelBuilder.Entity("AH.CancerConnect.AdminAPI.Features.SymptomConfiguration.SymptomConfiguration", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AlertTrigger")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Created")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("FollowUp")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<string>("Question")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<bool>("ShowForBreast")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("ShowForLung")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("SymptomId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IsActive");
-
-                    b.HasIndex("SymptomId");
-
-                    b.ToTable("SymptomConfiguration", "dbo");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AlertTrigger = "Yes",
-                            Created = "James Owen 2025-08-23",
-                            DateCreated = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4178),
-                            DateModified = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4179),
-                            FollowUp = false,
-                            IsActive = false,
-                            Question = "N/A",
-                            ShowForBreast = true,
-                            ShowForLung = true,
-                            SymptomId = 10
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AlertTrigger = "Yes",
-                            Created = "James Owen 2025-08-23",
-                            DateCreated = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4180),
-                            DateModified = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4181),
-                            FollowUp = false,
-                            IsActive = false,
-                            Question = "N/A",
-                            ShowForBreast = true,
-                            ShowForLung = true,
-                            SymptomId = 3
-                        },
-                        new
-                        {
-                            Id = 3,
-                            AlertTrigger = "Severe",
-                            Created = "James Owen 2025-08-23",
-                            DateCreated = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4182),
-                            DateModified = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4182),
-                            FollowUp = true,
-                            IsActive = false,
-                            Question = "Have you experienced severe tingling and/or numbness in your hands in your hands and feet for two or more days?",
-                            ShowForBreast = true,
-                            ShowForLung = true,
-                            SymptomId = 13
-                        },
-                        new
-                        {
-                            Id = 4,
-                            AlertTrigger = "Moderate or above",
-                            Created = "James Owen 2025-08-23",
-                            DateCreated = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4184),
-                            DateModified = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4184),
-                            FollowUp = true,
-                            IsActive = false,
-                            Question = "Have you experienced moderate or severe shortness of breath for more than 24 hours?",
-                            ShowForBreast = true,
-                            ShowForLung = true,
-                            SymptomId = 14
-                        },
-                        new
-                        {
-                            Id = 5,
-                            AlertTrigger = "4",
-                            Created = "James Owen 2025-08-23",
-                            DateCreated = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4186),
-                            DateModified = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4186),
-                            FollowUp = false,
-                            IsActive = false,
-                            Question = "N/A",
-                            ShowForBreast = true,
-                            ShowForLung = true,
-                            SymptomId = 12
-                        },
-                        new
-                        {
-                            Id = 6,
-                            AlertTrigger = "Moderate or above",
-                            Created = "James Owen 2025-08-23",
-                            DateCreated = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4187),
-                            DateModified = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4188),
-                            FollowUp = true,
-                            IsActive = false,
-                            Question = "Have you experienced moderate or severe appetite loss for more than two days?",
-                            ShowForBreast = true,
-                            ShowForLung = true,
-                            SymptomId = 2
-                        },
-                        new
-                        {
-                            Id = 7,
-                            AlertTrigger = "Moderate or above",
-                            Created = "James Owen 2025-08-23",
-                            DateCreated = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4189),
-                            DateModified = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4189),
-                            FollowUp = true,
-                            IsActive = false,
-                            Question = "Have you experienced moderate or severe constipation for two or more days?",
-                            ShowForBreast = true,
-                            ShowForLung = true,
-                            SymptomId = 5
-                        },
-                        new
-                        {
-                            Id = 8,
-                            AlertTrigger = "Moderate or above",
-                            Created = "James Owen 2025-08-23",
-                            DateCreated = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4191),
-                            DateModified = new DateTime(2025, 10, 23, 23, 3, 4, 877, DateTimeKind.Utc).AddTicks(4191),
-                            FollowUp = true,
-                            IsActive = false,
-                            Question = "Have you experienced moderate or severe cough for two or more days?",
-                            ShowForBreast = true,
-                            ShowForLung = true,
-                            SymptomId = 6
                         });
                 });
 
@@ -351,25 +153,9 @@ namespace AH.CancerConnect.AdminAPI.Migrations
                     b.Navigation("ProviderPool");
                 });
 
-            modelBuilder.Entity("AH.CancerConnect.AdminAPI.Features.SymptomConfiguration.SymptomConfiguration", b =>
-                {
-                    b.HasOne("AH.CancerConnect.AdminAPI.Features.SymptomConfiguration.Symptom", "Symptom")
-                        .WithMany("SymptomConfigurations")
-                        .HasForeignKey("SymptomId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Symptom");
-                });
-
             modelBuilder.Entity("AH.CancerConnect.AdminAPI.Features.Provider.ProviderPool", b =>
                 {
                     b.Navigation("Providers");
-                });
-
-            modelBuilder.Entity("AH.CancerConnect.AdminAPI.Features.SymptomConfiguration.Symptom", b =>
-                {
-                    b.Navigation("SymptomConfigurations");
                 });
 #pragma warning restore 612, 618
         }

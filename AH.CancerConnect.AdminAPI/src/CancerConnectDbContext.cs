@@ -1,9 +1,9 @@
 ﻿using AH.CancerConnect.AdminAPI.Features.Provider;
 using AH.CancerConnect.AdminAPI.Features.SymptomConfiguration;
 using Microsoft.EntityFrameworkCore;
- 
+
 namespace AH.CancerConnect.AdminAPI;
- 
+
 /// <summary>
 /// Database context for Cancer Connect application.
 /// </summary>
@@ -17,11 +17,12 @@ public class CancerConnectDbContext : DbContext
         : base(options)
     {
     }
+
     /// <summary>
     /// Gets or sets the providers table.
     /// </summary>
     public DbSet<Provider> Providers { get; set; }
- 
+
     /// <summary>
     /// Gets or sets the provider pools table.
     /// </summary>
@@ -36,19 +37,46 @@ public class CancerConnectDbContext : DbContext
     /// Gets or sets the symptom configurations table.
     /// </summary>
     public DbSet<SymptomConfiguration> SymptomConfigurations { get; set; }
- 
-    // Add these table configurations in your OnModelCreating method
+
+    /// <summary>
+    /// Configures the model and relationships for the database context.
+    /// </summary>
+    /// <param name="modelBuilder">The model builder.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
- 
+
         // Configure table names
+        ConfigureTableNames(modelBuilder);
+
+        // Configure entities
+        ConfigureProviderPool(modelBuilder);
+        ConfigureProvider(modelBuilder);
+        ConfigureSymptom(modelBuilder);
+        ConfigureSymptomConfiguration(modelBuilder);
+
+        // Seed initial data
+        SeedData(modelBuilder);
+    }
+
+    /// <summary>
+    /// Configures table names for all entities.
+    /// </summary>
+    /// <param name="modelBuilder">The model builder.</param>
+    private static void ConfigureTableNames(ModelBuilder modelBuilder)
+    {
         modelBuilder.Entity<Provider>().ToTable("Provider", "dbo");
         modelBuilder.Entity<ProviderPool>().ToTable("ProviderPool", "dbo");
         modelBuilder.Entity<Symptom>().ToTable("Symptom", "ref");
         modelBuilder.Entity<SymptomConfiguration>().ToTable("SymptomConfiguration", "dbo");
- 
-        // Configure ProviderPool entity
+    }
+
+    /// <summary>
+    /// Configures the ProviderPool entity.
+    /// </summary>
+    /// <param name="modelBuilder">The model builder.</param>
+    private static void ConfigureProviderPool(ModelBuilder modelBuilder)
+    {
         modelBuilder.Entity<ProviderPool>(entity =>
         {
             entity.HasKey(pp => pp.Id);
@@ -57,13 +85,19 @@ public class CancerConnectDbContext : DbContext
             entity.Property(pp => pp.IsActive).IsRequired().HasDefaultValue(true);
             entity.Property(pp => pp.DateCreated).IsRequired();
             entity.Property(pp => pp.DateModified).IsRequired();
- 
+
             // Index for performance
             entity.HasIndex(pp => pp.IsActive);
             entity.HasIndex(pp => pp.Name);
         });
- 
-        // Configure Provider entity
+    }
+
+    /// <summary>
+    /// Configures the Provider entity.
+    /// </summary>
+    /// <param name="modelBuilder">The model builder.</param>
+    private static void ConfigureProvider(ModelBuilder modelBuilder)
+    {
         modelBuilder.Entity<Provider>(entity =>
         {
             entity.HasKey(p => p.Id);
@@ -75,23 +109,29 @@ public class CancerConnectDbContext : DbContext
             entity.Property(p => p.IsActive).IsRequired().HasDefaultValue(true);
             entity.Property(p => p.DateCreated).IsRequired();
             entity.Property(p => p.DateModified).IsRequired();
- 
+
             // Unique constraint on ProviderId
             entity.HasIndex(p => p.ProviderId).IsUnique();
- 
+
             // Relationship with ProviderPool
             entity.HasOne(p => p.ProviderPool)
                   .WithMany(pp => pp.Providers)
                   .HasForeignKey(p => p.ProviderPoolId)
                   .OnDelete(DeleteBehavior.SetNull);
- 
+
             // Indexes for performance
             entity.HasIndex(p => p.IsActive);
             entity.HasIndex(p => new { p.LastName, p.FirstName });
             entity.HasIndex(p => p.ProviderPoolId);
         });
+    }
 
-        // Configure Symptom entity (reference table - read-only from API project)
+    /// <summary>
+    /// Configures the Symptom entity (reference table - read-only from API project).
+    /// </summary>
+    /// <param name="modelBuilder">The model builder.</param>
+    private static void ConfigureSymptom(ModelBuilder modelBuilder)
+    {
         modelBuilder.Entity<Symptom>(entity =>
         {
             entity.HasKey(s => s.Id);
@@ -99,12 +139,18 @@ public class CancerConnectDbContext : DbContext
             entity.Property(s => s.DisplayTitle).IsRequired().HasMaxLength(250);
             entity.Property(s => s.Description).IsRequired().HasMaxLength(500);
             entity.Property(s => s.Invalid).IsRequired();
-            
+
             // This table is managed by the API project, AdminAPI only reads from it
             entity.ToTable("Symptom", "ref", t => t.ExcludeFromMigrations());
         });
+    }
 
-        // Configure SymptomConfiguration entity
+    /// <summary>
+    /// Configures the SymptomConfiguration entity.
+    /// </summary>
+    /// <param name="modelBuilder">The model builder.</param>
+    private static void ConfigureSymptomConfiguration(ModelBuilder modelBuilder)
+    {
         modelBuilder.Entity<SymptomConfiguration>(entity =>
         {
             entity.HasKey(sc => sc.Id);
@@ -127,7 +173,14 @@ public class CancerConnectDbContext : DbContext
             entity.HasIndex(sc => sc.SymptomId);
             entity.HasIndex(sc => sc.IsActive);
         });
- 
+    }
+
+    /// <summary>
+    /// Seeds initial data for the database.
+    /// </summary>
+    /// <param name="modelBuilder">The model builder.</param>
+    private static void SeedData(ModelBuilder modelBuilder)
+    {
         // Seed provider pools
         var providerPools = new[]
         {
@@ -159,11 +212,8 @@ public class CancerConnectDbContext : DbContext
                 DateModified = DateTime.UtcNow,
             },
         };
- 
-        modelBuilder.Entity<ProviderPool>().HasData(providerPools);
 
-        // Note: Symptoms table is NOT seeded here - it's managed by the API project
-        // AdminAPI only reads from the existing ref.Symptom table
+        modelBuilder.Entity<ProviderPool>().HasData(providerPools);
 
         // Seed symptom configurations - based on the provided data file and grid
         var symptomConfigurations = new[]
@@ -199,217 +249,9 @@ public class CancerConnectDbContext : DbContext
             {
                 Id = 3,
                 SymptomId = 3,
-                AlertTrigger = "When Yes is indicated for 1+ day",
-                FollowUp = false,
-                Question = "N/A",
-                Created = "James Owen 2025-08-23",
-                IsActive = true,
-                DateCreated = DateTime.UtcNow,
-                DateModified = DateTime.UtcNow,
-            },
-            // Constipation - ID 5
-            new SymptomConfiguration
-            {
-                Id = 4,
-                SymptomId = 5,
-                AlertTrigger = "When 2 days of moderate or 1 score of Severe",
-                FollowUp = true,
-                Question = "Have you experienced moderate or severe constipation for two or more days?",
-                Created = "James Owen 2025-08-23",
-                IsActive = true,
-                DateCreated = DateTime.UtcNow,
-                DateModified = DateTime.UtcNow,
-            },
-            // Cough - ID 6
-            new SymptomConfiguration
-            {
-                Id = 5,
-                SymptomId = 6,
-                AlertTrigger = "When 2 days of moderate or 1 score of Severe",
-                FollowUp = true,
-                Question = "Have you experienced moderate or severe cough for two or more days?",
-                Created = "James Owen 2025-08-23",
-                IsActive = true,
-                DateCreated = DateTime.UtcNow,
-                DateModified = DateTime.UtcNow,
-            },
-            // Depression - ID 7
-            new SymptomConfiguration
-            {
-                Id = 6,
-                SymptomId = 7,
-                AlertTrigger = "When Severe is indicated for 1+ day",
-                FollowUp = false,
-                Question = null,
-                Created = "James Owen 2025-08-23",
-                IsActive = true,
-                DateCreated = DateTime.UtcNow,
-                DateModified = DateTime.UtcNow,
-            },
-            // Diarrhea - ID 8
-            new SymptomConfiguration
-            {
-                Id = 7,
-                SymptomId = 8,
-                AlertTrigger = "When 2 days of moderate or 1 score of Severe",
-                FollowUp = false,
-                Question = null,
-                Created = "James Owen 2025-08-23",
-                IsActive = true,
-                DateCreated = DateTime.UtcNow,
-                DateModified = DateTime.UtcNow,
-            },
-            // Edema/Swelling - ID 17
-            new SymptomConfiguration
-            {
-                Id = 8,
-                SymptomId = 17,
                 AlertTrigger = "Trigger 1 day of Yes",
                 FollowUp = false,
                 Question = null,
-                Created = "James Owen 2025-08-23",
-                IsActive = true,
-                DateCreated = DateTime.UtcNow,
-                DateModified = DateTime.UtcNow,
-            },
-            // Fatigue - ID 9
-            new SymptomConfiguration
-            {
-                Id = 9,
-                SymptomId = 9,
-                AlertTrigger = "When 2 days of moderate or 1 score of Severe",
-                FollowUp = false,
-                Question = null,
-                Created = "James Owen 2025-08-23",
-                IsActive = true,
-                DateCreated = DateTime.UtcNow,
-                DateModified = DateTime.UtcNow,
-            },
-            // Fever - ID 10
-            new SymptomConfiguration
-            {
-                Id = 10,
-                SymptomId = 10,
-                AlertTrigger = "Trigger when 1 day of Yes",
-                FollowUp = false,
-                Question = "N/A",
-                Created = "James Owen 2025-08-23",
-                IsActive = true,
-                DateCreated = DateTime.UtcNow,
-                DateModified = DateTime.UtcNow,
-            },
-            // Impaired activity (ADLs) - ID 4
-            new SymptomConfiguration
-            {
-                Id = 11,
-                SymptomId = 4,
-                AlertTrigger = "When 2 days of moderate or 1 score of Severe",
-                FollowUp = false,
-                Question = null,
-                Created = "James Owen 2025-08-23",
-                IsActive = true,
-                DateCreated = DateTime.UtcNow,
-                DateModified = DateTime.UtcNow,
-            },
-            // Level of Emotional Distress - ID 19
-            new SymptomConfiguration
-            {
-                Id = 12,
-                SymptomId = 19,
-                AlertTrigger = "Trigger when score 4 or higher for 4 days in a row or score 4 or higher for 4 days within 10 days",
-                FollowUp = false,
-                Question = null,
-                Created = "James Owen 2025-08-23",
-                IsActive = true,
-                DateCreated = DateTime.UtcNow,
-                DateModified = DateTime.UtcNow,
-            },
-            // Mouth Sores - ID 18
-            new SymptomConfiguration
-            {
-                Id = 13,
-                SymptomId = 18,
-                AlertTrigger = "Trigger 1 day of Yes",
-                FollowUp = false,
-                Question = null,
-                Created = "James Owen 2025-08-23",
-                IsActive = true,
-                DateCreated = DateTime.UtcNow,
-                DateModified = DateTime.UtcNow,
-            },
-            // Nausea or Vomiting - ID 11
-            new SymptomConfiguration
-            {
-                Id = 14,
-                SymptomId = 11,
-                AlertTrigger = "When 1 days of moderate or 1 score of Severe",
-                FollowUp = false,
-                Question = null,
-                Created = "James Owen 2025-08-23",
-                IsActive = true,
-                DateCreated = DateTime.UtcNow,
-                DateModified = DateTime.UtcNow,
-            },
-            // Pain - ID 12
-            new SymptomConfiguration
-            {
-                Id = 15,
-                SymptomId = 12,
-                AlertTrigger = "When an 4 or above is indicated for 1 time",
-                FollowUp = false,
-                Question = "N/A",
-                Created = "James Owen 2025-08-23",
-                IsActive = true,
-                DateCreated = DateTime.UtcNow,
-                DateModified = DateTime.UtcNow,
-            },
-            // Redness of skin - ID 16
-            new SymptomConfiguration
-            {
-                Id = 16,
-                SymptomId = 16,
-                AlertTrigger = "Trigger 1 day of Yes",
-                FollowUp = false,
-                Question = null,
-                Created = "James Owen 2025-08-23",
-                IsActive = true,
-                DateCreated = DateTime.UtcNow,
-                DateModified = DateTime.UtcNow,
-            },
-            // Shortness of breath - ID 14
-            new SymptomConfiguration
-            {
-                Id = 17,
-                SymptomId = 14,
-                AlertTrigger = "When 1 days of moderate or 1 day of Severe",
-                FollowUp = true,
-                Question = "Have you experienced moderate or severe shortness of breath for more than 24 hours?",
-                Created = "James Owen 2025-08-23",
-                IsActive = true,
-                DateCreated = DateTime.UtcNow,
-                DateModified = DateTime.UtcNow,
-            },
-            // Skin rash - ID 15
-            new SymptomConfiguration
-            {
-                Id = 18,
-                SymptomId = 15,
-                AlertTrigger = "Trigger 1 day of Yes",
-                FollowUp = false,
-                Question = null,
-                Created = "James Owen 2025-08-23",
-                IsActive = true,
-                DateCreated = DateTime.UtcNow,
-                DateModified = DateTime.UtcNow,
-            },
-            // Tingling and Numbness in hands or feet - ID 13
-            new SymptomConfiguration
-            {
-                Id = 19,
-                SymptomId = 13,
-                AlertTrigger = "When Severe is indicated for 2+ days",
-                FollowUp = true,
-                Question = "Have you experienced severe tingling and/or numbness in your hands and feet for two or more days?",
                 Created = "James Owen 2025-08-23",
                 IsActive = true,
                 DateCreated = DateTime.UtcNow,
