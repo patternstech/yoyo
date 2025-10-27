@@ -20,10 +20,6 @@ public class ValidationFilter : IActionFilter
         _logger = logger;
     }
 
-    /// <summary>
-    /// Called before the action method is executed.
-    /// </summary>
-    /// <param name="context">Action executing context.</param>
     public void OnActionExecuting(ActionExecutingContext context)
     {
         if (!context.ModelState.IsValid)
@@ -50,12 +46,8 @@ public class ValidationFilter : IActionFilter
         }
     }
 
-    /// <summary>
-    /// Called after the action method is executed.
-    /// </summary>
-    /// <param name="context">Action executed context.</param>
     public void OnActionExecuted(ActionExecutedContext context)
     {
-        // No implementation needed for this filter
+       
     }
 }
