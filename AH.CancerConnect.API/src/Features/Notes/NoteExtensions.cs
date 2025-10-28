@@ -17,9 +17,6 @@ public static class NoteExtensions
             PatientId = request.PatientId,
             Title = request.Title,
             NoteText = request.NoteText,
-            RecordingPath = request.RecordingPath,
-            DateAdded = DateTime.UtcNow,
-            DateCreated = DateTime.UtcNow,
         };
     }
 
@@ -32,8 +29,6 @@ public static class NoteExtensions
     {
         note.Title = request.Title;
         note.NoteText = request.NoteText;
-        note.RecordingPath = request.RecordingPath;
-        note.DateAdded = DateTime.UtcNow;
     }
 
     /// <summary>
@@ -47,11 +42,8 @@ public static class NoteExtensions
         {
             Id = note.Id,
             PatientId = note.PatientId,
-            DateCreated = note.DateCreated,
             Title = note.Title,
             NoteText = note.NoteText,
-            RecordingPath = note.RecordingPath,
-            DateAdded = note.DateAdded,
         };
     }
 

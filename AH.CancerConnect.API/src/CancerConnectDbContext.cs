@@ -146,9 +146,6 @@ public class CancerConnectDbContext : DbContext
                 entity.Property(n => n.PatientId).IsRequired();
                 entity.Property(n => n.Title).HasMaxLength(250);
                 entity.Property(n => n.NoteText).IsRequired().HasMaxLength(1000);
-                entity.Property(n => n.RecordingPath).HasMaxLength(500);
-                entity.Property(n => n.DateAdded).IsRequired();
-                entity.Property(n => n.DateCreated).IsRequired();
 
                 // Relationship with Patient
                 entity.HasOne(n => n.Patient)

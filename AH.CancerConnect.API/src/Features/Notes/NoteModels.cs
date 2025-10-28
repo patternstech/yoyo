@@ -16,12 +16,6 @@ public class Note
 
     public string NoteText { get; set; } = string.Empty;
 
-    public string? RecordingPath { get; set; }
-
-    public DateTime DateAdded { get; set; }
-
-    public DateTime DateCreated { get; set; }
-
     // Navigation property
     public Patient Patient { get; set; } = null!;
 }
@@ -41,9 +35,6 @@ public class NoteRequest
     [Required(ErrorMessage = "Note text is required.")]
     [StringLength(1000, ErrorMessage = "Note text cannot exceed 1000 characters.")]
     public string NoteText { get; set; } = string.Empty;
-
-    [StringLength(500, ErrorMessage = "Recording path cannot exceed 500 characters.")]
-    public string? RecordingPath { get; set; }
 }
 
 /// <summary>
@@ -65,7 +56,4 @@ public class NoteUpdateRequest
     [Required(ErrorMessage = "Note text is required.")]
     [StringLength(1000, ErrorMessage = "Note text cannot exceed 1000 characters.")]
     public string NoteText { get; set; } = string.Empty;
-
-    [StringLength(500, ErrorMessage = "Recording path cannot exceed 500 characters.")]
-    public string? RecordingPath { get; set; }
 }

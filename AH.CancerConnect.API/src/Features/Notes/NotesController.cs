@@ -27,7 +27,7 @@ public class NotesController : ControllerBase
     /// <summary>
     /// Create a new note for a patient
     /// Example: POST /api/v1/notes
-    /// Body: { "patientId": 123, "title": "Follow-up", "noteText": "Patient doing well", "recordingPath": "/recordings/file.mp3" }.
+    /// Body: { "patientId": 123, "title": "Follow-up", "noteText": "Patient doing well" }.
     /// </summary>
     /// <param name="request">Note request.</param>
     /// <returns>Success response with note ID.</returns>
@@ -51,7 +51,7 @@ public class NotesController : ControllerBase
     /// <summary>
     /// Update an existing note
     /// Example: PUT /api/v1/notes
-    /// Body: { "id": 5, "patientId": 123, "title": "Updated Follow-up", "noteText": "Patient improving", "recordingPath": "/recordings/file2.mp3" }.
+    /// Body: { "id": 5, "patientId": 123, "title": "Updated Follow-up", "noteText": "Patient improving" }.
     /// </summary>
     /// <param name="request">Update request.</param>
     /// <returns>Success response with note ID.</returns>
