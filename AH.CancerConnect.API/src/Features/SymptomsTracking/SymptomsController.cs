@@ -142,4 +142,29 @@ public class SymptomsController : ControllerBase
 
         return Ok(summary);
     }
+
+    /// <summary>
+    /// Get symptom graph data for a patient within a date range
+    /// Example:
+    /// GET /api/v1/symptoms/graph?patientId=123&amp;days=7
+    /// GET /api/v1/symptoms/graph?patientId=123&amp;days=30
+    /// </summary>
+    /// <param name="patientId">Patient ID to retrieve graph data for.</param>
+    /// <param name="days">Number of days to look back from today (7 or 30).</param>
+    /// <returns>Graph data for symptoms within the specified date range.</returns>
+    [HttpGet("graph")]
+    [ProducesResponseType<SymptomGraphResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetSymptomGraphData(
+        [FromQuery][Required][Range(1, int.MaxValue)] int patientId,
+        [FromQuery][Range(1, 365)] int days = 7)
+    {
+        _logger.LogDebug("GetSymptomGraphData called for patient {PatientId} with {Days} days", patientId, days);
+
+        var graphData = await _symptomDataService.GetSymptomGraphDataAsync(patientId, days);
+
+        return Ok(graphData);
+    }
 }

@@ -41,4 +41,12 @@ public interface ISymptomDataService
     /// <param name="patientId">Patient ID to retrieve symptom summary for.</param>
     /// <returns>List of all symptom entries with details for the patient.</returns>
     Task<IEnumerable<SymptomEntryDetailResponse>> GetSymptomSummaryAsync(int patientId);
+
+    /// <summary>
+    /// Gets symptom graph data for a patient within a date range.
+    /// </summary>
+    /// <param name="patientId">Patient ID to retrieve graph data for.</param>
+    /// <param name="days">Number of days to look back from today.</param>
+    /// <returns>Graph data for symptoms within the specified date range.</returns>
+    Task<SymptomGraphResponse> GetSymptomGraphDataAsync(int patientId, int days);
 }

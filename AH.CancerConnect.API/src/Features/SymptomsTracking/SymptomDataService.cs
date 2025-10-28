@@ -314,4 +314,112 @@ public class SymptomDataService : ISymptomDataService
             }
         }
     }
+
+    /// <inheritdoc />
+    public async Task<SymptomGraphResponse> GetSymptomGraphDataAsync(int patientId, int days)
+    {
+        _logger.LogInformation("Retrieving symptom graph data for patient {PatientId} for {Days} days", patientId, days);
+
+        var endDate = DateTime.UtcNow.Date;
+        var startDate = endDate.AddDays(-days + 1);
+
+        var entries = await _dbContext.SymptomEntries
+            .Include(e => e.SymptomDetails)
+                .ThenInclude(sd => sd.Symptom)
+            .Include(e => e.SymptomDetails)
+                .ThenInclude(sd => sd.Category)
+            .Where(e => e.PatientId == patientId 
+                && e.EntryDate.Date >= startDate 
+                && e.EntryDate.Date <= endDate)
+            .OrderBy(e => e.EntryDate)
+            .ToListAsync();
+
+        // Group symptoms by name
+        var symptomGroups = entries
+            .SelectMany(e => e.SymptomDetails)
+            .GroupBy(sd => sd.Symptom.Name)
+            .ToList();
+
+        var symptomsData = new List<SymptomGraphData>();
+
+        foreach (var symptomGroup in symptomGroups)
+        {
+            var symptomData = new SymptomGraphData
+            {
+                Name = symptomGroup.Key.ToLowerInvariant(),
+                Values = new List<SymptomValuePoint>()
+            };
+
+            // Get all values for this symptom, ordered by date
+            var symptomValues = symptomGroup
+                .Select(sd => new
+                {
+                    Date = sd.SymptomEntry.EntryDate,
+                    Value = ConvertSymptomValueToGraphValue(sd.SymptomValue, sd.Category.Name),
+                    CategoryName = sd.Category.Name
+                })
+                .OrderBy(sv => sv.Date)
+                .ToList();
+
+            foreach (var value in symptomValues)
+            {
+                symptomData.Values.Add(new SymptomValuePoint
+                {
+                    Date = value.Date,
+                    Value = value.Value
+                });
+            }
+
+            if (symptomData.Values.Any())
+            {
+                symptomsData.Add(symptomData);
+            }
+        }
+
+        // Calculate summary statistics
+        var daysWithEntries = entries.Select(e => e.EntryDate.Date).Distinct().Count();
+        var uniqueSymptoms = symptomGroups.Count();
+
+        var response = new SymptomGraphResponse
+        {
+            StartDate = startDate,
+            EndDate = endDate,
+            DaysWithSymptoms = daysWithEntries,
+            SymptomsTracked = uniqueSymptoms,
+            SymptomsData = symptomsData.OrderBy(s => s.Name).ToList()
+        };
+
+        _logger.LogInformation("Retrieved graph data for {DaysWithSymptoms} days and {SymptomsTracked} symptoms", 
+            daysWithEntries, uniqueSymptoms);
+
+        return response;
+    }
+
+    /// <summary>
+    /// Converts symptom value to standardized graph value based on category.
+    /// </summary>
+    /// <param name="symptomValue">Original symptom value.</param>
+    /// <param name="categoryName">Category name to determine conversion logic.</param>
+    /// <returns>Standardized value for graphing.</returns>
+    private static string ConvertSymptomValueToGraphValue(string symptomValue, string categoryName)
+    {
+        return categoryName.ToLowerInvariant() switch
+        {
+            "yes/no" => symptomValue.ToLowerInvariant() switch
+            {
+                "yes" => "2",
+                "no" => "1",
+                _ => symptomValue
+            },
+            "severity" => symptomValue.ToLowerInvariant() switch
+            {
+                "mild" => "1",
+                "moderate" => "2", 
+                "severe" => "3",
+                _ => symptomValue
+            },
+            "scale" => symptomValue, // Already 1-10, keep as is
+            _ => symptomValue
+        };
+    }
 }
