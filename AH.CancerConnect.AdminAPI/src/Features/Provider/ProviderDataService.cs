@@ -38,20 +38,6 @@ public class ProviderDataService : IProviderDataService
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<ProviderPoolListResponse>> GetProviderPoolsAsync()
-    {
-        _logger.LogDebug("Getting provider pools");
-
-        var query = _dbContext.ProviderPools.Include(pp => pp.Providers).AsQueryable();
-
-        var providerPools = await query
-            .OrderBy(pp => pp.Name)
-            .ToListAsync();
-
-        return providerPools.Select(pp => pp.ToListResponse());
-    }
-
-    /// <inheritdoc />
     public async Task<int> CreateProviderAsync(ProviderRequest request)
     {
         _logger.LogDebug("Creating provider {FirstName} {LastName} with ID {ProviderId}",
@@ -87,13 +73,11 @@ public class ProviderDataService : IProviderDataService
             return false;
         }
 
-        // Soft delete - just mark as inactive
-        provider.IsActive = false;
-        provider.DateModified = DateTime.UtcNow;
-
+        // Hard delete
+        _dbContext.Providers.Remove(provider);
         await _dbContext.SaveChangesAsync();
 
-        _logger.LogDebug("Successfully deleted (marked inactive) provider {Id}", id);
+        _logger.LogDebug("Successfully deleted provider {Id}", id);
 
         return true;
     }
@@ -158,11 +142,11 @@ public class ProviderDataService : IProviderDataService
         if (request.ProviderPoolId.HasValue)
         {
             var poolExists = await _dbContext.ProviderPools
-                .AnyAsync(pp => pp.Id == request.ProviderPoolId.Value && pp.IsActive);
+                .AnyAsync(pp => pp.Id == request.ProviderPoolId.Value);
 
             if (!poolExists)
             {
-                throw new ArgumentException($"Provider pool with ID {request.ProviderPoolId} does not exist or is inactive");
+                throw new ArgumentException($"Provider pool with ID {request.ProviderPoolId} does not exist");
             }
         }
     }
@@ -183,11 +167,11 @@ public class ProviderDataService : IProviderDataService
         if (request.ProviderPoolId.HasValue)
         {
             var poolExists = await _dbContext.ProviderPools
-                .AnyAsync(pp => pp.Id == request.ProviderPoolId.Value && pp.IsActive);
+                .AnyAsync(pp => pp.Id == request.ProviderPoolId.Value);
 
             if (!poolExists)
             {
-                throw new ArgumentException($"Provider pool with ID {request.ProviderPoolId} does not exist or is inactive");
+                throw new ArgumentException($"Provider pool with ID {request.ProviderPoolId} does not exist");
             }
         }
     }

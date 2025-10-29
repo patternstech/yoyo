@@ -21,8 +21,6 @@ public class ProviderDetailResponse
 
     public string? ProviderPoolName { get; set; }
 
-    public bool IsActive { get; set; }
-
     public DateTime DateCreated { get; set; }
 
     public DateTime DateModified { get; set; }

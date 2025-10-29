@@ -6,22 +6,6 @@ namespace AH.CancerConnect.AdminAPI.Features.Provider;
 public static class ProviderExtensions
 {
     /// <summary>
-    /// Converts a ProviderPool entity to a ProviderPoolListResponse.
-    /// </summary>
-    /// <param name="providerPool">The provider pool entity.</param>
-    /// <returns>A provider pool list response.</returns>
-    public static ProviderPoolListResponse ToListResponse(this ProviderPool providerPool)
-    {
-        return new ProviderPoolListResponse
-        {
-            Id = providerPool.Id,
-            Name = providerPool.Name,
-            IsActive = providerPool.IsActive,
-            ActiveProviderCount = providerPool.Providers.Count(p => p.IsActive),
-        };
-    }
-
-    /// <summary>
     /// Converts a Provider entity to a ProviderDetailResponse.
     /// </summary>
     /// <param name="provider">The provider entity.</param>
@@ -37,7 +21,6 @@ public static class ProviderExtensions
             Email = provider.Email,
             ProviderPoolId = provider.ProviderPoolId,
             ProviderPoolName = provider.ProviderPool?.Name,
-            IsActive = provider.IsActive,
             DateCreated = provider.DateCreated,
             DateModified = provider.DateModified,
         };
@@ -57,7 +40,6 @@ public static class ProviderExtensions
             ProviderId = request.ProviderId.Trim(),
             Email = request.Email?.Trim(),
             ProviderPoolId = request.ProviderPoolId,
-            IsActive = request.IsActive,
             DateCreated = DateTime.UtcNow,
             DateModified = DateTime.UtcNow,
         };
@@ -75,7 +57,6 @@ public static class ProviderExtensions
         provider.ProviderId = request.ProviderId.Trim();
         provider.Email = request.Email?.Trim();
         provider.ProviderPoolId = request.ProviderPoolId;
-        provider.IsActive = request.IsActive;
         provider.DateModified = DateTime.UtcNow;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AH.CancerConnect.AdminAPI.Features.Provider;
+using AH.CancerConnect.AdminAPI.Features.ProviderPool;
 using AH.CancerConnect.AdminAPI.Features.SymptomConfiguration;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,6 +26,7 @@ public static class ServicesConfiguration
 
         // Core app services (DI)
         services.AddScoped<IProviderDataService, ProviderDataService>();
+        services.AddScoped<IProviderPoolDataService, ProviderPoolDataService>();
         services.AddScoped<ISymptomConfigurationDataService, SymptomConfigurationDataService>();
 
         // HttpClient factory

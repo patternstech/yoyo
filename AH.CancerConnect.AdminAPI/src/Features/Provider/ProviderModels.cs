@@ -19,8 +19,6 @@ public class Provider
 
     public int? ProviderPoolId { get; set; }
 
-    public bool IsActive { get; set; } = true;
-
     public DateTime DateCreated { get; set; }
 
     public DateTime DateModified { get; set; }
@@ -36,11 +34,13 @@ public class ProviderPool
 {
     public int Id { get; set; }
 
+    public int ProviderPoolId { get; set; }
+
     public string Name { get; set; } = string.Empty;
 
     public string? Description { get; set; }
 
-    public bool IsActive { get; set; } = true;
+    public string CreatedBy { get; set; } = string.Empty;
 
     public DateTime DateCreated { get; set; }
 
@@ -72,8 +72,6 @@ public class ProviderRequest
     public string? Email { get; set; }
 
     public int? ProviderPoolId { get; set; }
-
-    public bool IsActive { get; set; } = true;
 }
 
 /// <summary>
@@ -120,9 +118,4 @@ public class ProviderUpdateRequest
     /// Gets or sets the provider pool ID (optional).
     /// </summary>
     public int? ProviderPoolId { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether the provider is active.
-    /// </summary>
-    public bool IsActive { get; set; } = true;
 }

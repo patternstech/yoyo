@@ -13,13 +13,6 @@ public interface IProviderDataService
     Task<IEnumerable<ProviderDetailResponse>> GetProvidersAsync();
 
     /// <summary>
-    /// Gets all provider pools (for dropdowns/lists).
-    /// </summary>
-    /// <param name="activeOnly">Whether to return only active pools.</param>
-    /// <returns>List of provider pools.</returns>
-    Task<IEnumerable<ProviderPoolListResponse>> GetProviderPoolsAsync();
-
-    /// <summary>
     /// Creates a new provider.
     /// </summary>
     /// <param name="request">The provider creation request.</param>

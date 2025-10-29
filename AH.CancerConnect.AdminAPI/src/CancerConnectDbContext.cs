@@ -80,14 +80,15 @@ public class CancerConnectDbContext : DbContext
         modelBuilder.Entity<ProviderPool>(entity =>
         {
             entity.HasKey(pp => pp.Id);
+            entity.Property(pp => pp.ProviderPoolId).IsRequired();
             entity.Property(pp => pp.Name).IsRequired().HasMaxLength(200);
             entity.Property(pp => pp.Description).HasMaxLength(500);
-            entity.Property(pp => pp.IsActive).IsRequired().HasDefaultValue(true);
+            entity.Property(pp => pp.CreatedBy).IsRequired().HasMaxLength(100);
             entity.Property(pp => pp.DateCreated).IsRequired();
             entity.Property(pp => pp.DateModified).IsRequired();
 
             // Index for performance
-            entity.HasIndex(pp => pp.IsActive);
+            entity.HasIndex(pp => pp.ProviderPoolId).IsUnique();
             entity.HasIndex(pp => pp.Name);
         });
     }
@@ -106,7 +107,6 @@ public class CancerConnectDbContext : DbContext
             entity.Property(p => p.ProviderId).IsRequired().HasMaxLength(50);
             entity.Property(p => p.Email).HasMaxLength(200);
             entity.Property(p => p.ProviderPoolId);
-            entity.Property(p => p.IsActive).IsRequired().HasDefaultValue(true);
             entity.Property(p => p.DateCreated).IsRequired();
             entity.Property(p => p.DateModified).IsRequired();
 
@@ -120,7 +120,6 @@ public class CancerConnectDbContext : DbContext
                   .OnDelete(DeleteBehavior.SetNull);
 
             // Indexes for performance
-            entity.HasIndex(p => p.IsActive);
             entity.HasIndex(p => new { p.LastName, p.FirstName });
             entity.HasIndex(p => p.ProviderPoolId);
         });
@@ -187,27 +186,30 @@ public class CancerConnectDbContext : DbContext
             new ProviderPool
             {
                 Id = 1,
+                ProviderPoolId = 1,
                 Name = "Provider Pool A",
                 Description = "Primary care team for oncology patients",
-                IsActive = true,
+                CreatedBy = "System",
                 DateCreated = DateTime.UtcNow,
                 DateModified = DateTime.UtcNow,
             },
             new ProviderPool
             {
                 Id = 2,
+                ProviderPoolId = 2,
                 Name = "Provider Pool B",
                 Description = "Surgical care team for cancer treatment",
-                IsActive = true,
+                CreatedBy = "System",
                 DateCreated = DateTime.UtcNow,
                 DateModified = DateTime.UtcNow,
             },
             new ProviderPool
             {
                 Id = 3,
+                ProviderPoolId = 3,
                 Name = "Provider Pool C",
                 Description = "Radiation and chemotherapy specialist team",
-                IsActive = true,
+                CreatedBy = "System",
                 DateCreated = DateTime.UtcNow,
                 DateModified = DateTime.UtcNow,
             },

@@ -45,11 +45,6 @@ namespace AH.CancerConnect.AdminAPI.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -64,8 +59,6 @@ namespace AH.CancerConnect.AdminAPI.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("IsActive");
 
                     b.HasIndex("ProviderId")
                         .IsUnique();
@@ -85,6 +78,11 @@ namespace AH.CancerConnect.AdminAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
@@ -95,21 +93,20 @@ namespace AH.CancerConnect.AdminAPI.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<int>("ProviderPoolId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("IsActive");
-
                     b.HasIndex("Name");
+
+                    b.HasIndex("ProviderPoolId")
+                        .IsUnique();
 
                     b.ToTable("ProviderPool", "dbo");
 
@@ -117,29 +114,150 @@ namespace AH.CancerConnect.AdminAPI.Migrations
                         new
                         {
                             Id = 1,
-                            DateCreated = new DateTime(2025, 10, 24, 19, 0, 13, 138, DateTimeKind.Utc).AddTicks(6752),
-                            DateModified = new DateTime(2025, 10, 24, 19, 0, 13, 138, DateTimeKind.Utc).AddTicks(6754),
+                            CreatedBy = "System",
+                            DateCreated = new DateTime(2025, 10, 29, 14, 13, 8, 363, DateTimeKind.Utc).AddTicks(3511),
+                            DateModified = new DateTime(2025, 10, 29, 14, 13, 8, 363, DateTimeKind.Utc).AddTicks(3513),
                             Description = "Primary care team for oncology patients",
-                            IsActive = true,
-                            Name = "Provider Pool A"
+                            Name = "Provider Pool A",
+                            ProviderPoolId = 1
                         },
                         new
                         {
                             Id = 2,
-                            DateCreated = new DateTime(2025, 10, 24, 19, 0, 13, 138, DateTimeKind.Utc).AddTicks(6756),
-                            DateModified = new DateTime(2025, 10, 24, 19, 0, 13, 138, DateTimeKind.Utc).AddTicks(6757),
+                            CreatedBy = "System",
+                            DateCreated = new DateTime(2025, 10, 29, 14, 13, 8, 363, DateTimeKind.Utc).AddTicks(3515),
+                            DateModified = new DateTime(2025, 10, 29, 14, 13, 8, 363, DateTimeKind.Utc).AddTicks(3515),
                             Description = "Surgical care team for cancer treatment",
-                            IsActive = true,
-                            Name = "Provider Pool B"
+                            Name = "Provider Pool B",
+                            ProviderPoolId = 2
                         },
                         new
                         {
                             Id = 3,
-                            DateCreated = new DateTime(2025, 10, 24, 19, 0, 13, 138, DateTimeKind.Utc).AddTicks(6759),
-                            DateModified = new DateTime(2025, 10, 24, 19, 0, 13, 138, DateTimeKind.Utc).AddTicks(6760),
+                            CreatedBy = "System",
+                            DateCreated = new DateTime(2025, 10, 29, 14, 13, 8, 363, DateTimeKind.Utc).AddTicks(3517),
+                            DateModified = new DateTime(2025, 10, 29, 14, 13, 8, 363, DateTimeKind.Utc).AddTicks(3517),
                             Description = "Radiation and chemotherapy specialist team",
+                            Name = "Provider Pool C",
+                            ProviderPoolId = 3
+                        });
+                });
+
+            modelBuilder.Entity("AH.CancerConnect.AdminAPI.Features.SymptomConfiguration.Symptom", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("DisplayTitle")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<bool>("Invalid")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Symptom", "ref", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("AH.CancerConnect.AdminAPI.Features.SymptomConfiguration.SymptomConfiguration", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AlertTrigger")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Created")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("FollowUp")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Question")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("SymptomId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("SymptomId");
+
+                    b.ToTable("SymptomConfiguration", "dbo");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AlertTrigger = "When Severe is indicated for 1+ day or Moderate is indicated for 2+ days",
+                            Created = "James Owen 2025-08-23",
+                            DateCreated = new DateTime(2025, 10, 29, 14, 13, 8, 363, DateTimeKind.Utc).AddTicks(3644),
+                            DateModified = new DateTime(2025, 10, 29, 14, 13, 8, 363, DateTimeKind.Utc).AddTicks(3645),
+                            FollowUp = false,
                             IsActive = true,
-                            Name = "Provider Pool C"
+                            SymptomId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AlertTrigger = "When 2 days of moderate or 1 score of Severe",
+                            Created = "James Owen 2025-08-23",
+                            DateCreated = new DateTime(2025, 10, 29, 14, 13, 8, 363, DateTimeKind.Utc).AddTicks(3646),
+                            DateModified = new DateTime(2025, 10, 29, 14, 13, 8, 363, DateTimeKind.Utc).AddTicks(3647),
+                            FollowUp = true,
+                            IsActive = true,
+                            Question = "Have you experienced moderate or severe appetite loss for more than two days?",
+                            SymptomId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AlertTrigger = "Trigger 1 day of Yes",
+                            Created = "James Owen 2025-08-23",
+                            DateCreated = new DateTime(2025, 10, 29, 14, 13, 8, 363, DateTimeKind.Utc).AddTicks(3649),
+                            DateModified = new DateTime(2025, 10, 29, 14, 13, 8, 363, DateTimeKind.Utc).AddTicks(3658),
+                            FollowUp = false,
+                            IsActive = true,
+                            SymptomId = 3
                         });
                 });
 
@@ -153,9 +271,25 @@ namespace AH.CancerConnect.AdminAPI.Migrations
                     b.Navigation("ProviderPool");
                 });
 
+            modelBuilder.Entity("AH.CancerConnect.AdminAPI.Features.SymptomConfiguration.SymptomConfiguration", b =>
+                {
+                    b.HasOne("AH.CancerConnect.AdminAPI.Features.SymptomConfiguration.Symptom", "Symptom")
+                        .WithMany("SymptomConfigurations")
+                        .HasForeignKey("SymptomId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Symptom");
+                });
+
             modelBuilder.Entity("AH.CancerConnect.AdminAPI.Features.Provider.ProviderPool", b =>
                 {
                     b.Navigation("Providers");
+                });
+
+            modelBuilder.Entity("AH.CancerConnect.AdminAPI.Features.SymptomConfiguration.Symptom", b =>
+                {
+                    b.Navigation("SymptomConfigurations");
                 });
 #pragma warning restore 612, 618
         }
