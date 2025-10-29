@@ -320,19 +320,24 @@ public class SymptomDataService : ISymptomDataService
     {
         _logger.LogInformation("Retrieving symptom graph data for patient {PatientId} for {Days} days", patientId, days);
 
-        var endDate = DateTime.UtcNow.Date;
-        var startDate = endDate.AddDays(-days + 1);
+        var endDate = DateTime.UtcNow.Date.AddDays(1); // End of today (tomorrow 00:00)
+        var startDate = DateTime.UtcNow.Date.AddDays(-days); // Go back 'days' from today
+
+        _logger.LogInformation("Date range: {StartDate} to {EndDate}", startDate, endDate);
 
         var entries = await _dbContext.SymptomEntries
             .Include(e => e.SymptomDetails)
                 .ThenInclude(sd => sd.Symptom)
             .Include(e => e.SymptomDetails)
                 .ThenInclude(sd => sd.Category)
-            .Where(e => e.PatientId == patientId 
-                && e.EntryDate.Date >= startDate 
-                && e.EntryDate.Date <= endDate)
+            .Where(e => e.PatientId == patientId
+                && e.EntryDate >= startDate
+                && e.EntryDate < endDate)
             .OrderBy(e => e.EntryDate)
             .ToListAsync();
+
+        _logger.LogInformation("Found {Count} entries for patient {PatientId}", entries.Count, patientId);
+
 
         // Group symptoms by name
         var symptomGroups = entries
@@ -383,7 +388,7 @@ public class SymptomDataService : ISymptomDataService
         var response = new SymptomGraphResponse
         {
             StartDate = startDate,
-            EndDate = endDate,
+            EndDate = DateTime.Now.Date,
             DaysWithSymptoms = daysWithEntries,
             SymptomsTracked = uniqueSymptoms,
             SymptomsData = symptomsData.OrderBy(s => s.Name).ToList()
@@ -405,20 +410,20 @@ public class SymptomDataService : ISymptomDataService
     {
         return categoryName.ToLowerInvariant() switch
         {
-            "yes/no" => symptomValue.ToLowerInvariant() switch
+            "yesno" => symptomValue.ToLowerInvariant() switch
             {
-                "yes" => "2",
-                "no" => "1",
+                "yes" => "1",
+                "no" => "2",
                 _ => symptomValue
             },
-            "severity" => symptomValue.ToLowerInvariant() switch
+            "mildmoderatesevere" => symptomValue.ToLowerInvariant() switch
             {
                 "mild" => "1",
-                "moderate" => "2", 
+                "moderate" => "2",
                 "severe" => "3",
                 _ => symptomValue
             },
-            "scale" => symptomValue, // Already 1-10, keep as is
+            "scale1to10" => symptomValue,
             _ => symptomValue
         };
     }

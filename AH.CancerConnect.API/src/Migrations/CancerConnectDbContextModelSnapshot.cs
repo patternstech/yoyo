@@ -99,12 +99,6 @@ namespace AH.CancerConnect.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("DateAdded")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("NoteText")
                         .IsRequired()
                         .HasMaxLength(1000)
@@ -112,10 +106,6 @@ namespace AH.CancerConnect.API.Migrations
 
                     b.Property<int>("PatientId")
                         .HasColumnType("int");
-
-                    b.Property<string>("RecordingPath")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Title")
                         .HasMaxLength(250)
@@ -986,7 +976,7 @@ namespace AH.CancerConnect.API.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2025, 10, 14, 3, 30, 43, 32, DateTimeKind.Utc).AddTicks(3110),
+                            Created = new DateTime(2025, 10, 28, 13, 51, 0, 336, DateTimeKind.Utc).AddTicks(2102),
                             FirstName = "Test",
                             LastName = "User",
                             MychartLogin = "testuser",

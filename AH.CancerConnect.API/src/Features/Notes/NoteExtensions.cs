@@ -43,7 +43,7 @@ public static class NoteExtensions
             Id = note.Id,
             PatientId = note.PatientId,
             Title = note.Title,
-            NoteText = note.NoteText,
+            NoteText = note.NoteText
         };
     }
 

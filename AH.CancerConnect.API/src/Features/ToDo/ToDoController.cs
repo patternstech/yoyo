@@ -33,10 +33,16 @@ public class ToDoController : ControllerBase
     /// <returns>Success response with ToDo ID.</returns>
     [HttpPost]
     [ProducesResponseType<ToDoResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> PostToDo([FromBody] ToDoRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            _logger.LogWarning("PostToDo called with invalid model state");
+            return BadRequest(ModelState);
+        }
+
         _logger.LogDebug("PostToDo called for patient {PatientId}", request.PatientId);
 
         var todoId = await _todoDataService.CreateToDoAsync(request);
@@ -57,7 +63,7 @@ public class ToDoController : ControllerBase
     /// <returns>Success response.</returns>
     [HttpPatch("{id}/toggle")]
     [ProducesResponseType<ToDoResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ToggleCompletion(int id, [FromQuery][Required] int patientId)
@@ -82,7 +88,7 @@ public class ToDoController : ControllerBase
     /// <returns>Success response.</returns>
     [HttpDelete("{id}")]
     [ProducesResponseType<ToDoResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteToDo(int id, [FromQuery][Required] int patientId)

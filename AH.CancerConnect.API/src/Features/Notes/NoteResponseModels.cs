@@ -21,7 +21,13 @@ public class NoteDetailResponse
 
     public int PatientId { get; set; }
 
+    public DateTime DateCreated { get; set; }
+
     public string? Title { get; set; }
 
     public string NoteText { get; set; } = string.Empty;
+
+    public string? RecordingPath { get; set; }
+
+    public DateTime DateAdded { get; set; }
 }

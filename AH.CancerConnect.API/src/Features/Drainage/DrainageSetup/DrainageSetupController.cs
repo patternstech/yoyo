@@ -33,10 +33,16 @@ public class DrainageSetupController : ControllerBase
     /// <returns>Success response with drainage setup ID.</returns>
     [HttpPost]
     [ProducesResponseType<DrainageSetupResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> PostDrainageSetup([FromBody] DrainageSetupRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            _logger.LogWarning("Invalid model state for drainage setup creation: {ModelState}", ModelState);
+            return BadRequest(ModelState);
+        }
+
         try
         {
             var setupId = await _drainageSetupDataService.CreateDrainageSetupAsync(request);
@@ -96,11 +102,17 @@ public class DrainageSetupController : ControllerBase
     /// <returns>Success response with drainage setup ID.</returns>
     [HttpPut]
     [ProducesResponseType<DrainageSetupResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> PutDrainageSetup([FromBody] DrainageSetupUpdateRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            _logger.LogWarning("Invalid model state for drainage setup update: {ModelState}", ModelState);
+            return BadRequest(ModelState);
+        }
+
         try
         {
             var setupId = await _drainageSetupDataService.UpdateDrainageSetupAsync(request);
@@ -129,11 +141,17 @@ public class DrainageSetupController : ControllerBase
     /// <returns>Success response.</returns>
     [HttpPatch("archive-drain")]
     [ProducesResponseType<ArchiveDrainResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ArchiveDrain([FromBody] ArchiveDrainRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            _logger.LogWarning("Invalid model state for drain archiving: {ModelState}", ModelState);
+            return BadRequest(ModelState);
+        }
+
         try
         {
             var success = await _drainageSetupDataService.ArchiveDrainAsync(request);

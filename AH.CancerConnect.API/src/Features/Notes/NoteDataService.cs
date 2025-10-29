@@ -106,7 +106,6 @@ public class NoteDataService : INoteDataService
 
         var notes = await _dbContext.Notes
             .Where(n => n.PatientId == patientId)
-            .OrderByDescending(n => n.Id)
             .ToListAsync();
 
         _logger.LogDebug("Retrieved {Count} notes for patient {PatientId}", notes.Count, patientId);
