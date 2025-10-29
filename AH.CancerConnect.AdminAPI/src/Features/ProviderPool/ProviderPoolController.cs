@@ -45,7 +45,7 @@ public class ProviderPoolController : ControllerBase
     /// Create a new provider pool
     /// Example:
     /// POST /api/v1/provider-pools
-    /// Body: { "name": "Oncology Team A", "description": "Primary oncology care team" }
+    /// Body: { "providerPoolId": 1, "name": "Oncology Team A", "description": "Primary oncology care team" }
     /// </summary>
     /// <param name="request">The provider pool creation request.</param>
     /// <returns>Success response with provider pool ID.</returns>
@@ -55,7 +55,8 @@ public class ProviderPoolController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CreateProviderPool([FromBody] ProviderPoolRequest request)
     {
-        _logger.LogDebug("CreateProviderPool called for {Name}", request.Name);
+        _logger.LogDebug("CreateProviderPool called for ProviderPoolId {ProviderPoolId} - {Name}", 
+            request.ProviderPoolId, request.Name);
 
         // Get the logged-in user's name (for now, using a placeholder)
         // In production, this would come from the authenticated user context

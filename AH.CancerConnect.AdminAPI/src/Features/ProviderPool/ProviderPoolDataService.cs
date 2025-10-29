@@ -36,19 +36,14 @@ public class ProviderPoolDataService : IProviderPoolDataService
     /// <inheritdoc />
     public async Task<int> CreateProviderPoolAsync(ProviderPoolRequest request, string createdBy)
     {
-        _logger.LogDebug("Creating provider pool {Name} by {CreatedBy}", request.Name, createdBy);
+        _logger.LogDebug("Creating provider pool {ProviderPoolId} - {Name} by {CreatedBy}", 
+            request.ProviderPoolId, request.Name, createdBy);
 
         // Validate request
         await ValidateProviderPoolRequestAsync(request);
 
-        // Generate a unique ProviderPoolId
-        var maxProviderPoolId = await _dbContext.ProviderPools
-            .Select(pp => (int?)pp.ProviderPoolId)
-            .MaxAsync() ?? 0;
-
         // Create the provider pool using extension method
         var providerPool = request.ToEntity(createdBy);
-        providerPool.ProviderPoolId = maxProviderPoolId + 1;
 
         // Save to database
         _dbContext.ProviderPools.Add(providerPool);
@@ -123,6 +118,15 @@ public class ProviderPoolDataService : IProviderPoolDataService
     /// <param name="request">The request to validate.</param>
     private async Task ValidateProviderPoolRequestAsync(ProviderPoolRequest request)
     {
+        // Check for duplicate ProviderPoolId
+        var providerPoolIdExists = await _dbContext.ProviderPools
+            .AnyAsync(pp => pp.ProviderPoolId == request.ProviderPoolId);
+
+        if (providerPoolIdExists)
+        {
+            throw new ArgumentException($"A provider pool with ProviderPoolId '{request.ProviderPoolId}' already exists");
+        }
+
         // Check for duplicate name
         var nameExists = await _dbContext.ProviderPools
             .AnyAsync(pp => pp.Name == request.Name);

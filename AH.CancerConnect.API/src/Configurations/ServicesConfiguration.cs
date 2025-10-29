@@ -5,6 +5,7 @@ using AH.CancerConnect.API.Features.SymptomsTracking;
 using AH.CancerConnect.API.Features.ToDo;
 using AH.CancerConnect.API.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Serialization;
 
 namespace AH.CancerConnect.API.Configurations;
 
@@ -24,6 +25,7 @@ public static class ServicesConfiguration
             {
                 options.JsonSerializerOptions.WriteIndented = true;
                 options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
         // Bind options (AuthSettings, XealthAppSettings)

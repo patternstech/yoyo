@@ -7,6 +7,10 @@ namespace AH.CancerConnect.AdminAPI.Features.ProviderPool;
 /// </summary>
 public class ProviderPoolRequest
 {
+    [Required(ErrorMessage = "Provider Pool ID is required")]
+    [Range(1, int.MaxValue, ErrorMessage = "Provider Pool ID must be greater than 0")]
+    public int ProviderPoolId { get; set; }
+
     [Required(ErrorMessage = "Name is required")]
     [StringLength(200, ErrorMessage = "Name must be 200 characters or less")]
     public string Name { get; set; } = string.Empty;

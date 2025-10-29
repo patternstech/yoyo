@@ -56,6 +56,7 @@ public static class ProviderPoolExtensions
     {
         return new Provider.ProviderPool
         {
+            ProviderPoolId = request.ProviderPoolId,
             Name = request.Name.Trim(),
             Description = request.Description?.Trim(),
             CreatedBy = createdBy,
