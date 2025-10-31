@@ -342,7 +342,7 @@ public class SymptomDataService : ISymptomDataService
         // Group symptoms by name
         var symptomGroups = entries
             .SelectMany(e => e.SymptomDetails)
-            .GroupBy(sd => sd.Symptom.Name)
+            .GroupBy(sd => new { sd.Symptom.Name, sd.CategoryId })
             .ToList();
 
         var symptomsData = new List<SymptomGraphData>();
@@ -351,7 +351,8 @@ public class SymptomDataService : ISymptomDataService
         {
             var symptomData = new SymptomGraphData
             {
-                Name = symptomGroup.Key.ToLowerInvariant(),
+                Name = symptomGroup.Key.Name.ToLowerInvariant(),
+                CategoryId = symptomGroup.Key.CategoryId,
                 Values = new List<SymptomValuePoint>()
             };
 

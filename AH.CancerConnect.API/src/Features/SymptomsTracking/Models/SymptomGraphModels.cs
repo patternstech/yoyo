@@ -39,6 +39,8 @@ public class SymptomGraphData
 {
     public string Name { get; set; } = string.Empty;
 
+    public int CategoryId { get; set; }
+
     public List<SymptomValuePoint> Values { get; set; } = new List<SymptomValuePoint>();
 }
 
