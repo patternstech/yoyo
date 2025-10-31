@@ -16,6 +16,8 @@ public class Note
 
     public string NoteText { get; set; } = string.Empty;
 
+    public DateTime DateCreated { get; set; }
+
     // Navigation property
     public Patient Patient { get; set; } = null!;
 }

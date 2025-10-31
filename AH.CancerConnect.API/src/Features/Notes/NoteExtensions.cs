@@ -17,6 +17,7 @@ public static class NoteExtensions
             PatientId = request.PatientId,
             Title = request.Title,
             NoteText = request.NoteText,
+            DateCreated = DateTime.Now,
         };
     }
 
@@ -43,7 +44,8 @@ public static class NoteExtensions
             Id = note.Id,
             PatientId = note.PatientId,
             Title = note.Title,
-            NoteText = note.NoteText
+            NoteText = note.NoteText,
+            DateCreated = note.DateCreated,
         };
     }
 

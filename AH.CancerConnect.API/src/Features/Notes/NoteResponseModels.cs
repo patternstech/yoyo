@@ -24,4 +24,6 @@ public class NoteDetailResponse
     public string? Title { get; set; }
 
     public string NoteText { get; set; } = string.Empty;
+
+    public DateTime DateCreated { get; set; }
 }
