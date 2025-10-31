@@ -9,14 +9,38 @@ namespace AH.CancerConnect.API.Features.ToDo;
 public enum AlertType
 {
     /// <summary>
-    /// Alert on the day of the task.
+    /// NONE
     /// </summary>
-    OnDay,
+    NONE,
 
     /// <summary>
-    /// Alert the evening before the task.
+    /// DAY_OF_EVENT
     /// </summary>
-    EveningBefore,
+    ///
+    DAY_OF_EVENT,
+
+    /// <summary>
+    /// EVENING_BEFORE_DAY_OF_EVENT
+    /// </summary>
+    ///
+    EVENING_BEFORE_DAY_OF_EVENT,
+
+    /// <summary>
+    /// MORNING_BEFORE_DAY_OF_EVENT
+    /// </summary>
+    ///
+    MORNING_BEFORE_DAY_OF_EVENT,
+
+    /// <summary>
+    /// HOUR_BEFORE_EVENT
+    /// </summary>
+    ///
+    HOUR_BEFORE_EVENT,
+
+    /// <summary>
+    /// DAY_BEFORE_EVENT
+    /// </summary>
+    DAY_BEFORE_EVENT,
 }
 
 /// <summary>
