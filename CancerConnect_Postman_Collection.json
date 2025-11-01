@@ -1,0 +1,548 @@
+{
+	"info": {
+		"_postman_id": "cancer-connect-api-collection",
+		"name": "Cancer Connect API Collection",
+		"description": "Complete API collection for Cancer Connect application",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Symptoms Tracking",
+			"item": [
+				{
+					"name": "Get All Symptoms",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7080/api/v1/symptoms",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "symptoms"]
+						}
+					}
+				},
+				{
+					"name": "Create Symptom Entry",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"patientId\": 1,\n  \"entryDate\": \"2025-10-31\",\n  \"note\": \"Feeling moderate anxiety today\",\n  \"symptomDetails\": [\n    {\n      \"symptomId\": 1,\n      \"categoryId\": 1,\n      \"symptomValue\": \"Moderate\"\n    },\n    {\n      \"symptomId\": 5,\n      \"categoryId\": 3,\n      \"symptomValue\": \"7\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7080/api/v1/symptoms",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "symptoms"]
+						}
+					}
+				},
+				{
+					"name": "Update Symptom Entry",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"patientId\": 1,\n  \"entryDate\": \"2025-10-31\",\n  \"note\": \"Updated: Feeling better now\",\n  \"symptomDetails\": [\n    {\n      \"id\": 1,\n      \"symptomId\": 1,\n      \"categoryId\": 1,\n      \"symptomValue\": \"Mild\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7080/api/v1/symptoms",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "symptoms"]
+						}
+					}
+				},
+				{
+					"name": "Delete Symptom Entry",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7080/api/v1/symptoms/1?patientId=1",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "symptoms", "1"],
+							"query": [
+								{
+									"key": "patientId",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Symptom Summary",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7080/api/v1/symptoms/summary?patientId=1",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "symptoms", "summary"],
+							"query": [
+								{
+									"key": "patientId",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Symptom Graph Data - 7 Days",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7080/api/v1/symptoms/graph?patientId=1&days=7",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "symptoms", "graph"],
+							"query": [
+								{
+									"key": "patientId",
+									"value": "1"
+								},
+								{
+									"key": "days",
+									"value": "7"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Symptom Graph Data - 30 Days",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7080/api/v1/symptoms/graph?patientId=1&days=30",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "symptoms", "graph"],
+							"query": [
+								{
+									"key": "patientId",
+									"value": "1"
+								},
+								{
+									"key": "days",
+									"value": "30"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Notes",
+			"item": [
+				{
+					"name": "Get All Notes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7080/api/v1/notes?patientId=1",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "notes"],
+							"query": [
+								{
+									"key": "patientId",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Note",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"patientId\": 1,\n  \"title\": \"Patient Consultation\",\n  \"noteText\": \"Patient reported feeling better today. Medication is working well.\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7080/api/v1/notes",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "notes"]
+						}
+					}
+				},
+				{
+					"name": "Update Note",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"patientId\": 1,\n  \"title\": \"Updated Consultation\",\n  \"noteText\": \"Patient continues to show improvement. No side effects reported.\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7080/api/v1/notes",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "notes"]
+						}
+					}
+				},
+				{
+					"name": "Delete Note",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7080/api/v1/notes/1?patientId=1",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "notes", "1"],
+							"query": [
+								{
+									"key": "patientId",
+									"value": "1"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "ToDo",
+			"item": [
+				{
+					"name": "Get All ToDos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7080/api/v1/todo?patientId=1",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "todo"],
+							"query": [
+								{
+									"key": "patientId",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Create ToDo",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"patientId\": 1,\n  \"title\": \"Take Medicine\",\n  \"detail\": \"Take blood pressure medication\",\n  \"date\": \"2025-11-01\",\n  \"time\": \"08:00:00\",\n  \"alert\": \"OnDay\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7080/api/v1/todo",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "todo"]
+						}
+					}
+				},
+				{
+					"name": "Toggle ToDo Completion",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7080/api/v1/todo/1/toggle?patientId=1",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "todo", "1", "toggle"],
+							"query": [
+								{
+									"key": "patientId",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete ToDo",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7080/api/v1/todo/1?patientId=1",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "todo", "1"],
+							"query": [
+								{
+									"key": "patientId",
+									"value": "1"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Drainage Setup",
+			"item": [
+				{
+					"name": "Get Drainage Setup",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7080/api/v1/drainage-setup?patientId=1",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "drainage-setup"],
+							"query": [
+								{
+									"key": "patientId",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Create or Update Drainage Setup",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"patientId\": 1,\n  \"drains\": [\n    {\n      \"drainNumber\": 1,\n      \"drainName\": \"Left Chest Drain\"\n    },\n    {\n      \"drainNumber\": 2,\n      \"drainName\": \"Right Chest Drain\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7080/api/v1/drainage-setup",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "drainage-setup"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Provider (AdminAPI)",
+			"item": [
+				{
+					"name": "Get All Providers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7443/api/v1/providers",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7443",
+							"path": ["api", "v1", "providers"]
+						}
+					}
+				},
+				{
+					"name": "Create Provider",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Smith\",\n  \"providerId\": \"PRV001\",\n  \"email\": \"john.smith@hospital.com\",\n  \"providerPoolId\": 1\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7443/api/v1/providers",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7443",
+							"path": ["api", "v1", "providers"]
+						}
+					}
+				},
+				{
+					"name": "Update Provider",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"firstName\": \"John\",\n  \"lastName\": \"Smith\",\n  \"providerId\": \"PRV001\",\n  \"email\": \"john.smith@hospital.com\",\n  \"providerPoolId\": 2\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7443/api/v1/providers",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7443",
+							"path": ["api", "v1", "providers"]
+						}
+					}
+				},
+				{
+					"name": "Delete Provider",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7443/api/v1/providers/1",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7443",
+							"path": ["api", "v1", "providers", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Provider Pool (AdminAPI)",
+			"item": [
+				{
+					"name": "Get All Provider Pools",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7443/api/v1/provider-pools",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7443",
+							"path": ["api", "v1", "provider-pools"]
+						}
+					}
+				},
+				{
+					"name": "Create Provider Pool",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"providerPoolId\": 10,\n  \"name\": \"Oncology Team A\",\n  \"description\": \"Primary oncology care team for patient management\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7443/api/v1/provider-pools",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7443",
+							"path": ["api", "v1", "provider-pools"]
+						}
+					}
+				},
+				{
+					"name": "Update Provider Pool",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"name\": \"Updated Oncology Team\",\n  \"description\": \"Updated description for the care team\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7443/api/v1/provider-pools",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7443",
+							"path": ["api", "v1", "provider-pools"]
+						}
+					}
+				},
+				{
+					"name": "Delete Provider Pool",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7443/api/v1/provider-pools/1",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7443",
+							"path": ["api", "v1", "provider-pools", "1"]
+						}
+					}
+				}
+			]
+		}
+	]
+}
