@@ -285,7 +285,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"patientId\": 1,\n  \"title\": \"Take Medicine\",\n  \"detail\": \"Take blood pressure medication\",\n  \"date\": \"2025-11-01\",\n  \"time\": \"08:00:00\",\n  \"alert\": \"OnDay\"\n}"
+							"raw": "{\n  \"patientId\": 1,\n  \"title\": \"Take Medicine\",\n  \"detail\": \"Take blood pressure medication\",\n  \"date\": \"2025-11-01\",\n  \"time\": \"08:00:00\",\n  \"alert\": \"DAY_OF_EVENT\"\n}"
 						},
 						"url": {
 							"raw": "https://localhost:7080/api/v1/todo",
@@ -373,7 +373,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"patientId\": 1,\n  \"drains\": [\n    {\n      \"drainNumber\": 1,\n      \"drainName\": \"Left Chest Drain\"\n    },\n    {\n      \"drainNumber\": 2,\n      \"drainName\": \"Right Chest Drain\"\n    }\n  ]\n}"
+							"raw": "{\n  \"patientId\": 1,\n  \"hasProviderGoalAmount\": true,\n  \"goalDrainageAmount\": 100,\n  \"providerInstructions\": \"Monitor drainage levels daily\",\n  \"drains\": [\n    {\n      \"name\": \"Left Chest Drain\"\n    },\n    {\n      \"name\": \"Right Chest Drain\"\n    }\n  ]\n}"
 						},
 						"url": {
 							"raw": "https://localhost:7080/api/v1/drainage-setup",
