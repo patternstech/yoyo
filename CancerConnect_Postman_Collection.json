@@ -347,22 +347,16 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:7080/api/v1/drainage-setup?patientId=1",
+							"raw": "https://localhost:7080/api/v1/drainage-setup/patient/1",
 							"protocol": "https",
 							"host": ["localhost"],
 							"port": "7080",
-							"path": ["api", "v1", "drainage-setup"],
-							"query": [
-								{
-									"key": "patientId",
-									"value": "1"
-								}
-							]
+							"path": ["api", "v1", "drainage-setup", "patient", "1"]
 						}
 					}
 				},
 				{
-					"name": "Create or Update Drainage Setup",
+					"name": "Create Drainage Setup",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -381,6 +375,52 @@
 							"host": ["localhost"],
 							"port": "7080",
 							"path": ["api", "v1", "drainage-setup"]
+						}
+					}
+				},
+				{
+					"name": "Update Drainage Setup",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"patientId\": 1,\n  \"hasProviderGoalAmount\": false,\n  \"providerInstructions\": \"Updated: Check drainage twice daily\",\n  \"drains\": [\n    {\n      \"id\": 1,\n      \"name\": \"Left Chest Drain - Updated\"\n    },\n    {\n      \"id\": 2,\n      \"name\": \"Right Chest Drain\"\n    },\n    {\n      \"name\": \"New Additional Drain\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7080/api/v1/drainage-setup",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "drainage-setup"]
+						}
+					}
+				},
+				{
+					"name": "Archive Drain",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"drainId\": 1,\n  \"patientId\": 1\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7080/api/v1/drainage-setup/archive-drain",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "drainage-setup", "archive-drain"]
 						}
 					}
 				}
