@@ -285,7 +285,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"patientId\": 1,\n  \"title\": \"Take Medicine\",\n  \"detail\": \"Take blood pressure medication\",\n  \"date\": \"2025-11-01\",\n  \"time\": \"08:00:00\",\n  \"alert\": \"DAY_OF_EVENT\"\n}"
+							"raw": "{\n  \"patientId\": 1,\n  \"title\": \"Take Medicine\",\n  \"detail\": \"Take blood pressure medication\",\n  \"date\": \"2025-11-01\",\n  \"time\": \"08:00:00\",\n  \"alert\": \"TIME_OF_EVENT\"\n}"
 						},
 						"url": {
 							"raw": "https://localhost:7080/api/v1/todo",

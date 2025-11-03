@@ -17,7 +17,7 @@ public static class ToDoExtensions
             PatientId = request.PatientId,
             Title = request.Title,
             Detail = request.Detail,
-            Date = request.Date,
+            Date = request.Date.HasValue ? DateOnly.FromDateTime(request.Date.Value) : null,
             Time = request.Time,
             Alert = request.Alert,
             IsCompleted = false,

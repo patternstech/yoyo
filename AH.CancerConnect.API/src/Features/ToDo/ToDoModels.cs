@@ -16,25 +16,26 @@ public enum AlertType
     /// <summary>
     /// DAY_OF_EVENT
     /// </summary>
-    ///
     DAY_OF_EVENT,
 
     /// <summary>
     /// EVENING_BEFORE_DAY_OF_EVENT
     /// </summary>
-    ///
     EVENING_BEFORE_DAY_OF_EVENT,
 
     /// <summary>
     /// MORNING_BEFORE_DAY_OF_EVENT
     /// </summary>
-    ///
     MORNING_BEFORE_DAY_OF_EVENT,
+
+    /// <summary>
+    /// TIME_OF_EVENT
+    /// </summary>
+    TIME_OF_EVENT,
 
     /// <summary>
     /// HOUR_BEFORE_EVENT
     /// </summary>
-    ///
     HOUR_BEFORE_EVENT,
 
     /// <summary>
@@ -56,7 +57,7 @@ public class ToDo
 
     public string Detail { get; set; } = string.Empty;
 
-    public DateTime? Date { get; set; }
+    public DateOnly? Date { get; set; }
 
     public TimeSpan? Time { get; set; }
 
@@ -86,7 +87,7 @@ public class ToDoRequest
     [StringLength(1000, ErrorMessage = "Detail cannot exceed 1000 characters.")]
     public string Detail { get; set; } = string.Empty;
 
-    public DateTime? Date { get; set; }
+    public DateOnly? Date { get; set; }
 
     public TimeSpan? Time { get; set; }
 

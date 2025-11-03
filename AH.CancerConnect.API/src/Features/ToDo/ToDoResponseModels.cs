@@ -27,7 +27,7 @@ public class ToDoDetailResponse
 
     public string Detail { get; set; } = string.Empty;
 
-    public DateTime? Date { get; set; }
+    public DateOnly? Date { get; set; }
 
     public TimeSpan? Time { get; set; }
 
