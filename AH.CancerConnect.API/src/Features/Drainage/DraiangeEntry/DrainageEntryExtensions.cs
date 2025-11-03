@@ -14,10 +14,12 @@ public static class DrainageEntryExtensions
     {
         return new DrainageEntry
         {
-            DrainId = request.DrainId,
+            DrainageSetupId = request.DrainageSetupId,
             EmptyDate = request.EmptyDate,
             Drain1Amount = request.Drain1Amount,
             Drain2Amount = request.Drain2Amount,
+            Drain3Amount = request.Drain3Amount,
+            Drain4Amount = request.Drain4Amount,
             Note = request.Note,
             IsArchived = false,
             DateCreated = DateTime.UtcNow,

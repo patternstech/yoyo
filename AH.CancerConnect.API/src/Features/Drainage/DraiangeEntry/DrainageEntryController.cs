@@ -23,9 +23,9 @@ public class DrainageEntryController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new drainage entry for a drain
+    /// Create a new drainage entry for all drains in a drainage setup
     /// Example: POST /api/v1/drainage-entry
-    /// Body: { "drainId": 1, "emptyDate": "2025-10-13T21:21:00", "drain1Amount": 25.5, "drain2Amount": null, "note": "Patient feeling better" }.
+    /// Body: { "drainageSetupId": 1, "emptyDate": "2025-11-03T11:22:00", "drain1Amount": 25.5, "drain2Amount": 30.0, "drain3Amount": null, "drain4Amount": null, "note": "Patient feeling better" }.
     /// </summary>
     /// <param name="request">Drainage entry request.</param>
     /// <returns>Success response with drainage entry ID.</returns>
