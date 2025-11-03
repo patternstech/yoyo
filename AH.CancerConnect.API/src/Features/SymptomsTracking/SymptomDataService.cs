@@ -353,7 +353,7 @@ public class SymptomDataService : ISymptomDataService
             {
                 Name = symptomGroup.Key.Name.ToLowerInvariant(),
                 CategoryId = symptomGroup.Key.CategoryId,
-                Values = new List<SymptomValuePoint>()
+                Values = new List<SymptomValuePoint>(),
             };
 
             // Get all values for this symptom, ordered by date

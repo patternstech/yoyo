@@ -1,3 +1,4 @@
+using AH.CancerConnect.API.Features.Drainage.DraiangeEntry;
 using AH.CancerConnect.API.Features.Drainage.DrainageSetup;
 using AH.CancerConnect.API.Features.Notes;
 using AH.CancerConnect.API.Features.SymptomsTracking.Models;
@@ -72,6 +73,11 @@ public class CancerConnectDbContext : DbContext
     public DbSet<Drain> Drains { get; set; }
 
     /// <summary>
+    /// Gets or sets the drainage entries table.
+    /// </summary>
+    public DbSet<DrainageEntry> DrainageEntries { get; set; }
+
+    /// <summary>
     /// Configures the model relationships and constraints.
     /// </summary>
     /// <param name="modelBuilder">Model builder.</param>
@@ -90,6 +96,7 @@ public class CancerConnectDbContext : DbContext
         modelBuilder.Entity<ToDo>().ToTable("ToDo", "dbo");
         modelBuilder.Entity<DrainageSetup>().ToTable("DrainageSetup", "dbo");
         modelBuilder.Entity<Drain>().ToTable("Drain", "dbo");
+        modelBuilder.Entity<DrainageEntry>().ToTable("DrainageEntry", "dbo");
 
         // Configure Patient entity
         modelBuilder.Entity<Patient>(entity =>
@@ -257,6 +264,30 @@ public class CancerConnectDbContext : DbContext
 
             // Index for performance
             entity.HasIndex(d => new { d.DrainageSetupId, d.IsArchived });
+        });
+
+        // Configure DrainageEntry entity
+        modelBuilder.Entity<DrainageEntry>(entity =>
+        {
+            entity.HasKey(de => de.Id);
+            entity.Property(de => de.DrainId).IsRequired();
+            entity.Property(de => de.EmptyDate).IsRequired();
+            entity.Property(de => de.Drain1Amount).HasColumnType("decimal(7,2)");
+            entity.Property(de => de.Drain2Amount).HasColumnType("decimal(7,2)");
+            entity.Property(de => de.Note).HasMaxLength(1000);
+            entity.Property(de => de.IsArchived).IsRequired().HasDefaultValue(false);
+            entity.Property(de => de.DateCreated).IsRequired();
+            entity.Property(de => de.DateArchived);
+
+            // Relationship with Drain
+            entity.HasOne(de => de.Drain)
+                  .WithMany()
+                  .HasForeignKey(de => de.DrainId)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            // Indexes for performance
+            entity.HasIndex(de => new { de.DrainId, de.EmptyDate });
+            entity.HasIndex(de => new { de.DrainId, de.IsArchived });
         });
 
         // Seed initial data
