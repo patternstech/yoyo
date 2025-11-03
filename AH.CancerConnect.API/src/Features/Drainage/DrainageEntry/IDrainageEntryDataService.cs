@@ -1,4 +1,4 @@
-namespace AH.CancerConnect.API.Features.Drainage.DraiangeEntry;
+namespace AH.CancerConnect.API.Features.Drainage.DrainageEntry;
 
 /// <summary>
 /// Interface for drainage entry data service.

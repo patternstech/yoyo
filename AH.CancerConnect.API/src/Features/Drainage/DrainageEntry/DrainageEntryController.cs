@@ -1,4 +1,4 @@
-namespace AH.CancerConnect.API.Features.Drainage.DraiangeEntry;
+namespace AH.CancerConnect.API.Features.Drainage.DrainageEntry;
 using Microsoft.AspNetCore.Mvc;
 
 /// <summary>

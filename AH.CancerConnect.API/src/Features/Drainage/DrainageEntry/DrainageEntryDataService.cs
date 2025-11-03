@@ -1,7 +1,7 @@
 using AH.CancerConnect.API.Features.Drainage.DrainageSetup;
 using Microsoft.EntityFrameworkCore;
 
-namespace AH.CancerConnect.API.Features.Drainage.DraiangeEntry;
+namespace AH.CancerConnect.API.Features.Drainage.DrainageEntry;
 
 /// <summary>
 /// Database implementation of drainage entry data service.

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using AH.CancerConnect.API.Features.Drainage.DrainageSetup;
 
-namespace AH.CancerConnect.API.Features.Drainage.DraiangeEntry;
+namespace AH.CancerConnect.API.Features.Drainage.DrainageEntry;
 
 /// <summary>
 /// Main drainage entry entity for tracking drain measurements for all drains at once.

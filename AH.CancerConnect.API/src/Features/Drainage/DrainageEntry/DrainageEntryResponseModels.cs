@@ -1,4 +1,4 @@
-namespace AH.CancerConnect.API.Features.Drainage.DraiangeEntry;
+namespace AH.CancerConnect.API.Features.Drainage.DrainageEntry;
 
 /// <summary>
 /// Response DTO for drainage entry operations.

@@ -1,4 +1,4 @@
-namespace AH.CancerConnect.API.Features.Drainage.DraiangeEntry;
+namespace AH.CancerConnect.API.Features.Drainage.DrainageEntry;
 
 /// <summary>
 /// Extension methods for mapping drainage entry requests to entities.
