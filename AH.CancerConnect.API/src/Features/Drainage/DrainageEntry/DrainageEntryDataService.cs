@@ -60,12 +60,6 @@ public class DrainageEntryDataService : IDrainageEntryDataService
             throw new InvalidOperationException($"Cannot create drainage entry for archived drain {request.DrainId}");
         }
 
-        // Validate that at least one drain amount is provided
-        if (!request.Drain1Amount.HasValue && !request.Drain2Amount.HasValue)
-        {
-            throw new ArgumentException("At least one drain amount (Drain 1 or Drain 2) must be provided");
-        }
-
         // Validate empty date is not in the future
         if (request.EmptyDate > DateTime.UtcNow.AddDays(1)) // Allow some tolerance for timezone differences
         {

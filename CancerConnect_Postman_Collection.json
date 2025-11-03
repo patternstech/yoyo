@@ -441,7 +441,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"drainageSetupId\": 1,\n  \"emptyDate\": \"2025-11-03T11:22:00\",\n  \"drain1Amount\": 50.5,\n  \"drain2Amount\": 35.0,\n  \"drain3Amount\": null,\n  \"drain4Amount\": null,\n  \"note\": \"Patient feeling better today\"\n}"
+							"raw": "{\n  \"drainId\": 1,\n  \"emptyDate\": \"2025-11-03T11:22:00\",\n  \"amount\": 50.5,\n  \"note\": \"Patient feeling better today\"\n}"
 						},
 						"url": {
 							"raw": "https://localhost:7080/api/v1/drainage-entry",

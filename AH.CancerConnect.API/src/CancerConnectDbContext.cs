@@ -270,26 +270,23 @@ public class CancerConnectDbContext : DbContext
         modelBuilder.Entity<DrainageEntry>(entity =>
         {
             entity.HasKey(de => de.Id);
-            entity.Property(de => de.DrainageSetupId).IsRequired();
+            entity.Property(de => de.DrainId).IsRequired();
             entity.Property(de => de.EmptyDate).IsRequired();
-            entity.Property(de => de.Drain1Amount).HasColumnType("decimal(7,2)");
-            entity.Property(de => de.Drain2Amount).HasColumnType("decimal(7,2)");
-            entity.Property(de => de.Drain3Amount).HasColumnType("decimal(7,2)");
-            entity.Property(de => de.Drain4Amount).HasColumnType("decimal(7,2)");
+            entity.Property(de => de.Amount).IsRequired().HasColumnType("decimal(7,2)");
             entity.Property(de => de.Note).HasMaxLength(1000);
             entity.Property(de => de.IsArchived).IsRequired().HasDefaultValue(false);
             entity.Property(de => de.DateCreated).IsRequired();
             entity.Property(de => de.DateArchived);
 
-            // Relationship with DrainageSetup
-            entity.HasOne(de => de.DrainageSetup)
+            // Relationship with Drain
+            entity.HasOne(de => de.Drain)
                   .WithMany()
-                  .HasForeignKey(de => de.DrainageSetupId)
+                  .HasForeignKey(de => de.DrainId)
                   .OnDelete(DeleteBehavior.Restrict);
 
             // Indexes for performance
-            entity.HasIndex(de => new { de.DrainageSetupId, de.EmptyDate });
-            entity.HasIndex(de => new { de.DrainageSetupId, de.IsArchived });
+            entity.HasIndex(de => new { de.DrainId, de.EmptyDate });
+            entity.HasIndex(de => new { de.DrainId, de.IsArchived });
         });
 
         // Seed initial data
