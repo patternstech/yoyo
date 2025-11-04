@@ -10,7 +10,7 @@ public class SymptomEntry
 
     public int PatientId { get; set; }
 
-    public string Note { get; set; } = string.Empty;
+    public string? Note { get; set; }
 
     public DateTime EntryDate { get; set; }
 
@@ -50,8 +50,8 @@ public class SymptomEntryRequest
     [Range(1, int.MaxValue, ErrorMessage = "Patient ID must be a positive integer.")]
     public int PatientId { get; set; }
 
-    [Required(ErrorMessage = "Note is required.")]
-    public string Note { get; set; } = string.Empty;
+    [StringLength(2000, ErrorMessage = "Note cannot exceed 2000 characters.")]
+    public string? Note { get; set; }
 
     [Required(ErrorMessage = "Entry date is required.")]
     public DateTime EntryDate { get; set; }
@@ -86,8 +86,8 @@ public class SymptomEntryUpdateRequest
     [Range(1, int.MaxValue, ErrorMessage = "Patient ID must be a positive integer.")]
     public int PatientId { get; set; }
 
-    [Required(ErrorMessage = "Note is required.")]
-    public string Note { get; set; } = string.Empty;
+    [StringLength(2000, ErrorMessage = "Note cannot exceed 2000 characters.")]
+    public string? Note { get; set; }
 
     [Required(ErrorMessage = "Entry date is required.")]
     public DateTime EntryDate { get; set; }

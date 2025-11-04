@@ -168,7 +168,7 @@ public class CancerConnectDbContext : DbContext
         {
             entity.HasKey(se => se.Id);
             entity.Property(se => se.PatientId).IsRequired();
-            entity.Property(se => se.Note).IsRequired().HasMaxLength(2000);
+            entity.Property(se => se.Note).HasMaxLength(2000);
             entity.Property(se => se.EntryDate).IsRequired();
             entity.Property(se => se.Created).IsRequired();
 
@@ -210,8 +210,8 @@ public class CancerConnectDbContext : DbContext
         {
             entity.HasKey(t => t.Id);
             entity.Property(t => t.PatientId).IsRequired();
-            entity.Property(t => t.Title).HasMaxLength(250);
-            entity.Property(t => t.Detail).IsRequired().HasMaxLength(1000);
+            entity.Property(t => t.Title).IsRequired().HasMaxLength(250);
+            entity.Property(t => t.Detail).HasMaxLength(1000);
             entity.Property(t => t.Date);
             entity.Property(t => t.Time);
             entity.Property(t => t.Alert).HasConversion<string>();

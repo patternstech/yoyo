@@ -53,9 +53,9 @@ public class ToDo
 
     public int PatientId { get; set; }
 
-    public string? Title { get; set; }
+    public string Title { get; set; } = string.Empty;
 
-    public string Detail { get; set; } = string.Empty;
+    public string? Detail { get; set; }
 
     public DateOnly? Date { get; set; }
 
@@ -80,12 +80,12 @@ public class ToDoRequest
     [Range(1, int.MaxValue, ErrorMessage = "Patient ID must be a positive integer.")]
     public int PatientId { get; set; }
 
+    [Required(ErrorMessage = "Title is required.")]
     [StringLength(250, ErrorMessage = "Title cannot exceed 250 characters.")]
-    public string? Title { get; set; }
+    public string Title { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Detail is required.")]
     [StringLength(1000, ErrorMessage = "Detail cannot exceed 1000 characters.")]
-    public string Detail { get; set; } = string.Empty;
+    public string? Detail { get; set; }
 
     public DateOnly? Date { get; set; }
 
