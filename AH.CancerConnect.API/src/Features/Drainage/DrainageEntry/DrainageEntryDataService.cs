@@ -61,7 +61,7 @@ public class DrainageEntryDataService : IDrainageEntryDataService
         }
 
         // Validate empty date is not in the future
-        if (request.EmptyDate > DateTime.UtcNow.AddDays(1)) // Allow some tolerance for timezone differences
+        if (request.EmptyDate > DateTime.UtcNow.AddDays(1))
         {
             throw new ArgumentException("Empty date cannot be in the future");
         }

@@ -22,6 +22,47 @@ namespace AH.CancerConnect.API.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("AH.CancerConnect.API.Features.Drainage.DrainageEntry.DrainageEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(7,2)");
+
+                    b.Property<DateTime?>("DateArchived")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DrainId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EmptyDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsArchived")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DrainId", "EmptyDate");
+
+                    b.HasIndex("DrainId", "IsArchived");
+
+                    b.ToTable("DrainageEntry", "dbo");
+                });
+
             modelBuilder.Entity("AH.CancerConnect.API.Features.Drainage.DrainageSetup.Drain", b =>
                 {
                     b.Property<int>("Id")
@@ -979,12 +1020,23 @@ namespace AH.CancerConnect.API.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2025, 11, 3, 15, 20, 2, 222, DateTimeKind.Utc).AddTicks(1102),
+                            Created = new DateTime(2025, 11, 3, 18, 36, 31, 374, DateTimeKind.Utc).AddTicks(7526),
                             FirstName = "Test",
                             LastName = "User",
                             MychartLogin = "testuser",
                             Status = "Active"
                         });
+                });
+
+            modelBuilder.Entity("AH.CancerConnect.API.Features.Drainage.DrainageEntry.DrainageEntry", b =>
+                {
+                    b.HasOne("AH.CancerConnect.API.Features.Drainage.DrainageSetup.Drain", "Drain")
+                        .WithMany()
+                        .HasForeignKey("DrainId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Drain");
                 });
 
             modelBuilder.Entity("AH.CancerConnect.API.Features.Drainage.DrainageSetup.Drain", b =>
