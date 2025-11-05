@@ -4,8 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace AH.CancerConnect.API;
 
 /// <summary>
-/// Custom validation filter to return HTTP 422 Unprocessable Entity for model validation errors
-/// instead of the default HTTP 400 Bad Request.
+/// Custom validation filter to return consistent ProblemDetails for model validation errors.
 /// </summary>
 public class ValidationFilter : IActionFilter
 {
@@ -26,28 +25,29 @@ public class ValidationFilter : IActionFilter
         {
             _logger.LogWarning("Model validation failed for action {Action}", context.ActionDescriptor.DisplayName);
 
-            var validationErrors = context.ModelState
-                .Where(x => x.Value?.Errors.Count > 0)
-                .SelectMany(x => x.Value!.Errors)
-                .Select(x => x.ErrorMessage)
-                .ToList();
+            var errorMessages = new List<string>();
+            
+            foreach (var keyValuePair in context.ModelState)
+            {
+                var messages = keyValuePair.Value?.Errors
+                    .Select(x => x.ErrorMessage)
+                    .ToList() ?? new List<string>();
+                
+                errorMessages.AddRange(messages);
+            }
 
             var response = new
             {
-                Success = false,
-                Error = "Validation Error",
-                ValidationErrors = validationErrors
+                title = "One or more validation errors occurred.",
+                status = StatusCodes.Status400BadRequest,
+                errors = errorMessages
             };
 
-            context.Result = new ObjectResult(response)
-            {
-                StatusCode = StatusCodes.Status422UnprocessableEntity
-            };
+            context.Result = new BadRequestObjectResult(response);
         }
     }
 
     public void OnActionExecuted(ActionExecutedContext context)
     {
-       
     }
 }

@@ -47,7 +47,7 @@ public class ToDoDataService : IToDoDataService
 
         if (todo == null)
         {
-            throw new ArgumentException($"ToDo with ID {todoId} not found.");
+            throw new KeyNotFoundException($"ToDo with ID {todoId} not found.");
         }
 
         // Verify the ToDo belongs to the specified patient
@@ -76,7 +76,7 @@ public class ToDoDataService : IToDoDataService
 
         if (todo == null)
         {
-            throw new ArgumentException($"ToDo with ID {todoId} not found.");
+            throw new KeyNotFoundException($"ToDo with ID {todoId} not found.");
         }
 
         // Verify the ToDo belongs to the specified patient

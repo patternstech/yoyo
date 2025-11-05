@@ -52,7 +52,7 @@ public class DrainageEntryDataService : IDrainageEntryDataService
 
         if (drain == null)
         {
-            throw new ArgumentException($"Drain with ID {request.DrainId} not found");
+            throw new KeyNotFoundException($"Drain with ID {request.DrainId} not found");
         }
 
         if (drain.IsArchived)

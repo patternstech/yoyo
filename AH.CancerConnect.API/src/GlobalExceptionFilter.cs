@@ -34,6 +34,7 @@ public class GlobalExceptionFilter : IExceptionFilter
         var result = exception switch
         {
             ArgumentException argEx => HandleArgumentException(argEx),
+            InvalidOperationException invalidOpEx => HandleInvalidOperationException(invalidOpEx),
             DbUpdateException dbEx => HandleDbUpdateException(dbEx),
             KeyNotFoundException notFoundEx => HandleNotFoundException(notFoundEx),
             UnauthorizedAccessException unauthorizedEx => HandleUnauthorizedException(unauthorizedEx),
@@ -48,48 +49,70 @@ public class GlobalExceptionFilter : IExceptionFilter
     {
         _logger.LogWarning(exception, "Validation error: {Message}", exception.Message);
 
-        return new BadRequestObjectResult(new
+        var response = new
         {
-            Success = false,
-            Error = "Validation Error",
-            ValidationErrors = new List<string> { exception.Message }
-        });
+            title = "One or more validation errors occurred.",
+            status = StatusCodes.Status400BadRequest,
+            errors = new[] { exception.Message }
+        };
+
+        return new BadRequestObjectResult(response);
+    }
+
+    private ObjectResult HandleInvalidOperationException(InvalidOperationException exception)
+    {
+        _logger.LogWarning(exception, "Invalid operation: {Message}", exception.Message);
+
+        var response = new
+        {
+            title = "Invalid operation.",
+            status = StatusCodes.Status400BadRequest,
+            errors = new[] { exception.Message }
+        };
+
+        return new BadRequestObjectResult(response);
     }
 
     private ObjectResult HandleDbUpdateException(DbUpdateException exception)
     {
         _logger.LogWarning(exception, "Database constraint violation: {Message}", exception.Message);
 
-        return new BadRequestObjectResult(new
+        var response = new
         {
-            Success = false,
-            Error = "Database Error",
-            ValidationErrors = new List<string> { "Error due to invalid data or constraint violation." }
-        });
+            title = "Database constraint violation.",
+            status = StatusCodes.Status400BadRequest,
+            errors = new[] { "Error due to invalid data or constraint violation." }
+        };
+
+        return new BadRequestObjectResult(response);
     }
 
     private ObjectResult HandleNotFoundException(KeyNotFoundException exception)
     {
         _logger.LogWarning(exception, "Resource not found: {Message}", exception.Message);
 
-        return new NotFoundObjectResult(new
+        var response = new
         {
-            Success = false,
-            Error = "Not Found",
-            Message = exception.Message
-        });
+            title = "Resource not found.",
+            status = StatusCodes.Status404NotFound,
+            errors = new[] { exception.Message }
+        };
+
+        return new NotFoundObjectResult(response);
     }
 
     private ObjectResult HandleUnauthorizedException(UnauthorizedAccessException exception)
     {
         _logger.LogWarning(exception, "Unauthorized access: {Message}", exception.Message);
 
-        return new ObjectResult(new
+        var response = new
         {
-            Success = false,
-            Error = "Unauthorized",
-            Message = "You are not authorized to perform this action."
-        })
+            title = "Unauthorized.",
+            status = StatusCodes.Status401Unauthorized,
+            errors = new[] { "You are not authorized to perform this action." }
+        };
+
+        return new ObjectResult(response)
         {
             StatusCode = StatusCodes.Status401Unauthorized
         };
@@ -99,13 +122,14 @@ public class GlobalExceptionFilter : IExceptionFilter
     {
         _logger.LogError(exception, "An unexpected error occurred: {Message}", exception.Message);
 
-        return new ObjectResult(new
+        var response = new
         {
-            Success = false,
-            Error = "Internal Server Error",
-            Message = "An unexpected error occurred. Please try again later.",
-            Details = exception.Message // Remove in production
-        })
+            title = "An error occurred while processing your request.",
+            status = StatusCodes.Status500InternalServerError,
+            errors = new[] { "An unexpected error occurred. Please try again later." }
+        };
+
+        return new ObjectResult(response)
         {
             StatusCode = StatusCodes.Status500InternalServerError
         };

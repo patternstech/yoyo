@@ -50,7 +50,7 @@ public class NoteDataService : INoteDataService
 
         if (note == null)
         {
-            throw new ArgumentException($"Note with ID {request.Id} not found.");
+            throw new KeyNotFoundException($"Note with ID {request.Id} not found.");
         }
 
         // Verify the note belongs to the specified patient
@@ -81,7 +81,7 @@ public class NoteDataService : INoteDataService
 
         if (note == null)
         {
-            throw new ArgumentException($"Note with ID {noteId} not found.");
+            throw new KeyNotFoundException($"Note with ID {noteId} not found.");
         }
 
         // Verify the note belongs to the specified patient

@@ -120,7 +120,7 @@ public class SymptomDataService : ISymptomDataService
 
         if (entry == null)
         {
-            throw new ArgumentException($"Symptom entry with ID {request.Id} not found.");
+            throw new KeyNotFoundException($"Symptom entry with ID {request.Id} not found.");
         }
 
         // Verify the entry belongs to the specified patient
@@ -161,7 +161,7 @@ public class SymptomDataService : ISymptomDataService
 
         if (entry == null)
         {
-            throw new ArgumentException($"Symptom entry with ID {entryId} not found.");
+            throw new KeyNotFoundException($"Symptom entry with ID {entryId} not found.");
         }
 
         // Verify the entry belongs to the specified patient

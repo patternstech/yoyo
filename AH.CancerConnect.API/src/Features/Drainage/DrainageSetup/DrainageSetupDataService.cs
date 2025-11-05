@@ -81,7 +81,7 @@ public class DrainageSetupDataService : IDrainageSetupDataService
 
         if (drainageSetup == null)
         {
-            throw new ArgumentException($"Drainage setup with ID {request.Id} not found for patient {request.PatientId}");
+            throw new KeyNotFoundException($"Drainage setup with ID {request.Id} not found for patient {request.PatientId}");
         }
 
         // Validate maximum active drains
@@ -116,7 +116,7 @@ public class DrainageSetupDataService : IDrainageSetupDataService
 
         if (drain == null)
         {
-            throw new ArgumentException($"Drain with ID {request.DrainId} not found for patient {request.PatientId}");
+            throw new KeyNotFoundException($"Drain with ID {request.DrainId} not found for patient {request.PatientId}");
         }
 
         if (drain.IsArchived)
