@@ -64,4 +64,54 @@ public class DrainageEntryController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+
+    /// <summary>
+    /// Update an existing drainage entry
+    /// Example: PUT /api/v1/drainage-entry/123
+    /// Body: { "emptyDate": "2025-11-05T10:30:00", "amount": 30.5, "note": "Updated measurement" }.
+    /// </summary>
+    /// <param name="entryId">ID of the drainage entry to update.</param>
+    /// <param name="request">Updated drainage entry data.</param>
+    /// <returns>Success response.</returns>
+    [HttpPut("{entryId}")]
+    [ProducesResponseType<DrainageEntryResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateDrainageEntry(int entryId, [FromBody] DrainageEntryUpdateRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            _logger.LogWarning("Invalid model state for drainage entry update: {ModelState}", ModelState);
+            return BadRequest(ModelState);
+        }
+
+        try
+        {
+            await _drainageEntryDataService.UpdateDrainageEntryAsync(entryId, request);
+            var response = new DrainageEntryResponse
+            {
+                Id = entryId,
+                Message = "Drainage entry updated successfully",
+            };
+
+            _logger.LogDebug("Drainage entry {EntryId} updated successfully", entryId);
+            return Ok(response);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            _logger.LogWarning("Drainage entry not found: {Message}", ex.Message);
+            return NotFound(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning("Invalid operation while updating drainage entry: {Message}", ex.Message);
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            _logger.LogWarning("Invalid argument while updating drainage entry: {Message}", ex.Message);
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 }

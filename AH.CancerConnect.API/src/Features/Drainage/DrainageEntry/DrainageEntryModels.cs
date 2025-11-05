@@ -47,3 +47,19 @@ public class DrainageEntryRequest
     [StringLength(1000, ErrorMessage = "Note cannot exceed 1000 characters.")]
     public string? Note { get; set; }
 }
+
+/// <summary>
+/// Request DTO for updating an existing drainage entry.
+/// </summary>
+public class DrainageEntryUpdateRequest
+{
+    [Required(ErrorMessage = "Empty date is required.")]
+    public DateTime EmptyDate { get; set; }
+
+    [Required(ErrorMessage = "Amount is required.")]
+    [Range(0, 9999.99, ErrorMessage = "Amount must be between 0 and 9999.99 mL.")]
+    public decimal Amount { get; set; }
+
+    [StringLength(1000, ErrorMessage = "Note cannot exceed 1000 characters.")]
+    public string? Note { get; set; }
+}

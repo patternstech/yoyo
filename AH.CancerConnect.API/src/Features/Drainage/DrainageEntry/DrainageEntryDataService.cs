@@ -66,4 +66,49 @@ public class DrainageEntryDataService : IDrainageEntryDataService
             throw new ArgumentException("Empty date cannot be in the future");
         }
     }
+
+    /// <inheritdoc />
+    public async Task<bool> UpdateDrainageEntryAsync(int entryId, DrainageEntryUpdateRequest request)
+    {
+        _logger.LogDebug("Updating drainage entry {EntryId}", entryId);
+
+        // Retrieve the existing drainage entry
+        var entry = await _dbContext.DrainageEntries
+            .Include(e => e.Drain)
+            .FirstOrDefaultAsync(e => e.Id == entryId);
+
+        if (entry == null)
+        {
+            throw new KeyNotFoundException($"Drainage entry with ID {entryId} not found");
+        }
+
+        // Validate that the entry is not archived
+        if (entry.IsArchived)
+        {
+            throw new InvalidOperationException($"Cannot update archived drainage entry {entryId}");
+        }
+
+        // Validate that the drain is not archived
+        if (entry.Drain.IsArchived)
+        {
+            throw new InvalidOperationException($"Cannot update drainage entry for archived drain {entry.DrainId}");
+        }
+
+        // Validate empty date is not in the future
+        if (request.EmptyDate > DateTime.UtcNow.AddDays(1))
+        {
+            throw new ArgumentException("Empty date cannot be in the future");
+        }
+
+        // Update the entry
+        entry.EmptyDate = request.EmptyDate;
+        entry.Amount = request.Amount;
+        entry.Note = request.Note;
+
+        await _dbContext.SaveChangesAsync();
+
+        _logger.LogDebug("Successfully updated drainage entry {EntryId}", entryId);
+
+        return true;
+    }
 }
