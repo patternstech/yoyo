@@ -578,6 +578,163 @@
 							"body": "{\n  \"title\": \"One or more validation errors occurred.\",\n  \"status\": 400,\n  \"errors\": [\n    \"Amount must be between 0 and 9999.99 mL.\"\n  ]\n}"
 						}
 					]
+				},
+				{
+					"name": "Get Drainage Entry",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7080/api/v1/drainage-entry/1",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "drainage-entry", "1"]
+						}
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7080/api/v1/drainage-entry/1",
+									"protocol": "https",
+									"host": ["localhost"],
+									"port": "7080",
+									"path": ["api", "v1", "drainage-entry", "1"]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"id\": 1,\n  \"drainId\": 1,\n  \"emptyDate\": \"2025-11-05T10:30:00\",\n  \"amount\": 30.5,\n  \"note\": \"Patient recovering well\",\n  \"isArchived\": false,\n  \"dateCreated\": \"2025-11-03T08:00:00\"\n}"
+						},
+						{
+							"name": "Not Found Error",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7080/api/v1/drainage-entry/999",
+									"protocol": "https",
+									"host": ["localhost"],
+									"port": "7080",
+									"path": ["api", "v1", "drainage-entry", "999"]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"title\": \"Resource not found.\",\n  \"status\": 404,\n  \"errors\": [\n    \"Drainage entry with ID 999 not found\"\n  ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Drainage Entry",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7080/api/v1/drainage-entry/1",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "drainage-entry", "1"]
+						}
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7080/api/v1/drainage-entry/1",
+									"protocol": "https",
+									"host": ["localhost"],
+									"port": "7080",
+									"path": ["api", "v1", "drainage-entry", "1"]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"id\": 1,\n  \"message\": \"Drainage entry deleted successfully\"\n}"
+						},
+						{
+							"name": "Not Found Error",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7080/api/v1/drainage-entry/999",
+									"protocol": "https",
+									"host": ["localhost"],
+									"port": "7080",
+									"path": ["api", "v1", "drainage-entry", "999"]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"title\": \"Resource not found.\",\n  \"status\": 404,\n  \"errors\": [\n    \"Drainage entry with ID 999 not found\"\n  ]\n}"
+						},
+						{
+							"name": "Already Archived Error",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7080/api/v1/drainage-entry/1",
+									"protocol": "https",
+									"host": ["localhost"],
+									"port": "7080",
+									"path": ["api", "v1", "drainage-entry", "1"]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"title\": \"Invalid operation.\",\n  \"status\": 400,\n  \"errors\": [\n    \"Drainage entry 1 is already archived\"\n  ]\n}"
+						}
+					]
 				}
 			]
 		},
