@@ -111,4 +111,51 @@ public class DrainageEntryDataService : IDrainageEntryDataService
 
         return true;
     }
+
+    /// <inheritdoc />
+    public async Task<DrainageEntryDetailResponse> GetDrainageEntryByIdAsync(int entryId)
+    {
+        _logger.LogDebug("Retrieving drainage entry {EntryId}", entryId);
+
+        var entry = await _dbContext.DrainageEntries
+            .FirstOrDefaultAsync(e => e.Id == entryId);
+
+        if (entry == null)
+        {
+            throw new KeyNotFoundException($"Drainage entry with ID {entryId} not found");
+        }
+
+        _logger.LogDebug("Successfully retrieved drainage entry {EntryId}", entryId);
+
+        return entry.ToDetailResponse();
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> DeleteDrainageEntryAsync(int entryId)
+    {
+        _logger.LogDebug("Deleting drainage entry {EntryId}", entryId);
+
+        var entry = await _dbContext.DrainageEntries
+            .FirstOrDefaultAsync(e => e.Id == entryId);
+
+        if (entry == null)
+        {
+            throw new KeyNotFoundException($"Drainage entry with ID {entryId} not found");
+        }
+
+        if (entry.IsArchived)
+        {
+            throw new InvalidOperationException($"Drainage entry {entryId} is already archived");
+        }
+
+        // Archive the entry instead of hard delete
+        entry.IsArchived = true;
+        entry.DateArchived = DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
+
+        _logger.LogDebug("Successfully archived drainage entry {EntryId}", entryId);
+
+        return true;
+    }
 }

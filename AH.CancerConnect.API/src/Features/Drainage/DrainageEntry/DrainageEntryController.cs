@@ -114,4 +114,66 @@ public class DrainageEntryController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+
+    /// <summary>
+    /// Get a drainage entry by ID
+    /// Example: GET /api/v1/drainage-entry/123.
+    /// </summary>
+    /// <param name="entryId">ID of the drainage entry.</param>
+    /// <returns>Drainage entry details.</returns>
+    [HttpGet("{entryId}")]
+    [ProducesResponseType<DrainageEntryDetailResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetDrainageEntry(int entryId)
+    {
+        try
+        {
+            var entry = await _drainageEntryDataService.GetDrainageEntryByIdAsync(entryId);
+            _logger.LogDebug("Retrieved drainage entry {EntryId}", entryId);
+            return Ok(entry);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            _logger.LogWarning("Drainage entry not found: {Message}", ex.Message);
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Delete (archive) a drainage entry by ID
+    /// Example: DELETE /api/v1/drainage-entry/123.
+    /// </summary>
+    /// <param name="entryId">ID of the drainage entry to delete.</param>
+    /// <returns>Success response.</returns>
+    [HttpDelete("{entryId}")]
+    [ProducesResponseType<DrainageEntryResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeleteDrainageEntry(int entryId)
+    {
+        try
+        {
+            await _drainageEntryDataService.DeleteDrainageEntryAsync(entryId);
+            var response = new DrainageEntryResponse
+            {
+                Id = entryId,
+                Message = "Drainage entry deleted successfully",
+            };
+
+            _logger.LogDebug("Drainage entry {EntryId} deleted successfully", entryId);
+            return Ok(response);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            _logger.LogWarning("Drainage entry not found: {Message}", ex.Message);
+            return NotFound(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning("Invalid operation while deleting drainage entry: {Message}", ex.Message);
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 }

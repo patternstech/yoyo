@@ -19,4 +19,18 @@ public interface IDrainageEntryDataService
     /// <param name="request">Updated drainage entry data.</param>
     /// <returns>True if updated successfully.</returns>
     Task<bool> UpdateDrainageEntryAsync(int entryId, DrainageEntryUpdateRequest request);
+
+    /// <summary>
+    /// Gets a drainage entry by ID.
+    /// </summary>
+    /// <param name="entryId">ID of the drainage entry.</param>
+    /// <returns>The drainage entry detail response.</returns>
+    Task<DrainageEntryDetailResponse> GetDrainageEntryByIdAsync(int entryId);
+
+    /// <summary>
+    /// Deletes a drainage entry by ID (archives it).
+    /// </summary>
+    /// <param name="entryId">ID of the drainage entry to delete.</param>
+    /// <returns>True if deleted successfully.</returns>
+    Task<bool> DeleteDrainageEntryAsync(int entryId);
 }
