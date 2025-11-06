@@ -386,12 +386,18 @@ public class SymptomDataService : ISymptomDataService
         var daysWithEntries = entries.Select(e => e.EntryDate.Date).Distinct().Count();
         var uniqueSymptoms = symptomGroups.Count();
 
+        // Get total number of entries for this patient (regardless of date range)
+        var totalEntries = await _dbContext.SymptomEntries
+            .Where(e => e.PatientId == patientId)
+            .CountAsync();
+
         var response = new SymptomGraphResponse
         {
             StartDate = startDate,
             EndDate = DateTime.Now.Date,
             DaysWithSymptoms = daysWithEntries,
             SymptomsTracked = uniqueSymptoms,
+            TotalEntries = totalEntries,
             SymptomsData = symptomsData.OrderBy(s => s.Name).ToList()
         };
 

@@ -29,6 +29,8 @@ public class SymptomGraphResponse
 
     public int SymptomsTracked { get; set; }
 
+    public int TotalEntries { get; set; }
+
     public List<SymptomGraphData> SymptomsData { get; set; } = new List<SymptomGraphData>();
 }
 
