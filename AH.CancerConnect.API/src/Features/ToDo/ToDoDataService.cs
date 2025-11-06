@@ -21,9 +21,6 @@ public class ToDoDataService : IToDoDataService
     {
         _logger.LogDebug("Creating ToDo for patient {PatientId}", request.PatientId);
 
-        // Validate detail
-        ValidateDetail(request.Detail);
-
         // Create the ToDo using extension method
         var todo = request.ToEntity();
 
@@ -107,17 +104,5 @@ public class ToDoDataService : IToDoDataService
         _logger.LogDebug("Retrieved {Count} ToDos for patient {PatientId}", todos.Count, patientId);
 
         return todos.ToDetailResponses();
-    }
-
-    /// <summary>
-    /// Validates ToDo detail text.
-    /// </summary>
-    /// <param name="detail">The detail text to validate.</param>
-    private void ValidateDetail(string detail)
-    {
-        if (string.IsNullOrWhiteSpace(detail))
-        {
-            throw new ArgumentException("Detail cannot be empty.");
-        }
     }
 }
