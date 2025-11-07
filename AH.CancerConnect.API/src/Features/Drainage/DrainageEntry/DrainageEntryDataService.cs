@@ -65,6 +65,12 @@ public class DrainageEntryDataService : IDrainageEntryDataService
         {
             throw new ArgumentException("Empty date cannot be in the future");
         }
+
+        // Validate amount is between 0 and 100 mL
+        if (request.Amount < 0 || request.Amount > 100)
+        {
+            throw new ArgumentException("Drainage entry amount must be between 0 and 100 mL");
+        }
     }
 
     /// <inheritdoc />
@@ -100,6 +106,12 @@ public class DrainageEntryDataService : IDrainageEntryDataService
             throw new ArgumentException("Empty date cannot be in the future");
         }
 
+        // Validate amount is between 0 and 100 mL
+        if (request.Amount < 0 || request.Amount > 100)
+        {
+            throw new ArgumentException("Drainage entry amount must be between 0 and 100 mL");
+        }
+
         // Update the entry
         entry.EmptyDate = request.EmptyDate;
         entry.Amount = request.Amount;
@@ -128,6 +140,28 @@ public class DrainageEntryDataService : IDrainageEntryDataService
         _logger.LogDebug("Successfully retrieved drainage entry {EntryId}", entryId);
 
         return entry.ToDetailResponse();
+    }
+
+    /// <inheritdoc />
+    public async Task<IEnumerable<DrainageEntryDetailResponse>> GetDrainageEntriesByPatientAsync(int patientId)
+    {
+        _logger.LogDebug("Retrieving all drainage entries for patient {PatientId}", patientId);
+
+        // Get all drains for the patient through drainage setup
+        var drainIds = await _dbContext.Drains
+            .Where(d => d.DrainageSetup.PatientId == patientId)
+            .Select(d => d.Id)
+            .ToListAsync();
+
+        // Get all entries for those drains
+        var entries = await _dbContext.DrainageEntries
+            .Where(e => drainIds.Contains(e.DrainId))
+            .OrderByDescending(e => e.EmptyDate)
+            .ToListAsync();
+
+        _logger.LogDebug("Retrieved {Count} drainage entries for patient {PatientId}", entries.Count, patientId);
+
+        return entries.Select(e => e.ToDetailResponse());
     }
 
     /// <inheritdoc />

@@ -28,6 +28,13 @@ public interface IDrainageEntryDataService
     Task<DrainageEntryDetailResponse> GetDrainageEntryByIdAsync(int entryId);
 
     /// <summary>
+    /// Gets all drainage entries for a patient.
+    /// </summary>
+    /// <param name="patientId">ID of the patient.</param>
+    /// <returns>List of drainage entries for the patient.</returns>
+    Task<IEnumerable<DrainageEntryDetailResponse>> GetDrainageEntriesByPatientAsync(int patientId);
+
+    /// <summary>
     /// Deletes a drainage entry by ID (archives it).
     /// </summary>
     /// <param name="entryId">ID of the drainage entry to delete.</param>

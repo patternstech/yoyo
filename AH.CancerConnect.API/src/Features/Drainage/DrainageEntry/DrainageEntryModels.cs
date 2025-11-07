@@ -41,7 +41,7 @@ public class DrainageEntryRequest
     public DateTime EmptyDate { get; set; }
 
     [Required(ErrorMessage = "Amount is required.")]
-    [Range(0, 9999.99, ErrorMessage = "Amount must be between 0 and 9999.99 mL.")]
+    [Range(0, 100, ErrorMessage = "Amount must be between 0 and 100 mL.")]
     public decimal Amount { get; set; }
 
     [StringLength(1000, ErrorMessage = "Note cannot exceed 1000 characters.")]
@@ -57,7 +57,7 @@ public class DrainageEntryUpdateRequest
     public DateTime EmptyDate { get; set; }
 
     [Required(ErrorMessage = "Amount is required.")]
-    [Range(0, 9999.99, ErrorMessage = "Amount must be between 0 and 9999.99 mL.")]
+    [Range(0, 100, ErrorMessage = "Amount must be between 0 and 100 mL.")]
     public decimal Amount { get; set; }
 
     [StringLength(1000, ErrorMessage = "Note cannot exceed 1000 characters.")]

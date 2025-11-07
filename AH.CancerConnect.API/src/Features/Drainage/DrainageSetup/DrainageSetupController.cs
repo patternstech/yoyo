@@ -33,32 +33,19 @@ public class DrainageSetupController : ControllerBase
     /// <returns>Success response with drainage setup ID.</returns>
     [HttpPost]
     [ProducesResponseType<DrainageSetupResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> PostDrainageSetup([FromBody] DrainageSetupRequest request)
     {
-        try
+        var setupId = await _drainageSetupDataService.CreateDrainageSetupAsync(request);
+        var response = new DrainageSetupResponse
         {
-            var setupId = await _drainageSetupDataService.CreateDrainageSetupAsync(request);
-            var response = new DrainageSetupResponse
-            {
-                Id = setupId,
-                Message = "Drainage setup created successfully",
-            };
+            Id = setupId,
+            Message = "Drainage setup created successfully",
+        };
 
-            _logger.LogDebug("Drainage setup created successfully with ID {SetupId}", setupId);
-            return Ok(response);
-        }
-        catch (InvalidOperationException ex)
-        {
-            _logger.LogWarning("Invalid operation while creating drainage setup: {Message}", ex.Message);
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (ArgumentException ex)
-        {
-            _logger.LogWarning("Invalid argument while creating drainage setup: {Message}", ex.Message);
-            return BadRequest(new { message = ex.Message });
-        }
+        _logger.LogDebug("Drainage setup created successfully with ID {SetupId}", setupId);
+        return Ok(response);
     }
 
     /// <summary>
@@ -81,7 +68,7 @@ public class DrainageSetupController : ControllerBase
         if (drainageSetup == null)
         {
             _logger.LogDebug("No drainage setup found for patient {PatientId}", patientId);
-            return NotFound(new { message = $"No drainage setup found for patient {patientId}" });
+            throw new KeyNotFoundException($"No drainage setup found for patient {patientId}");
         }
 
         return Ok(drainageSetup);
@@ -96,28 +83,20 @@ public class DrainageSetupController : ControllerBase
     /// <returns>Success response with drainage setup ID.</returns>
     [HttpPut]
     [ProducesResponseType<DrainageSetupResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> PutDrainageSetup([FromBody] DrainageSetupUpdateRequest request)
     {
-        try
+        var setupId = await _drainageSetupDataService.UpdateDrainageSetupAsync(request);
+        var response = new DrainageSetupResponse
         {
-            var setupId = await _drainageSetupDataService.UpdateDrainageSetupAsync(request);
-            var response = new DrainageSetupResponse
-            {
-                Id = setupId,
-                Message = "Drainage setup updated successfully",
-            };
+            Id = setupId,
+            Message = "Drainage setup updated successfully",
+        };
 
-            _logger.LogDebug("Drainage setup updated successfully with ID {SetupId}", setupId);
-            return Ok(response);
-        }
-        catch (ArgumentException ex)
-        {
-            _logger.LogWarning("Invalid argument while updating drainage setup: {Message}", ex.Message);
-            return BadRequest(new { message = ex.Message });
-        }
+        _logger.LogDebug("Drainage setup updated successfully with ID {SetupId}", setupId);
+        return Ok(response);
     }
 
     /// <summary>
@@ -129,33 +108,25 @@ public class DrainageSetupController : ControllerBase
     /// <returns>Success response.</returns>
     [HttpPatch("archive-drain")]
     [ProducesResponseType<ArchiveDrainResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ArchiveDrain([FromBody] ArchiveDrainRequest request)
     {
-        try
+        var success = await _drainageSetupDataService.ArchiveDrainAsync(request);
+
+        if (!success)
         {
-            var success = await _drainageSetupDataService.ArchiveDrainAsync(request);
-
-            if (!success)
-            {
-                return BadRequest(new { message = "Failed to archive drain" });
-            }
-
-            var response = new ArchiveDrainResponse
-            {
-                DrainId = request.DrainId,
-                Message = "Drain archived successfully",
-            };
-
-            _logger.LogDebug("Drain {DrainId} archived successfully", request.DrainId);
-            return Ok(response);
+            throw new InvalidOperationException("Failed to archive drain");
         }
-        catch (ArgumentException ex)
+
+        var response = new ArchiveDrainResponse
         {
-            _logger.LogWarning("Invalid argument while archiving drain: {Message}", ex.Message);
-            return BadRequest(new { message = ex.Message });
-        }
+            DrainId = request.DrainId,
+            Message = "Drain archived successfully",
+        };
+
+        _logger.LogDebug("Drain {DrainId} archived successfully", request.DrainId);
+        return Ok(response);
     }
 }

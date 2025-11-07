@@ -16,7 +16,7 @@ public static class DrainageSetupExtensions
         {
             PatientId = request.PatientId,
             HasProviderGoalAmount = request.HasProviderGoalAmount,
-            GoalDrainageAmount = request.HasProviderGoalAmount ? request.GoalDrainageAmount : null,
+            GoalDrainageAmount = request.HasProviderGoalAmount ? request.GoalDrainageAmount : 30, // Default 30 mL if no provider goal
             ProviderInstructions = request.ProviderInstructions,
             DateCreated = DateTime.UtcNow,
             DateModified = DateTime.UtcNow,
@@ -89,7 +89,7 @@ public static class DrainageSetupExtensions
     public static void UpdateFrom(this DrainageSetup setup, DrainageSetupUpdateRequest request)
     {
         setup.HasProviderGoalAmount = request.HasProviderGoalAmount;
-        setup.GoalDrainageAmount = request.HasProviderGoalAmount ? request.GoalDrainageAmount : null;
+        setup.GoalDrainageAmount = request.HasProviderGoalAmount ? request.GoalDrainageAmount : 30; // Default 30 mL if no provider goal
         setup.ProviderInstructions = request.ProviderInstructions;
         setup.DateModified = DateTime.UtcNow;
 

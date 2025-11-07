@@ -367,7 +367,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"patientId\": 1,\n  \"hasProviderGoalAmount\": true,\n  \"goalDrainageAmount\": 100,\n  \"providerInstructions\": \"Monitor drainage levels daily\",\n  \"drains\": [\n    {\n      \"name\": \"Left Chest Drain\"\n    },\n    {\n      \"name\": \"Right Chest Drain\"\n    }\n  ]\n}"
+							"raw": "{\n  \"patientId\": 1,\n  \"hasProviderGoalAmount\": true,\n  \"goalDrainageAmount\": 35,\n  \"providerInstructions\": \"Monitor drainage levels daily\",\n  \"drains\": [\n    {\n      \"name\": \"Left Chest Drain\"\n    },\n    {\n      \"name\": \"Right Chest Drain\"\n    }\n  ]\n}"
 						},
 						"url": {
 							"raw": "https://localhost:7080/api/v1/drainage-setup",
@@ -441,7 +441,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"drainId\": 1,\n  \"emptyDate\": \"2025-11-03T11:22:00\",\n  \"amount\": 50.5,\n  \"note\": \"Patient feeling better today\"\n}"
+							"raw": "{\n  \"drainId\": 1,\n  \"emptyDate\": \"2025-11-03T11:22:00\",\n  \"amount\": 45.5,\n  \"note\": \"Patient feeling better today\"\n}"
 						},
 						"url": {
 							"raw": "https://localhost:7080/api/v1/drainage-entry",
@@ -580,30 +580,30 @@
 					]
 				},
 				{
-					"name": "Get Drainage Entry",
+					"name": "Get Drainage Entries by Patient",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:7080/api/v1/drainage-entry/1",
+							"raw": "https://localhost:7080/api/v1/drainage-entry/patient/123",
 							"protocol": "https",
 							"host": ["localhost"],
 							"port": "7080",
-							"path": ["api", "v1", "drainage-entry", "1"]
+							"path": ["api", "v1", "drainage-entry", "patient", "123"]
 						}
 					},
 					"response": [
 						{
-							"name": "Success Response",
+							"name": "Success Response - Multiple Entries",
 							"originalRequest": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "https://localhost:7080/api/v1/drainage-entry/1",
+									"raw": "https://localhost:7080/api/v1/drainage-entry/patient/123",
 									"protocol": "https",
 									"host": ["localhost"],
 									"port": "7080",
-									"path": ["api", "v1", "drainage-entry", "1"]
+									"path": ["api", "v1", "drainage-entry", "patient", "123"]
 								}
 							},
 							"status": "OK",
@@ -616,23 +616,23 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n  \"id\": 1,\n  \"drainId\": 1,\n  \"emptyDate\": \"2025-11-05T10:30:00\",\n  \"amount\": 30.5,\n  \"note\": \"Patient recovering well\",\n  \"isArchived\": false,\n  \"dateCreated\": \"2025-11-03T08:00:00\"\n}"
+							"body": "[\n  {\n    \"id\": 1,\n    \"drainId\": 1,\n    \"emptyDate\": \"2025-11-05T10:30:00\",\n    \"amount\": 30.5,\n    \"note\": \"Patient recovering well\",\n    \"isArchived\": false,\n    \"dateCreated\": \"2025-11-03T08:00:00\"\n  },\n  {\n    \"id\": 2,\n    \"drainId\": 2,\n    \"emptyDate\": \"2025-11-04T14:15:00\",\n    \"amount\": 25.0,\n    \"note\": \"Normal drainage\",\n    \"isArchived\": false,\n    \"dateCreated\": \"2025-11-03T08:00:00\"\n  }\n]"
 						},
 						{
-							"name": "Not Found Error",
+							"name": "Success Response - Empty Array",
 							"originalRequest": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "https://localhost:7080/api/v1/drainage-entry/999",
+									"raw": "https://localhost:7080/api/v1/drainage-entry/patient/456",
 									"protocol": "https",
 									"host": ["localhost"],
 									"port": "7080",
-									"path": ["api", "v1", "drainage-entry", "999"]
+									"path": ["api", "v1", "drainage-entry", "patient", "456"]
 								}
 							},
-							"status": "Not Found",
-							"code": 404,
+							"status": "OK",
+							"code": 200,
 							"_postman_previewlanguage": "json",
 							"header": [
 								{
@@ -641,7 +641,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n  \"title\": \"Resource not found.\",\n  \"status\": 404,\n  \"errors\": [\n    \"Drainage entry with ID 999 not found\"\n  ]\n}"
+							"body": "[]"
 						}
 					]
 				},

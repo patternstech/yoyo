@@ -61,7 +61,7 @@ public class DrainageSetupRequest
     [Required(ErrorMessage = "Provider goal amount selection is required.")]
     public bool HasProviderGoalAmount { get; set; }
 
-    [Range(1, int.MaxValue, ErrorMessage = "Goal drainage amount must be a positive integer.")]
+    [Range(20, 50, ErrorMessage = "Goal drainage amount must be between 20 and 50 mL.")]
     public int? GoalDrainageAmount { get; set; }
 
     [StringLength(1000, ErrorMessage = "Provider instructions cannot exceed 1000 characters.")]
@@ -103,7 +103,7 @@ public class DrainageSetupUpdateRequest
     [Required(ErrorMessage = "Provider goal amount selection is required.")]
     public bool HasProviderGoalAmount { get; set; }
 
-    [Range(1, int.MaxValue, ErrorMessage = "Goal drainage amount must be a positive integer.")]
+    [Range(20, 50, ErrorMessage = "Goal drainage amount must be between 20 and 50 mL.")]
     public int? GoalDrainageAmount { get; set; }
 
     [StringLength(1000, ErrorMessage = "Provider instructions cannot exceed 1000 characters.")]

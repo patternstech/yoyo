@@ -32,37 +32,19 @@ public class DrainageEntryController : ControllerBase
     [HttpPost]
     [ProducesResponseType<DrainageEntryResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> PostDrainageEntry([FromBody] DrainageEntryRequest request)
     {
-        if (!ModelState.IsValid)
+        var entryId = await _drainageEntryDataService.CreateDrainageEntryAsync(request);
+        var response = new DrainageEntryResponse
         {
-            _logger.LogWarning("Invalid model state for drainage entry creation: {ModelState}", ModelState);
-            return BadRequest(ModelState);
-        }
+            Id = entryId,
+            Message = "Drainage entry created successfully",
+        };
 
-        try
-        {
-            var entryId = await _drainageEntryDataService.CreateDrainageEntryAsync(request);
-            var response = new DrainageEntryResponse
-            {
-                Id = entryId,
-                Message = "Drainage entry created successfully",
-            };
-
-            _logger.LogDebug("Drainage entry created successfully with ID {EntryId}", entryId);
-            return Ok(response);
-        }
-        catch (InvalidOperationException ex)
-        {
-            _logger.LogWarning("Invalid operation while creating drainage entry: {Message}", ex.Message);
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (ArgumentException ex)
-        {
-            _logger.LogWarning("Invalid argument while creating drainage entry: {Message}", ex.Message);
-            return BadRequest(new { message = ex.Message });
-        }
+        _logger.LogDebug("Drainage entry created successfully with ID {EntryId}", entryId);
+        return Ok(response);
     }
 
     /// <summary>
@@ -80,64 +62,32 @@ public class DrainageEntryController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateDrainageEntry(int entryId, [FromBody] DrainageEntryUpdateRequest request)
     {
-        if (!ModelState.IsValid)
+        await _drainageEntryDataService.UpdateDrainageEntryAsync(entryId, request);
+        var response = new DrainageEntryResponse
         {
-            _logger.LogWarning("Invalid model state for drainage entry update: {ModelState}", ModelState);
-            return BadRequest(ModelState);
-        }
+            Id = entryId,
+            Message = "Drainage entry updated successfully",
+        };
 
-        try
-        {
-            await _drainageEntryDataService.UpdateDrainageEntryAsync(entryId, request);
-            var response = new DrainageEntryResponse
-            {
-                Id = entryId,
-                Message = "Drainage entry updated successfully",
-            };
-
-            _logger.LogDebug("Drainage entry {EntryId} updated successfully", entryId);
-            return Ok(response);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            _logger.LogWarning("Drainage entry not found: {Message}", ex.Message);
-            return NotFound(new { message = ex.Message });
-        }
-        catch (InvalidOperationException ex)
-        {
-            _logger.LogWarning("Invalid operation while updating drainage entry: {Message}", ex.Message);
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (ArgumentException ex)
-        {
-            _logger.LogWarning("Invalid argument while updating drainage entry: {Message}", ex.Message);
-            return BadRequest(new { message = ex.Message });
-        }
+        _logger.LogDebug("Drainage entry {EntryId} updated successfully", entryId);
+        return Ok(response);
     }
 
     /// <summary>
-    /// Get a drainage entry by ID
-    /// Example: GET /api/v1/drainage-entry/123.
+    /// Get all drainage entries for a patient
+    /// Example: GET /api/v1/drainage-entry/patient/123.
     /// </summary>
-    /// <param name="entryId">ID of the drainage entry.</param>
-    /// <returns>Drainage entry details.</returns>
-    [HttpGet("{entryId}")]
-    [ProducesResponseType<DrainageEntryDetailResponse>(StatusCodes.Status200OK)]
+    /// <param name="patientId">ID of the patient.</param>
+    /// <returns>List of drainage entries for the patient.</returns>
+    [HttpGet("patient/{patientId}")]
+    [ProducesResponseType<IEnumerable<DrainageEntryDetailResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetDrainageEntry(int entryId)
+    public async Task<IActionResult> GetDrainageEntry(int patientId)
     {
-        try
-        {
-            var entry = await _drainageEntryDataService.GetDrainageEntryByIdAsync(entryId);
-            _logger.LogDebug("Retrieved drainage entry {EntryId}", entryId);
-            return Ok(entry);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            _logger.LogWarning("Drainage entry not found: {Message}", ex.Message);
-            return NotFound(new { message = ex.Message });
-        }
+        var entries = await _drainageEntryDataService.GetDrainageEntriesByPatientAsync(patientId);
+        _logger.LogDebug("Retrieved drainage entries for patient {PatientId}", patientId);
+        return Ok(entries);
     }
 
     /// <summary>
@@ -153,27 +103,14 @@ public class DrainageEntryController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteDrainageEntry(int entryId)
     {
-        try
+        await _drainageEntryDataService.DeleteDrainageEntryAsync(entryId);
+        var response = new DrainageEntryResponse
         {
-            await _drainageEntryDataService.DeleteDrainageEntryAsync(entryId);
-            var response = new DrainageEntryResponse
-            {
-                Id = entryId,
-                Message = "Drainage entry deleted successfully",
-            };
+            Id = entryId,
+            Message = "Drainage entry deleted successfully",
+        };
 
-            _logger.LogDebug("Drainage entry {EntryId} deleted successfully", entryId);
-            return Ok(response);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            _logger.LogWarning("Drainage entry not found: {Message}", ex.Message);
-            return NotFound(new { message = ex.Message });
-        }
-        catch (InvalidOperationException ex)
-        {
-            _logger.LogWarning("Invalid operation while deleting drainage entry: {Message}", ex.Message);
-            return BadRequest(new { message = ex.Message });
-        }
+        _logger.LogDebug("Drainage entry {EntryId} deleted successfully", entryId);
+        return Ok(response);
     }
 }

@@ -166,6 +166,15 @@ public class DrainageSetupDataService : IDrainageSetupDataService
             throw new ArgumentException("Goal drainage amount should not be provided when provider has not set a goal amount");
         }
 
+        // Validate goal amount range if provided
+        if (request.HasProviderGoalAmount && request.GoalDrainageAmount.HasValue)
+        {
+            if (request.GoalDrainageAmount.Value < 20 || request.GoalDrainageAmount.Value > 50)
+            {
+                throw new ArgumentException("Goal drainage amount must be between 20 and 50 mL");
+            }
+        }
+
         if (request.Drains.Count > 4)
         {
             throw new ArgumentException("Cannot add more than 4 drains");
@@ -201,6 +210,15 @@ public class DrainageSetupDataService : IDrainageSetupDataService
         if (!request.HasProviderGoalAmount && request.GoalDrainageAmount.HasValue)
         {
             throw new ArgumentException("Goal drainage amount should not be provided when provider has not set a goal amount");
+        }
+
+        // Validate goal amount range if provided
+        if (request.HasProviderGoalAmount && request.GoalDrainageAmount.HasValue)
+        {
+            if (request.GoalDrainageAmount.Value < 20 || request.GoalDrainageAmount.Value > 50)
+            {
+                throw new ArgumentException("Goal drainage amount must be between 20 and 50 mL");
+            }
         }
 
         if (request.Drains.Count > 4)
