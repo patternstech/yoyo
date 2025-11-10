@@ -2,6 +2,7 @@
 using AH.CancerConnect.API.Features.Drainage.DrainageEntry;
 using AH.CancerConnect.API.Features.Drainage.DrainageSetup;
 using AH.CancerConnect.API.Features.Notes;
+using AH.CancerConnect.API.Features.Spirometry.SpirometrySetup;
 using AH.CancerConnect.API.Features.SymptomsTracking;
 using AH.CancerConnect.API.Features.ToDo;
 using AH.CancerConnect.API.Services;
@@ -45,6 +46,7 @@ public static class ServicesConfiguration
         services.AddScoped<IToDoDataService, ToDoDataService>();
         services.AddScoped<IDrainageSetupDataService, DrainageSetupDataService>();
         services.AddScoped<IDrainageEntryDataService, DrainageEntryDataService>();
+        services.AddScoped<ISpirometrySetupDataService, SpirometrySetupDataService>();
 
         // HttpClient factory
         services.AddHttpClient();

@@ -371,7 +371,7 @@ public class SymptomDataService : ISymptomDataService
             {
                 symptomData.Values.Add(new SymptomValuePoint
                 {
-                    Date = value.Date.Date,
+                    Date = DateOnly.FromDateTime(value.Date),
                     Value = value.Value
                 });
             }
@@ -393,8 +393,8 @@ public class SymptomDataService : ISymptomDataService
 
         var response = new SymptomGraphResponse
         {
-            StartDate = startDate.Date,
-            EndDate = endDate.Date,
+            StartDate = DateOnly.FromDateTime(startDate),
+            EndDate = DateOnly.FromDateTime(endDate),
             DaysWithSymptoms = daysWithEntries,
             SymptomsTracked = uniqueSymptoms,
             TotalEntries = totalEntries,

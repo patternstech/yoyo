@@ -21,9 +21,9 @@ public class SymptomGraphRequest
 /// </summary>
 public class SymptomGraphResponse
 {
-    public DateTime StartDate { get; set; }
+    public DateOnly StartDate { get; set; }
 
-    public DateTime EndDate { get; set; }
+    public DateOnly EndDate { get; set; }
 
     public int DaysWithSymptoms { get; set; }
 
@@ -51,7 +51,7 @@ public class SymptomGraphData
 /// </summary>
 public class SymptomValuePoint
 {
-    public DateTime Date { get; set; }
+    public DateOnly Date { get; set; }
 
     public string Value { get; set; } = string.Empty;
 }
