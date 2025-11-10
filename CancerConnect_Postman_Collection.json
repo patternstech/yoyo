@@ -441,7 +441,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"drainId\": 1,\n  \"emptyDate\": \"2025-11-03T11:22:00\",\n  \"amount\": 45.5,\n  \"note\": \"Patient feeling better today\"\n}"
+							"raw": "{\n  \"drainId\": 1,\n  \"emptyDate\": \"2025-11-03T11:22:00\",\n  \"amount\": 45.5,\n  \"note\": \"Patient feeling better today. Amount must be between 0 and 100 mL.\"\n}"
 						},
 						"url": {
 							"raw": "https://localhost:7080/api/v1/drainage-entry",
@@ -575,7 +575,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n  \"title\": \"One or more validation errors occurred.\",\n  \"status\": 400,\n  \"errors\": [\n    \"Amount must be between 0 and 9999.99 mL.\"\n  ]\n}"
+							"body": "{\n  \"title\": \"One or more validation errors occurred.\",\n  \"status\": 400,\n  \"errors\": [\n    \"Amount must be between 0 and 100 mL.\"\n  ]\n}"
 						}
 					]
 				},

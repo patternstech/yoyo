@@ -320,8 +320,8 @@ public class SymptomDataService : ISymptomDataService
     {
         _logger.LogInformation("Retrieving symptom graph data for patient {PatientId} for {Days} days", patientId, days);
 
-        var endDate = DateTime.UtcNow.Date.AddDays(1); // End of today (tomorrow 00:00)
-        var startDate = DateTime.UtcNow.Date.AddDays(-days); // Go back 'days' from today
+        var endDate = DateTime.Now.Date.AddDays(1); // End of today (tomorrow 00:00)
+        var startDate = DateTime.Now.Date.AddDays(-days); // Go back 'days' from today
 
         _logger.LogInformation("Date range: {StartDate} to {EndDate}", startDate, endDate);
 
@@ -371,7 +371,7 @@ public class SymptomDataService : ISymptomDataService
             {
                 symptomData.Values.Add(new SymptomValuePoint
                 {
-                    Date = value.Date,
+                    Date = value.Date.Date,
                     Value = value.Value
                 });
             }
@@ -393,8 +393,8 @@ public class SymptomDataService : ISymptomDataService
 
         var response = new SymptomGraphResponse
         {
-            StartDate = startDate,
-            EndDate = DateTime.Now.Date,
+            StartDate = startDate.Date,
+            EndDate = endDate.Date,
             DaysWithSymptoms = daysWithEntries,
             SymptomsTracked = uniqueSymptoms,
             TotalEntries = totalEntries,

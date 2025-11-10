@@ -19,7 +19,7 @@ public static class DrainageEntryExtensions
             Amount = request.Amount,
             Note = request.Note,
             IsArchived = false,
-            DateCreated = DateTime.UtcNow,
+            DateCreated = DateTime.Now,
         };
     }
 

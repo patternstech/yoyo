@@ -18,8 +18,8 @@ public static class DrainageSetupExtensions
             HasProviderGoalAmount = request.HasProviderGoalAmount,
             GoalDrainageAmount = request.HasProviderGoalAmount ? request.GoalDrainageAmount : 30, // Default 30 mL if no provider goal
             ProviderInstructions = request.ProviderInstructions,
-            DateCreated = DateTime.UtcNow,
-            DateModified = DateTime.UtcNow,
+            DateCreated = DateTime.Now,
+            DateModified = DateTime.Now,
         };
 
         // Add drains
@@ -39,8 +39,8 @@ public static class DrainageSetupExtensions
         {
             Name = request.Name,
             IsArchived = request.IsArchived,
-            DateCreated = DateTime.UtcNow,
-            DateArchived = request.IsArchived ? DateTime.UtcNow : null,
+            DateCreated = DateTime.Now,
+            DateArchived = request.IsArchived ? DateTime.Now : null,
         };
     }
 
@@ -91,7 +91,7 @@ public static class DrainageSetupExtensions
         setup.HasProviderGoalAmount = request.HasProviderGoalAmount;
         setup.GoalDrainageAmount = request.HasProviderGoalAmount ? request.GoalDrainageAmount : 30; // Default 30 mL if no provider goal
         setup.ProviderInstructions = request.ProviderInstructions;
-        setup.DateModified = DateTime.UtcNow;
+        setup.DateModified = DateTime.Now;
 
         // Update drains - this is complex as we need to handle additions, updates, and deletions
         UpdateDrains(setup, request.Drains);
@@ -110,19 +110,35 @@ public static class DrainageSetupExtensions
         foreach (var request in drainRequests.Where(d => d.Id.HasValue))
         {
             var existingDrain = existingDrains.FirstOrDefault(d => d.Id == request.Id!.Value);
-            if (existingDrain != null)
+            if (existingDrain == null)
             {
-                existingDrain.Name = request.Name;
-                if (request.IsArchived && !existingDrain.IsArchived)
-                {
-                    existingDrain.IsArchived = true;
-                    existingDrain.DateArchived = DateTime.UtcNow;
-                }
-                else if (!request.IsArchived && existingDrain.IsArchived)
-                {
-                    existingDrain.IsArchived = false;
-                    existingDrain.DateArchived = null;
-                }
+                throw new KeyNotFoundException($"Drain with ID {request.Id!.Value} not found in this drainage setup");
+            }
+
+            existingDrain.Name = request.Name;
+            if (request.IsArchived && !existingDrain.IsArchived)
+            {
+                existingDrain.IsArchived = true;
+                existingDrain.DateArchived = DateTime.Now;
+            }
+            else if (!request.IsArchived && existingDrain.IsArchived)
+            {
+                existingDrain.IsArchived = false;
+                existingDrain.DateArchived = null;
+            }
+        }
+
+        // Add new drains (those without an ID)
+        var newDrains = drainRequests.Where(d => !d.Id.HasValue).ToList();
+        
+        if (newDrains.Any())
+        {
+            // Add the new drains
+            foreach (var request in newDrains)
+            {
+                var newDrain = request.ToEntity();
+                newDrain.DrainageSetupId = setup.Id;
+                setup.Drains.Add(newDrain);
             }
         }
     }

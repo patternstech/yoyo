@@ -21,7 +21,7 @@ public static class ToDoExtensions
             Time = request.Time,
             Alert = request.Alert,
             IsCompleted = false,
-            DateCreated = DateTime.UtcNow,
+            DateCreated = DateTime.Now,
         };
     }
 

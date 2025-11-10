@@ -19,7 +19,7 @@ public static class SymptomEntryExtensions
             PatientId = request.PatientId,
             Note = request.Note,
             EntryDate = request.EntryDate,
-            Created = DateTime.UtcNow,
+            Created = DateTime.Now,
         };
     }
 

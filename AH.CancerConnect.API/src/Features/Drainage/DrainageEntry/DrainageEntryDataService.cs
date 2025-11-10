@@ -61,7 +61,7 @@ public class DrainageEntryDataService : IDrainageEntryDataService
         }
 
         // Validate empty date is not in the future
-        if (request.EmptyDate > DateTime.UtcNow.AddDays(1))
+        if (request.EmptyDate > DateTime.Now.AddDays(1))
         {
             throw new ArgumentException("Empty date cannot be in the future");
         }
@@ -101,7 +101,7 @@ public class DrainageEntryDataService : IDrainageEntryDataService
         }
 
         // Validate empty date is not in the future
-        if (request.EmptyDate > DateTime.UtcNow.AddDays(1))
+        if (request.EmptyDate > DateTime.Now.AddDays(1))
         {
             throw new ArgumentException("Empty date cannot be in the future");
         }
@@ -184,7 +184,7 @@ public class DrainageEntryDataService : IDrainageEntryDataService
 
         // Archive the entry instead of hard delete
         entry.IsArchived = true;
-        entry.DateArchived = DateTime.UtcNow;
+        entry.DateArchived = DateTime.Now;
 
         await _dbContext.SaveChangesAsync();
 

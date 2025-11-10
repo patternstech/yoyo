@@ -127,7 +127,7 @@ public class DrainageSetupDataService : IDrainageSetupDataService
 
         // Archive the drain
         drain.IsArchived = true;
-        drain.DateArchived = DateTime.UtcNow;
+        drain.DateArchived = DateTime.Now;
 
         // Archive all related drainage entries
         var drainageEntries = await _dbContext.DrainageEntries
@@ -137,7 +137,7 @@ public class DrainageSetupDataService : IDrainageSetupDataService
         foreach (var entry in drainageEntries)
         {
             entry.IsArchived = true;
-            entry.DateArchived = DateTime.UtcNow;
+            entry.DateArchived = DateTime.Now;
         }
 
         await _dbContext.SaveChangesAsync();

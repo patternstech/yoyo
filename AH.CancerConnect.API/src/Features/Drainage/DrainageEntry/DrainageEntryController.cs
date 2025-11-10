@@ -23,9 +23,10 @@ public class DrainageEntryController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new drainage entry for all drains in a drainage setup
+    /// Create a new drainage entry for a specific drain
     /// Example: POST /api/v1/drainage-entry
-    /// Body: { "drainageSetupId": 1, "emptyDate": "2025-11-03T11:22:00", "drain1Amount": 25.5, "drain2Amount": 30.0, "drain3Amount": null, "drain4Amount": null, "note": "Patient feeling better" }.
+    /// Body: { "drainId": 1, "emptyDate": "2025-11-03T11:22:00", "amount": 45.5, "note": "Patient feeling better" }.
+    /// Note: Amount must be between 0 and 100 mL.
     /// </summary>
     /// <param name="request">Drainage entry request.</param>
     /// <returns>Success response with drainage entry ID.</returns>
@@ -51,6 +52,7 @@ public class DrainageEntryController : ControllerBase
     /// Update an existing drainage entry
     /// Example: PUT /api/v1/drainage-entry/123
     /// Body: { "emptyDate": "2025-11-05T10:30:00", "amount": 30.5, "note": "Updated measurement" }.
+    /// Note: Amount must be between 0 and 100 mL.
     /// </summary>
     /// <param name="entryId">ID of the drainage entry to update.</param>
     /// <param name="request">Updated drainage entry data.</param>

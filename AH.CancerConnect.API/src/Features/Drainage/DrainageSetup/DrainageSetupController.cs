@@ -27,7 +27,8 @@ public class DrainageSetupController : ControllerBase
     /// <summary>
     /// Create a new drainage setup for a patient
     /// Example: POST /api/v1/drainage-setup
-    /// Body: { "patientId": 123, "hasProviderGoalAmount": true, "goalDrainageAmount": 28, "providerInstructions": "Test", "drains": [{ "name": "Drain 1" }, { "name": "Drain 2" }] }.
+    /// Body: { "patientId": 123, "hasProviderGoalAmount": true, "goalDrainageAmount": 35, "providerInstructions": "Monitor daily", "drains": [{ "name": "Drain 1" }, { "name": "Drain 2" }] }.
+    /// Note: Goal amount must be between 20-50 mL if provided, or defaults to 30 mL if not provided. Maximum 4 drains allowed.
     /// </summary>
     /// <param name="request">Drainage setup request.</param>
     /// <returns>Success response with drainage setup ID.</returns>
@@ -78,6 +79,7 @@ public class DrainageSetupController : ControllerBase
     /// Update an existing drainage setup for a patient
     /// Example: PUT /api/v1/drainage-setup
     /// Body: { "id": 1, "patientId": 123, "hasProviderGoalAmount": false, "providerInstructions": "Updated instructions", "drains": [{ "id": 1, "name": "Updated Drain 1" }, { "name": "New Drain" }] }.
+    /// Note: Goal amount must be between 20-50 mL if provided, or defaults to 30 mL if not provided. Can add new drains by omitting the "id" field. Maximum 4 active drains allowed.
     /// </summary>
     /// <param name="request">Drainage setup update request.</param>
     /// <returns>Success response with drainage setup ID.</returns>
