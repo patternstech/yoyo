@@ -818,6 +818,171 @@
 			]
 		},
 		{
+			"name": "Spirometry Setup",
+			"item": [
+				{
+					"name": "Create Spirometry Setup",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"patientId\": 1,\n  \"capacityGoal\": 4000,\n  \"providerInstructions\": \"Test at least 3 times daily, especially in the morning\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7080/api/v1/spirometry-setup",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "spirometry-setup"]
+						}
+					}
+				},
+				{
+					"name": "Get Spirometry Setup by Patient",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7080/api/v1/spirometry-setup/patient/1",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "spirometry-setup", "patient", "1"]
+						}
+					}
+				},
+				{
+					"name": "Update Spirometry Setup",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"patientId\": 1,\n  \"capacityGoal\": 4500,\n  \"providerInstructions\": \"Updated instructions: Test 3 times daily\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7080/api/v1/spirometry-setup",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "spirometry-setup"]
+						}
+					}
+				},
+				{
+					"name": "Delete Spirometry Setup",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7080/api/v1/spirometry-setup/patient/1",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "spirometry-setup", "patient", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Spirometry Entry",
+			"item": [
+				{
+					"name": "Create Spirometry Entry",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"patientId\": 1,\n  \"testDate\": \"2025-11-11\",\n  \"testTime\": \"08:00:00\",\n  \"numberReached\": 2800,\n  \"note\": \"Morning test before breakfast\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7080/api/v1/spirometry-entry",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "spirometry-entry"]
+						}
+					}
+				},
+				{
+					"name": "Update Spirometry Entry",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"testDate\": \"2025-11-11\",\n  \"testTime\": \"08:30:00\",\n  \"numberReached\": 3000,\n  \"note\": \"Updated reading - corrected time\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7080/api/v1/spirometry-entry/1",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "spirometry-entry", "1"]
+						}
+					}
+				},
+				{
+					"name": "Get Spirometry Graph Data",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7080/api/v1/spirometry-entry/patient/1?days=7",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "spirometry-entry", "patient", "1"],
+							"query": [
+								{
+									"key": "days",
+									"value": "7",
+									"description": "Number of days to include in graph (default: 7, max: 365)"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Spirometry Entry",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7080/api/v1/spirometry-entry/1",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "spirometry-entry", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
 			"name": "Provider Pool (AdminAPI)",
 			"item": [
 				{

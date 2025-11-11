@@ -129,23 +129,9 @@ public class DrainageSetupDataService : IDrainageSetupDataService
         drain.IsArchived = true;
         drain.DateArchived = DateTime.Now;
 
-        // Archive all related drainage entries
-        var drainageEntries = await _dbContext.DrainageEntries
-            .Where(de => de.DrainId == request.DrainId && !de.IsArchived)
-            .ToListAsync();
-
-        foreach (var entry in drainageEntries)
-        {
-            entry.IsArchived = true;
-            entry.DateArchived = DateTime.Now;
-        }
-
         await _dbContext.SaveChangesAsync();
 
-        _logger.LogDebug(
-            "Successfully archived drain {DrainId} and {EntryCount} related entries",
-            request.DrainId,
-            drainageEntries.Count);
+        _logger.LogDebug("Successfully archived drain {DrainId}", request.DrainId);
 
         return true;
     }

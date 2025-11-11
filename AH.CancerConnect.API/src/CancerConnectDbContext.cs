@@ -1,6 +1,7 @@
 using AH.CancerConnect.API.Features.Drainage.DrainageEntry;
 using AH.CancerConnect.API.Features.Drainage.DrainageSetup;
 using AH.CancerConnect.API.Features.Notes;
+using AH.CancerConnect.API.Features.Spirometry.SpirometryEntry;
 using AH.CancerConnect.API.Features.Spirometry.SpirometrySetup;
 using AH.CancerConnect.API.Features.SymptomsTracking.Models;
 using AH.CancerConnect.API.Features.ToDo;
@@ -84,6 +85,11 @@ public class CancerConnectDbContext : DbContext
     public DbSet<SpirometrySetup> SpirometrySetups { get; set; }
 
     /// <summary>
+    /// Gets or sets the spirometry entries table.
+    /// </summary>
+    public DbSet<SpirometryEntry> SpirometryEntries { get; set; }
+
+    /// <summary>
     /// Configures the model relationships and constraints.
     /// </summary>
     /// <param name="modelBuilder">Model builder.</param>
@@ -104,6 +110,7 @@ public class CancerConnectDbContext : DbContext
         modelBuilder.Entity<Drain>().ToTable("Drain", "dbo");
         modelBuilder.Entity<DrainageEntry>().ToTable("DrainageEntry", "dbo");
         modelBuilder.Entity<SpirometrySetup>().ToTable("SpirometrySetup", "dbo");
+        modelBuilder.Entity<SpirometryEntry>().ToTable("SpirometryEntry", "dbo");
 
         // Configure Patient entity
         modelBuilder.Entity<Patient>(entity =>
@@ -312,6 +319,26 @@ public class CancerConnectDbContext : DbContext
 
             // Index for unique patient constraint
             entity.HasIndex(ss => ss.PatientId).IsUnique();
+        });
+
+        // Configure SpirometryEntry entity
+        modelBuilder.Entity<SpirometryEntry>(entity =>
+        {
+            entity.HasKey(se => se.Id);
+            entity.Property(se => se.PatientId).IsRequired();
+            entity.Property(se => se.TestDate).IsRequired();
+            entity.Property(se => se.TestTime).IsRequired();
+            entity.Property(se => se.NumberReached).IsRequired().HasColumnType("decimal(10,2)");
+            entity.Property(se => se.Note).HasMaxLength(1000);
+
+            // Relationship with Patient
+            entity.HasOne(se => se.Patient)
+                  .WithMany()
+                  .HasForeignKey(se => se.PatientId)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            // Indexes for performance
+            entity.HasIndex(se => new { se.PatientId, se.TestDate, se.TestTime });
         });
 
         // Seed initial data
