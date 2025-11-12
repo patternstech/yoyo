@@ -23,13 +23,21 @@ public class DrainageEntryController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new drainage entry for a specific drain
+    /// Create drainage entries for multiple drains at once
     /// Example: POST /api/v1/drainage-entry
-    /// Body: { "drainId": 1, "emptyDate": "2025-11-03T11:22:00", "amount": 45.5, "note": "Patient feeling better" }.
-    /// Note: Amount must be between 0 and 100 mL.
+    /// Body: { 
+    ///   "patientId": 123, 
+    ///   "emptyDate": "2025-11-03T11:22:00", 
+    ///   "drainEntries": [
+    ///     { "drainId": 1, "amount": 45.5 },
+    ///     { "drainId": 2, "amount": 38.2 }
+    ///   ],
+    ///   "note": "Patient feeling better" 
+    /// }.
+    /// Note: Amount must be between 0 and 100 mL for each drain.
     /// </summary>
-    /// <param name="request">Drainage entry request.</param>
-    /// <returns>Success response with drainage entry ID.</returns>
+    /// <param name="request">Drainage entry request with multiple drains.</param>
+    /// <returns>Success response with created drainage entry IDs.</returns>
     [HttpPost]
     [ProducesResponseType<DrainageEntryResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -37,14 +45,14 @@ public class DrainageEntryController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> PostDrainageEntry([FromBody] DrainageEntryRequest request)
     {
-        var entryId = await _drainageEntryDataService.CreateDrainageEntryAsync(request);
+        var entryIds = await _drainageEntryDataService.CreateDrainageEntryAsync(request);
         var response = new DrainageEntryResponse
         {
-            Id = entryId,
-            Message = "Drainage entry created successfully",
+            EntryIds = entryIds,
+            Message = $"{entryIds.Count} drainage entry(ies) created successfully",
         };
 
-        _logger.LogDebug("Drainage entry created successfully with ID {EntryId}", entryId);
+        _logger.LogDebug("Created {Count} drainage entries for patient {PatientId}", entryIds.Count, request.PatientId);
         return Ok(response);
     }
 
@@ -58,14 +66,14 @@ public class DrainageEntryController : ControllerBase
     /// <param name="request">Updated drainage entry data.</param>
     /// <returns>Success response.</returns>
     [HttpPut("{entryId}")]
-    [ProducesResponseType<DrainageEntryResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<DrainageEntrySingleResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateDrainageEntry(int entryId, [FromBody] DrainageEntryUpdateRequest request)
     {
         await _drainageEntryDataService.UpdateDrainageEntryAsync(entryId, request);
-        var response = new DrainageEntryResponse
+        var response = new DrainageEntrySingleResponse
         {
             Id = entryId,
             Message = "Drainage entry updated successfully",
@@ -99,14 +107,14 @@ public class DrainageEntryController : ControllerBase
     /// <param name="entryId">ID of the drainage entry to delete.</param>
     /// <returns>Success response.</returns>
     [HttpDelete("{entryId}")]
-    [ProducesResponseType<DrainageEntryResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<DrainageEntrySingleResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteDrainageEntry(int entryId)
     {
         await _drainageEntryDataService.DeleteDrainageEntryAsync(entryId);
-        var response = new DrainageEntryResponse
+        var response = new DrainageEntrySingleResponse
         {
             Id = entryId,
             Message = "Drainage entry deleted successfully",

@@ -6,11 +6,11 @@ namespace AH.CancerConnect.API.Features.Drainage.DrainageEntry;
 public interface IDrainageEntryDataService
 {
     /// <summary>
-    /// Creates a new drainage entry.
+    /// Creates drainage entries for multiple drains.
     /// </summary>
-    /// <param name="request">Drainage entry request.</param>
-    /// <returns>ID of the created drainage entry.</returns>
-    Task<int> CreateDrainageEntryAsync(DrainageEntryRequest request);
+    /// <param name="request">Drainage entry request with multiple drain entries.</param>
+    /// <returns>List of created drainage entry IDs.</returns>
+    Task<List<int>> CreateDrainageEntryAsync(DrainageEntryRequest request);
 
     /// <summary>
     /// Updates an existing drainage entry.

@@ -1,13 +1,23 @@
 namespace AH.CancerConnect.API.Features.Drainage.DrainageEntry;
 
 /// <summary>
-/// Response DTO for drainage entry operations.
+/// Response DTO for drainage entry creation operations.
 /// </summary>
 public class DrainageEntryResponse
 {
+    public List<int> EntryIds { get; set; } = new List<int>();
+
+    public string Message { get; set; } = "Drainage entries created successfully";
+}
+
+/// <summary>
+/// Response DTO for drainage entry update/delete operations.
+/// </summary>
+public class DrainageEntrySingleResponse
+{
     public int Id { get; set; }
 
-    public string Message { get; set; } = "Drainage entry processed successfully";
+    public string Message { get; set; } = string.Empty;
 }
 
 /// <summary>

@@ -29,23 +29,37 @@ public class DrainageEntry
 }
 
 /// <summary>
-/// Request DTO for creating a new drainage entry.
+/// Request DTO for creating drainage entries (supports multiple drains).
 /// </summary>
 public class DrainageEntryRequest
+{
+    [Required(ErrorMessage = "Patient ID is required.")]
+    [Range(1, int.MaxValue, ErrorMessage = "Patient ID must be a positive integer.")]
+    public int PatientId { get; set; }
+
+    [Required(ErrorMessage = "Empty date is required.")]
+    public DateTime EmptyDate { get; set; }
+
+    [Required(ErrorMessage = "At least one drain entry is required.")]
+    [MinLength(1, ErrorMessage = "At least one drain entry is required.")]
+    public List<DrainEntryItem> DrainEntries { get; set; } = new List<DrainEntryItem>();
+
+    [StringLength(1000, ErrorMessage = "Note cannot exceed 1000 characters.")]
+    public string? Note { get; set; }
+}
+
+/// <summary>
+/// Individual drain entry item within a drainage entry request.
+/// </summary>
+public class DrainEntryItem
 {
     [Required(ErrorMessage = "Drain ID is required.")]
     [Range(1, int.MaxValue, ErrorMessage = "Drain ID must be a positive integer.")]
     public int DrainId { get; set; }
 
-    [Required(ErrorMessage = "Empty date is required.")]
-    public DateTime EmptyDate { get; set; }
-
     [Required(ErrorMessage = "Amount is required.")]
     [Range(0, 100, ErrorMessage = "Amount must be between 0 and 100 mL.")]
     public decimal Amount { get; set; }
-
-    [StringLength(1000, ErrorMessage = "Note cannot exceed 1000 characters.")]
-    public string? Note { get; set; }
 }
 
 /// <summary>

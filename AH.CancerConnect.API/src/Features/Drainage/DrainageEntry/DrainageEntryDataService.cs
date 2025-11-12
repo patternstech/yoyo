@@ -18,26 +18,41 @@ public class DrainageEntryDataService : IDrainageEntryDataService
     }
 
     /// <inheritdoc />
-    public async Task<int> CreateDrainageEntryAsync(DrainageEntryRequest request)
+    public async Task<List<int>> CreateDrainageEntryAsync(DrainageEntryRequest request)
     {
-        _logger.LogDebug("Creating drainage entry for drain {DrainId}", request.DrainId);
+        _logger.LogDebug("Creating drainage entries for patient {PatientId} with {DrainCount} drains", 
+            request.PatientId, request.DrainEntries.Count);
 
         // Validate request
         await ValidateDrainageEntryRequest(request);
 
-        // Create the drainage entry using extension method
-        var drainageEntry = request.ToEntity();
+        var createdEntryIds = new List<int>();
 
-        // Save to database
-        _dbContext.DrainageEntries.Add(drainageEntry);
-        await _dbContext.SaveChangesAsync();
+        // Create drainage entry for each drain
+        foreach (var drainEntry in request.DrainEntries)
+        {
+            var drainageEntry = new DrainageEntry
+            {
+                DrainId = drainEntry.DrainId,
+                EmptyDate = request.EmptyDate,
+                Amount = drainEntry.Amount,
+                Note = request.Note,
+                IsArchived = false,
+                DateCreated = DateTime.Now,
+            };
 
-        _logger.LogDebug(
-            "Successfully created drainage entry {EntryId} for drain {DrainId}",
-            drainageEntry.Id,
-            request.DrainId);
+            _dbContext.DrainageEntries.Add(drainageEntry);
+            await _dbContext.SaveChangesAsync();
+            
+            createdEntryIds.Add(drainageEntry.Id);
+            
+            _logger.LogDebug(
+                "Successfully created drainage entry {EntryId} for drain {DrainId}",
+                drainageEntry.Id,
+                drainEntry.DrainId);
+        }
 
-        return drainageEntry.Id;
+        return createdEntryIds;
     }
 
     /// <summary>
@@ -46,30 +61,50 @@ public class DrainageEntryDataService : IDrainageEntryDataService
     /// <param name="request">The request to validate.</param>
     private async Task ValidateDrainageEntryRequest(DrainageEntryRequest request)
     {
-        // Validate that the drain exists and is not archived
-        var drain = await _dbContext.Drains
-            .FirstOrDefaultAsync(d => d.Id == request.DrainId);
+        // Validate that the patient exists
+        var patientExists = await _dbContext.Patients
+            .AnyAsync(p => p.Id == request.PatientId);
 
-        if (drain == null)
+        if (!patientExists)
         {
-            throw new KeyNotFoundException($"Drain with ID {request.DrainId} not found");
+            throw new KeyNotFoundException($"Patient with ID {request.PatientId} not found");
         }
 
-        if (drain.IsArchived)
+        // Validate each drain in the request
+        foreach (var drainEntry in request.DrainEntries)
         {
-            throw new InvalidOperationException($"Cannot create drainage entry for archived drain {request.DrainId}");
+            // Validate that the drain exists and is not archived
+            var drain = await _dbContext.Drains
+                .Include(d => d.DrainageSetup)
+                .FirstOrDefaultAsync(d => d.Id == drainEntry.DrainId);
+
+            if (drain == null)
+            {
+                throw new KeyNotFoundException($"Drain with ID {drainEntry.DrainId} not found");
+            }
+
+            if (drain.IsArchived)
+            {
+                throw new InvalidOperationException($"Cannot create drainage entry for archived drain {drainEntry.DrainId}");
+            }
+
+            // Validate drain belongs to the patient
+            if (drain.DrainageSetup.PatientId != request.PatientId)
+            {
+                throw new InvalidOperationException($"Drain {drainEntry.DrainId} does not belong to patient {request.PatientId}");
+            }
+
+            // Validate amount is between 0 and 100 mL
+            if (drainEntry.Amount < 0 || drainEntry.Amount > 100)
+            {
+                throw new ArgumentException($"Drainage entry amount for drain {drainEntry.DrainId} must be between 0 and 100 mL");
+            }
         }
 
         // Validate empty date is not in the future
         if (request.EmptyDate > DateTime.Now.AddDays(1))
         {
             throw new ArgumentException("Empty date cannot be in the future");
-        }
-
-        // Validate amount is between 0 and 100 mL
-        if (request.Amount < 0 || request.Amount > 100)
-        {
-            throw new ArgumentException("Drainage entry amount must be between 0 and 100 mL");
         }
     }
 
