@@ -56,10 +56,7 @@ public class GlobalExceptionFilter : IExceptionFilter
             errors = new[] { exception.Message }
         };
 
-        return new ObjectResult(response)
-        {
-            StatusCode = StatusCodes.Status400BadRequest
-        };
+        return new BadRequestObjectResult(response);
     }
 
     private ObjectResult HandleInvalidOperationException(InvalidOperationException exception)
@@ -73,10 +70,7 @@ public class GlobalExceptionFilter : IExceptionFilter
             errors = new[] { exception.Message }
         };
 
-        return new ObjectResult(response)
-        {
-            StatusCode = StatusCodes.Status400BadRequest
-        };
+        return new BadRequestObjectResult(response);
     }
 
     private ObjectResult HandleDbUpdateException(DbUpdateException exception)
@@ -90,10 +84,7 @@ public class GlobalExceptionFilter : IExceptionFilter
             errors = new[] { "Error due to invalid data or constraint violation." }
         };
 
-        return new ObjectResult(response)
-        {
-            StatusCode = StatusCodes.Status400BadRequest
-        };
+        return new BadRequestObjectResult(response);
     }
 
     private ObjectResult HandleNotFoundException(KeyNotFoundException exception)
@@ -107,10 +98,7 @@ public class GlobalExceptionFilter : IExceptionFilter
             errors = new[] { exception.Message }
         };
 
-        return new ObjectResult(response)
-        {
-            StatusCode = StatusCodes.Status404NotFound
-        };
+        return new NotFoundObjectResult(response);
     }
 
     private ObjectResult HandleUnauthorizedException(UnauthorizedAccessException exception)

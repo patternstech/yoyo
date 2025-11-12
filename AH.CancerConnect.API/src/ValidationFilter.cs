@@ -25,11 +25,16 @@ public class ValidationFilter : IActionFilter
         {
             _logger.LogWarning("Model validation failed for action {Action}", context.ActionDescriptor.DisplayName);
 
-            var errorMessages = context.ModelState
-                .SelectMany(x => x.Value?.Errors ?? new List<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>())
-                .Select(x => x.ErrorMessage)
-                .Where(x => !string.IsNullOrEmpty(x))
-                .ToArray();
+            var errorMessages = new List<string>();
+            
+            foreach (var keyValuePair in context.ModelState)
+            {
+                var messages = keyValuePair.Value?.Errors
+                    .Select(x => x.ErrorMessage)
+                    .ToList() ?? new List<string>();
+                
+                errorMessages.AddRange(messages);
+            }
 
             var response = new
             {
@@ -38,10 +43,7 @@ public class ValidationFilter : IActionFilter
                 errors = errorMessages
             };
 
-            context.Result = new ObjectResult(response)
-            {
-                StatusCode = StatusCodes.Status400BadRequest
-            };
+            context.Result = new BadRequestObjectResult(response);
         }
     }
 
