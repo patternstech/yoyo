@@ -43,7 +43,10 @@ public class ValidationFilter : IActionFilter
                 errors = errorMessages
             };
 
-            context.Result = new BadRequestObjectResult(response);
+            context.Result = new ObjectResult(response)
+            {
+                StatusCode = StatusCodes.Status400BadRequest
+            };
         }
     }
 
