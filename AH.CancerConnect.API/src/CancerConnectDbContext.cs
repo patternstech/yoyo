@@ -265,7 +265,7 @@ public class CancerConnectDbContext : DbContext
         {
             entity.HasKey(d => d.Id);
             entity.Property(d => d.DrainageSetupId).IsRequired();
-            entity.Property(d => d.Name).IsRequired().HasMaxLength(100);
+            entity.Property(d => d.Name).IsRequired().HasMaxLength(20);
             entity.Property(d => d.IsArchived).IsRequired().HasDefaultValue(false);
             entity.Property(d => d.DateCreated).IsRequired();
             entity.Property(d => d.DateArchived);

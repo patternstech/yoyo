@@ -81,7 +81,7 @@ public class DrainRequest
     public int? Id { get; set; } // Null for new drains
 
     [Required(ErrorMessage = "Drain name is required.")]
-    [StringLength(100, ErrorMessage = "Drain name cannot exceed 100 characters.")]
+    [StringLength(20, ErrorMessage = "Drain name cannot exceed 20 characters.")]
     public string Name { get; set; } = string.Empty;
 
     public bool IsArchived { get; set; } = false;
