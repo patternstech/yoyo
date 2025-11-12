@@ -430,7 +430,7 @@
 			"name": "Drainage Entry",
 			"item": [
 				{
-					"name": "Create Drainage Entry",
+					"name": "Create Drainage Entry (Multiple Drains)",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -441,7 +441,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"drainId\": 1,\n  \"emptyDate\": \"2025-11-03T11:22:00\",\n  \"amount\": 45.5,\n  \"note\": \"Patient feeling better today. Amount must be between 0 and 100 mL.\"\n}"
+							"raw": "{\n  \"patientId\": 1,\n  \"emptyDate\": \"2025-11-03T11:22:00\",\n  \"drainEntries\": [\n    {\n      \"drainId\": 1,\n      \"amount\": 45.5\n    },\n    {\n      \"drainId\": 2,\n      \"amount\": 38.2\n    }\n  ],\n  \"note\": \"Patient feeling better today. Amount must be between 0 and 100 mL per drain.\"\n}"
 						},
 						"url": {
 							"raw": "https://localhost:7080/api/v1/drainage-entry",
