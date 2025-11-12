@@ -56,7 +56,7 @@ public static class ServicesConfiguration
         // Optional: if you ever need consistent 400 details, etc.
         services.Configure<ApiBehaviorOptions>(o =>
         {
-            // Customize model state errors here if desired
+              o.SuppressModelStateInvalidFilter = true;
         });
 
         return services;
