@@ -105,40 +105,6 @@ public class SpirometryEntryDataService : ISpirometryEntryDataService
     }
 
     /// <inheritdoc />
-    public async Task<SpirometryEntryDetailResponse?> GetSpirometryEntryByIdAsync(int entryId)
-    {
-        _logger.LogDebug("Retrieving spirometry entry {EntryId}", entryId);
-
-        var entry = await _dbContext.SpirometryEntries
-            .FirstOrDefaultAsync(e => e.Id == entryId);
-
-        if (entry == null)
-        {
-            throw new KeyNotFoundException($"Spirometry entry with ID {entryId} not found");
-        }
-
-        _logger.LogDebug("Successfully retrieved spirometry entry {EntryId}", entryId);
-
-        return entry.ToDetailResponse();
-    }
-
-    /// <inheritdoc />
-    public async Task<IEnumerable<SpirometryEntryDetailResponse>> GetSpirometryEntriesByPatientAsync(int patientId)
-    {
-        _logger.LogDebug("Retrieving all spirometry entries for patient {PatientId}", patientId);
-
-        var entries = await _dbContext.SpirometryEntries
-            .Where(e => e.PatientId == patientId)
-            .OrderByDescending(e => e.TestDate)
-            .ThenByDescending(e => e.TestTime)
-            .ToListAsync();
-
-        _logger.LogDebug("Retrieved {Count} spirometry entries for patient {PatientId}", entries.Count, patientId);
-
-        return entries.Select(e => e.ToDetailResponse());
-    }
-
-    /// <inheritdoc />
     public async Task<SpirometryGraphResponse> GetSpirometryGraphAsync(SpirometryGraphRequest request)
     {
         _logger.LogDebug(
