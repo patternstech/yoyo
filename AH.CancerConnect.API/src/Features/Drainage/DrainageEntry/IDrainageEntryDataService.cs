@@ -21,18 +21,11 @@ public interface IDrainageEntryDataService
     Task<bool> UpdateDrainageEntryAsync(int entryId, DrainageEntryUpdateRequest request);
 
     /// <summary>
-    /// Gets a drainage entry by ID.
-    /// </summary>
-    /// <param name="entryId">ID of the drainage entry.</param>
-    /// <returns>The drainage entry detail response.</returns>
-    Task<DrainageEntryDetailResponse> GetDrainageEntryByIdAsync(int entryId);
-
-    /// <summary>
-    /// Gets all drainage entries for a patient.
+    /// Gets drainage sessions grouped by empty date for a patient.
     /// </summary>
     /// <param name="patientId">ID of the patient.</param>
-    /// <returns>List of drainage entries for the patient.</returns>
-    Task<IEnumerable<DrainageEntryDetailResponse>> GetDrainageEntriesByPatientAsync(int patientId);
+    /// <returns>List of grouped drainage sessions.</returns>
+    Task<IEnumerable<DrainageSessionResponse>> GetDrainageSessionsByPatientAsync(int patientId);
 
     /// <summary>
     /// Deletes a drainage entry by ID (archives it).

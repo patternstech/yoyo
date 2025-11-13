@@ -21,21 +21,31 @@ public class DrainageEntrySingleResponse
 }
 
 /// <summary>
-/// Detailed response DTO for drainage entry.
+/// Grouped drainage session response - represents one emptying session with multiple drains.
 /// </summary>
-public class DrainageEntryDetailResponse
+public class DrainageSessionResponse
 {
-    public int Id { get; set; }
+    public int DrainageEntryId { get; set; }
 
-    public int DrainId { get; set; }
+    public int PatientId { get; set; }
 
     public DateTime EmptyDate { get; set; }
 
-    public decimal Amount { get; set; }
+    public List<DrainEntryDetail> DrainEntries { get; set; } = new List<DrainEntryDetail>();
 
     public string? Note { get; set; }
+}
+
+/// <summary>
+/// Individual drain detail within a drainage session.
+/// </summary>
+public class DrainEntryDetail
+{
+    public int DrainId { get; set; }
+
+    public decimal Amount { get; set; }
+
+    public string? DrainName { get; set; }
 
     public bool IsArchived { get; set; }
-
-    public DateTime DateCreated { get; set; }
 }

@@ -160,43 +160,49 @@ public class DrainageEntryDataService : IDrainageEntryDataService
     }
 
     /// <inheritdoc />
-    public async Task<DrainageEntryDetailResponse> GetDrainageEntryByIdAsync(int entryId)
+    public async Task<IEnumerable<DrainageSessionResponse>> GetDrainageSessionsByPatientAsync(int patientId)
     {
-        _logger.LogDebug("Retrieving drainage entry {EntryId}", entryId);
-
-        var entry = await _dbContext.DrainageEntries
-            .FirstOrDefaultAsync(e => e.Id == entryId);
-
-        if (entry == null)
-        {
-            throw new KeyNotFoundException($"Drainage entry with ID {entryId} not found");
-        }
-
-        _logger.LogDebug("Successfully retrieved drainage entry {EntryId}", entryId);
-
-        return entry.ToDetailResponse();
-    }
-
-    /// <inheritdoc />
-    public async Task<IEnumerable<DrainageEntryDetailResponse>> GetDrainageEntriesByPatientAsync(int patientId)
-    {
-        _logger.LogDebug("Retrieving all drainage entries for patient {PatientId}", patientId);
+        _logger.LogDebug("Retrieving grouped drainage sessions for patient {PatientId}", patientId);
 
         // Get all drains for the patient through drainage setup
-        var drainIds = await _dbContext.Drains
+        var drains = await _dbContext.Drains
+            .Include(d => d.DrainageSetup)
             .Where(d => d.DrainageSetup.PatientId == patientId)
-            .Select(d => d.Id)
             .ToListAsync();
 
-        // Get all entries for those drains
+        var drainIds = drains.Select(d => d.Id).ToList();
+
+        // Get all entries for those drains (non-archived only)
         var entries = await _dbContext.DrainageEntries
-            .Where(e => drainIds.Contains(e.DrainId))
+            .Include(e => e.Drain)
+            .Where(e => drainIds.Contains(e.DrainId) && !e.IsArchived)
             .OrderByDescending(e => e.EmptyDate)
+            .ThenBy(e => e.DateCreated)
             .ToListAsync();
 
-        _logger.LogDebug("Retrieved {Count} drainage entries for patient {PatientId}", entries.Count, patientId);
+        // Group entries by EmptyDate and Note to create sessions
+        var sessions = entries
+            .GroupBy(e => new { e.EmptyDate, e.Note, e.DateCreated })
+            .Select(g => new DrainageSessionResponse
+            {
+                DrainageEntryId = g.First().Id,
+                PatientId = patientId,
+                EmptyDate = g.Key.EmptyDate,
+                Note = g.Key.Note,
+                DrainEntries = g.Select(e => new DrainEntryDetail
+                {
+                    DrainId = e.DrainId,
+                    Amount = e.Amount,
+                    DrainName = e.Drain.Name,
+                    IsArchived = e.Drain.IsArchived,
+                }).ToList(),
+            })
+            .OrderByDescending(s => s.EmptyDate)
+            .ToList();
 
-        return entries.Select(e => e.ToDetailResponse());
+        _logger.LogDebug("Retrieved {Count} drainage sessions for patient {PatientId}", sessions.Count, patientId);
+
+        return sessions;
     }
 
     /// <inheritdoc />

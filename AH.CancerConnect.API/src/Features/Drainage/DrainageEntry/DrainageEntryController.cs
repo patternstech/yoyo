@@ -84,20 +84,21 @@ public class DrainageEntryController : ControllerBase
     }
 
     /// <summary>
-    /// Get all drainage entries for a patient
+    /// Get all drainage sessions for a patient (grouped by empty date)
     /// Example: GET /api/v1/drainage-entry/patient/123.
+    /// Returns drainage entries grouped by session (same empty date and time).
     /// </summary>
     /// <param name="patientId">ID of the patient.</param>
-    /// <returns>List of drainage entries for the patient.</returns>
+    /// <returns>List of grouped drainage sessions for the patient.</returns>
     [HttpGet("patient/{patientId}")]
-    [ProducesResponseType<IEnumerable<DrainageEntryDetailResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<IEnumerable<DrainageSessionResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetDrainageEntry(int patientId)
     {
-        var entries = await _drainageEntryDataService.GetDrainageEntriesByPatientAsync(patientId);
-        _logger.LogDebug("Retrieved drainage entries for patient {PatientId}", patientId);
-        return Ok(entries);
+        var sessions = await _drainageEntryDataService.GetDrainageSessionsByPatientAsync(patientId);
+        _logger.LogDebug("Retrieved {Count} drainage sessions for patient {PatientId}", sessions.Count(), patientId);
+        return Ok(sessions);
     }
 
     /// <summary>
