@@ -193,7 +193,7 @@ public class DrainageEntryDataService : IDrainageEntryDataService
 
         // Group entries by EmptyDate and Note to create sessions
         var sessions = entries
-            .GroupBy(e => new { e.EmptyDate, e.Note, e.DateCreated })
+            .GroupBy(e => new { e.EmptyDate, e.Note })
             .Select(g => new DrainageSessionResponse
             {
                 DrainageEntryId = g.First().Id,

@@ -25,7 +25,7 @@ public class SpirometryGraphResponse
 
     public DateOnly EndDate { get; set; }
 
-    public decimal CapacityGoal { get; set; }
+    public decimal? CapacityGoal { get; set; }
 
     public string? ProviderInstructions { get; set; }
 

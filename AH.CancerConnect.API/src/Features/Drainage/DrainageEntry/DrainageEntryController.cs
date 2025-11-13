@@ -83,9 +83,33 @@ public class DrainageEntryController : ControllerBase
     }
 
     /// <summary>
-    /// Get all drainage sessions for a patient (grouped by empty date)
+    /// Get all drainage sessions for a patient (grouped by empty date and note)
     /// Example: GET /api/v1/drainage-entry/patient/123.
-    /// Returns drainage entries grouped by session (same empty date and time).
+    /// Returns drainage entries grouped by session. Entries with the same EmptyDate and Note are grouped together,
+    /// regardless of when they were created. This allows multiple drains emptied at the same time to appear as one session.
+    /// Example Response:
+    /// [
+    ///   {
+    ///     "DrainageEntryId": 5,
+    ///     "PatientId": 1,
+    ///     "EmptyDate": "2025-11-13T13:58:33.711181",
+    ///     "DrainEntries": [
+    ///       {
+    ///         "DrainId": 2,
+    ///         "Amount": 20,
+    ///         "DrainName": "Left",
+    ///         "IsArchived": false
+    ///       },
+    ///       {
+    ///         "DrainId": 3,
+    ///         "Amount": 10,
+    ///         "DrainName": "Right",
+    ///         "IsArchived": false
+    ///       }
+    ///     ],
+    ///     "Note": "Morning drainage session"
+    ///   }
+    /// ].
     /// </summary>
     /// <param name="patientId">ID of the patient.</param>
     /// <returns>List of grouped drainage sessions for the patient.</returns>
