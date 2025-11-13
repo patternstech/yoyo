@@ -63,16 +63,29 @@ public class DrainEntryItem
 }
 
 /// <summary>
-/// Request DTO for updating an existing drainage entry.
+/// Represents a single drain entry update item with entry ID and new amount.
+/// </summary>
+public class DrainEntryUpdateItem
+{
+    [Required(ErrorMessage = "Entry ID is required.")]
+    public int EntryId { get; set; }
+
+    [Required(ErrorMessage = "Amount is required.")]
+    [Range(0, 100, ErrorMessage = "Amount must be between 0 and 100 mL.")]
+    public decimal Amount { get; set; }
+}
+
+/// <summary>
+/// Request DTO for updating multiple drainage entries in a session.
 /// </summary>
 public class DrainageEntryUpdateRequest
 {
     [Required(ErrorMessage = "Empty date is required.")]
     public DateTime EmptyDate { get; set; }
 
-    [Required(ErrorMessage = "Amount is required.")]
-    [Range(0, 100, ErrorMessage = "Amount must be between 0 and 100 mL.")]
-    public decimal Amount { get; set; }
+    [Required(ErrorMessage = "At least one drain entry is required.")]
+    [MinLength(1, ErrorMessage = "At least one drain entry must be provided.")]
+    public List<DrainEntryUpdateItem> DrainEntries { get; set; } = new();
 
     [StringLength(1000, ErrorMessage = "Note cannot exceed 1000 characters.")]
     public string? Note { get; set; }

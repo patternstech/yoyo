@@ -13,12 +13,11 @@ public interface IDrainageEntryDataService
     Task<List<int>> CreateDrainageEntryAsync(DrainageEntryRequest request);
 
     /// <summary>
-    /// Updates an existing drainage entry.
+    /// Updates multiple drainage entries in a session.
     /// </summary>
-    /// <param name="entryId">ID of the drainage entry to update.</param>
-    /// <param name="request">Updated drainage entry data.</param>
+    /// <param name="request">Updated drainage entry data with multiple drain entries.</param>
     /// <returns>True if updated successfully.</returns>
-    Task<bool> UpdateDrainageEntryAsync(int entryId, DrainageEntryUpdateRequest request);
+    Task<bool> UpdateDrainageEntryAsync(DrainageEntryUpdateRequest request);
 
     /// <summary>
     /// Gets drainage sessions grouped by empty date for a patient.

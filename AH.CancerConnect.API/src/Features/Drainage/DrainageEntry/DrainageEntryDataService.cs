@@ -109,31 +109,9 @@ public class DrainageEntryDataService : IDrainageEntryDataService
     }
 
     /// <inheritdoc />
-    public async Task<bool> UpdateDrainageEntryAsync(int entryId, DrainageEntryUpdateRequest request)
+    public async Task<bool> UpdateDrainageEntryAsync(DrainageEntryUpdateRequest request)
     {
-        _logger.LogDebug("Updating drainage entry {EntryId}", entryId);
-
-        // Retrieve the existing drainage entry
-        var entry = await _dbContext.DrainageEntries
-            .Include(e => e.Drain)
-            .FirstOrDefaultAsync(e => e.Id == entryId);
-
-        if (entry == null)
-        {
-            throw new KeyNotFoundException($"Drainage entry with ID {entryId} not found");
-        }
-
-        // Validate that the entry is not archived
-        if (entry.IsArchived)
-        {
-            throw new InvalidOperationException($"Cannot update archived drainage entry {entryId}");
-        }
-
-        // Validate that the drain is not archived
-        if (entry.Drain.IsArchived)
-        {
-            throw new InvalidOperationException($"Cannot update drainage entry for archived drain {entry.DrainId}");
-        }
+        _logger.LogDebug("Updating drainage entries for session");
 
         // Validate empty date is not in the future
         if (request.EmptyDate > DateTime.Now.AddDays(1))
@@ -141,20 +119,53 @@ public class DrainageEntryDataService : IDrainageEntryDataService
             throw new ArgumentException("Empty date cannot be in the future");
         }
 
-        // Validate amount is between 0 and 100 mL
-        if (request.Amount < 0 || request.Amount > 100)
+        // Retrieve all entry IDs to validate they exist
+        var entryIds = request.DrainEntries.Select(e => e.EntryId).ToList();
+        var entries = await _dbContext.DrainageEntries
+            .Include(e => e.Drain)
+            .Where(e => entryIds.Contains(e.Id))
+            .ToListAsync();
+
+        // Validate all entries exist
+        if (entries.Count != entryIds.Count)
         {
-            throw new ArgumentException("Drainage entry amount must be between 0 and 100 mL");
+            var foundIds = entries.Select(e => e.Id).ToList();
+            var missingIds = entryIds.Except(foundIds);
+            throw new KeyNotFoundException($"Drainage entries not found: {string.Join(", ", missingIds)}");
         }
 
-        // Update the entry
-        entry.EmptyDate = request.EmptyDate;
-        entry.Amount = request.Amount;
-        entry.Note = request.Note;
+        // Update each entry
+        foreach (var updateItem in request.DrainEntries)
+        {
+            var entry = entries.First(e => e.Id == updateItem.EntryId);
+
+            // Validate that the entry is not archived
+            if (entry.IsArchived)
+            {
+                throw new InvalidOperationException($"Cannot update archived drainage entry {entry.Id}");
+            }
+
+            // Validate that the drain is not archived
+            if (entry.Drain.IsArchived)
+            {
+                throw new InvalidOperationException($"Cannot update drainage entry for archived drain {entry.DrainId}");
+            }
+
+            // Validate amount is between 0 and 100 mL
+            if (updateItem.Amount < 0 || updateItem.Amount > 100)
+            {
+                throw new ArgumentException("Drainage entry amount must be between 0 and 100 mL");
+            }
+
+            // Update the entry
+            entry.EmptyDate = request.EmptyDate;
+            entry.Amount = updateItem.Amount;
+            entry.Note = request.Note;
+        }
 
         await _dbContext.SaveChangesAsync();
 
-        _logger.LogDebug("Successfully updated drainage entry {EntryId}", entryId);
+        _logger.LogDebug("Successfully updated {Count} drainage entries", request.DrainEntries.Count);
 
         return true;
     }

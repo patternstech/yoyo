@@ -464,14 +464,14 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"emptyDate\": \"2025-11-05T10:30:00\",\n  \"amount\": 30.5,\n  \"note\": \"Updated measurement - patient recovering well\"\n}"
+							"raw": "{\n  \"emptyDate\": \"2025-11-05T10:30:00\",\n  \"drainEntries\": [\n    {\n      \"entryId\": 1,\n      \"amount\": 30.5\n    },\n    {\n      \"entryId\": 2,\n      \"amount\": 25.0\n    }\n  ],\n  \"note\": \"Updated measurement - patient recovering well\"\n}"
 						},
 						"url": {
-							"raw": "https://localhost:7080/api/v1/drainage-entry/1",
+							"raw": "https://localhost:7080/api/v1/drainage-entry",
 							"protocol": "https",
 							"host": ["localhost"],
 							"port": "7080",
-							"path": ["api", "v1", "drainage-entry", "1"]
+							"path": ["api", "v1", "drainage-entry"]
 						}
 					},
 					"response": [
@@ -482,7 +482,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"emptyDate\": \"2025-11-05T10:30:00\",\n  \"amount\": 30.5,\n  \"note\": \"Updated measurement\"\n}",
+									"raw": "{\n  \"emptyDate\": \"2025-11-05T10:30:00\",\n  \"drainEntries\": [\n    {\n      \"entryId\": 1,\n      \"amount\": 30.5\n    },\n    {\n      \"entryId\": 2,\n      \"amount\": 25.0\n    }\n  ],\n  \"note\": \"Updated measurement\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -490,11 +490,11 @@
 									}
 								},
 								"url": {
-									"raw": "https://localhost:7080/api/v1/drainage-entry/1",
+									"raw": "https://localhost:7080/api/v1/drainage-entry",
 									"protocol": "https",
 									"host": ["localhost"],
 									"port": "7080",
-									"path": ["api", "v1", "drainage-entry", "1"]
+									"path": ["api", "v1", "drainage-entry"]
 								}
 							},
 							"status": "OK",
@@ -507,7 +507,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n  \"id\": 1,\n  \"message\": \"Drainage entry updated successfully\"\n}"
+							"body": "{\n  \"entryIds\": [1, 2],\n  \"message\": \"2 drainage entry/entries updated successfully\"\n}"
 						},
 						{
 							"name": "Not Found Error",
@@ -516,7 +516,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"emptyDate\": \"2025-11-05T10:30:00\",\n  \"amount\": 30.5,\n  \"note\": \"Updated measurement\"\n}",
+									"raw": "{\n  \"emptyDate\": \"2025-11-05T10:30:00\",\n  \"drainEntries\": [\n    {\n      \"entryId\": 999,\n      \"amount\": 30.5\n    }\n  ],\n  \"note\": \"Updated measurement\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -524,11 +524,11 @@
 									}
 								},
 								"url": {
-									"raw": "https://localhost:7080/api/v1/drainage-entry/999",
+									"raw": "https://localhost:7080/api/v1/drainage-entry",
 									"protocol": "https",
 									"host": ["localhost"],
 									"port": "7080",
-									"path": ["api", "v1", "drainage-entry", "999"]
+									"path": ["api", "v1", "drainage-entry"]
 								}
 							},
 							"status": "Not Found",
@@ -541,7 +541,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n  \"title\": \"Resource not found.\",\n  \"status\": 404,\n  \"errors\": [\n    \"Drainage entry with ID 999 not found\"\n  ]\n}"
+							"body": "{\n  \"title\": \"Resource not found.\",\n  \"status\": 404,\n  \"errors\": [\n    \"Drainage entries not found: 999\"\n  ]\n}"
 						},
 						{
 							"name": "Validation Error",
@@ -550,7 +550,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"emptyDate\": \"2025-11-05T10:30:00\",\n  \"amount\": -5.0,\n  \"note\": \"Invalid amount\"\n}",
+									"raw": "{\n  \"emptyDate\": \"2025-11-05T10:30:00\",\n  \"drainEntries\": [\n    {\n      \"entryId\": 1,\n      \"amount\": -5.0\n    }\n  ],\n  \"note\": \"Invalid amount\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -558,11 +558,11 @@
 									}
 								},
 								"url": {
-									"raw": "https://localhost:7080/api/v1/drainage-entry/1",
+									"raw": "https://localhost:7080/api/v1/drainage-entry",
 									"protocol": "https",
 									"host": ["localhost"],
 									"port": "7080",
-									"path": ["api", "v1", "drainage-entry", "1"]
+									"path": ["api", "v1", "drainage-entry"]
 								}
 							},
 							"status": "Bad Request",

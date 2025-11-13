@@ -57,29 +57,28 @@ public class DrainageEntryController : ControllerBase
     }
 
     /// <summary>
-    /// Update an existing drainage entry
-    /// Example: PUT /api/v1/drainage-entry/123
-    /// Body: { "emptyDate": "2025-11-05T10:30:00", "amount": 30.5, "note": "Updated measurement" }.
+    /// Update multiple drainage entries in a session
+    /// Example: PUT /api/v1/drainage-entry
+    /// Body: { "emptyDate": "2025-11-05T10:30:00", "drainEntries": [{"entryId": 1, "amount": 30.5}, {"entryId": 2, "amount": 25.0}], "note": "Updated measurement" }.
     /// Note: Amount must be between 0 and 100 mL.
     /// </summary>
-    /// <param name="entryId">ID of the drainage entry to update.</param>
-    /// <param name="request">Updated drainage entry data.</param>
+    /// <param name="request">Updated drainage entry data with multiple drain entries.</param>
     /// <returns>Success response.</returns>
-    [HttpPut("{entryId}")]
-    [ProducesResponseType<DrainageEntrySingleResponse>(StatusCodes.Status200OK)]
+    [HttpPut]
+    [ProducesResponseType<DrainageEntryResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UpdateDrainageEntry(int entryId, [FromBody] DrainageEntryUpdateRequest request)
+    public async Task<IActionResult> UpdateDrainageEntry([FromBody] DrainageEntryUpdateRequest request)
     {
-        await _drainageEntryDataService.UpdateDrainageEntryAsync(entryId, request);
-        var response = new DrainageEntrySingleResponse
+        await _drainageEntryDataService.UpdateDrainageEntryAsync(request);
+        var response = new DrainageEntryResponse
         {
-            Id = entryId,
-            Message = "Drainage entry updated successfully",
+            EntryIds = request.DrainEntries.Select(e => e.EntryId).ToList(),
+            Message = $"{request.DrainEntries.Count} drainage entry/entries updated successfully",
         };
 
-        _logger.LogDebug("Drainage entry {EntryId} updated successfully", entryId);
+        _logger.LogDebug("{Count} drainage entries updated successfully", request.DrainEntries.Count);
         return Ok(response);
     }
 
