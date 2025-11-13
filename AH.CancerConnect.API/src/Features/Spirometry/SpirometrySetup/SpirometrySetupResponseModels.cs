@@ -19,7 +19,7 @@ public class SpirometrySetupDetailResponse
 
     public int PatientId { get; set; }
 
-    public decimal CapacityGoal { get; set; }
+    public decimal? CapacityGoal { get; set; }
 
     public string? ProviderInstructions { get; set; }
 }

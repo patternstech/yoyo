@@ -308,7 +308,7 @@ public class CancerConnectDbContext : DbContext
         {
             entity.HasKey(ss => ss.Id);
             entity.Property(ss => ss.PatientId).IsRequired();
-            entity.Property(ss => ss.CapacityGoal).IsRequired().HasColumnType("decimal(10,2)");
+            entity.Property(ss => ss.CapacityGoal).HasColumnType("decimal(10,2)");
             entity.Property(ss => ss.ProviderInstructions).HasMaxLength(1000);
 
             // Relationship with Patient (one-to-one)
