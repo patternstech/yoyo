@@ -119,25 +119,30 @@ public class DrainageEntryDataService : IDrainageEntryDataService
             throw new ArgumentException("Empty date cannot be in the future");
         }
 
-        // Retrieve all entry IDs to validate they exist
-        var entryIds = request.DrainEntries.Select(e => e.EntryId).ToList();
+        // Get all drain IDs from the request
+        var drainIds = request.DrainEntries.Select(e => e.DrainId).Distinct().ToList();
+
+        // Find entries that match the drains, empty date, and note
         var entries = await _dbContext.DrainageEntries
             .Include(e => e.Drain)
-            .Where(e => entryIds.Contains(e.Id))
+            .Where(e => drainIds.Contains(e.DrainId) 
+                     && e.EmptyDate == request.EmptyDate 
+                     && e.Note == request.Note)
             .ToListAsync();
 
-        // Validate all entries exist
-        if (entries.Count != entryIds.Count)
+        // Validate all drains have corresponding entries
+        var foundDrainIds = entries.Select(e => e.DrainId).ToList();
+        var missingDrainIds = drainIds.Except(foundDrainIds).ToList();
+        
+        if (missingDrainIds.Any())
         {
-            var foundIds = entries.Select(e => e.Id).ToList();
-            var missingIds = entryIds.Except(foundIds);
-            throw new KeyNotFoundException($"Drainage entries not found: {string.Join(", ", missingIds)}");
+            throw new KeyNotFoundException($"No drainage entries found for drains: {string.Join(", ", missingDrainIds)} with the specified empty date and note");
         }
 
         // Update each entry
         foreach (var updateItem in request.DrainEntries)
         {
-            var entry = entries.First(e => e.Id == updateItem.EntryId);
+            var entry = entries.First(e => e.DrainId == updateItem.DrainId);
 
             // Validate that the entry is not archived
             if (entry.IsArchived)

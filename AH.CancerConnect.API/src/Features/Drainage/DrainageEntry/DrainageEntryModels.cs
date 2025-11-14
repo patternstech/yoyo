@@ -63,12 +63,12 @@ public class DrainEntryItem
 }
 
 /// <summary>
-/// Represents a single drain entry update item with entry ID and new amount.
+/// Represents a single drain entry update item with drain ID and new amount.
 /// </summary>
 public class DrainEntryUpdateItem
 {
-    [Required(ErrorMessage = "Entry ID is required.")]
-    public int EntryId { get; set; }
+    [Required(ErrorMessage = "Drain ID is required.")]
+    public int DrainId { get; set; }
 
     [Required(ErrorMessage = "Amount is required.")]
     [Range(0, 100, ErrorMessage = "Amount must be between 0 and 100 mL.")]

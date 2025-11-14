@@ -59,8 +59,8 @@ public class DrainageEntryController : ControllerBase
     /// <summary>
     /// Update multiple drainage entries in a session
     /// Example: PUT /api/v1/drainage-entry
-    /// Body: { "emptyDate": "2025-11-05T10:30:00", "drainEntries": [{"entryId": 1, "amount": 30.5}, {"entryId": 2, "amount": 25.0}], "note": "Updated measurement" }.
-    /// Note: Amount must be between 0 and 100 mL.
+    /// Body: { "emptyDate": "2025-11-05T10:30:00", "drainEntries": [{"drainId": 1, "amount": 30.5}, {"drainId": 2, "amount": 25.0}], "note": "Updated measurement" }.
+    /// Note: Amount must be between 0 and 100 mL. Updates entries matching the drainId, emptyDate, and note.
     /// </summary>
     /// <param name="request">Updated drainage entry data with multiple drain entries.</param>
     /// <returns>Success response.</returns>
@@ -74,7 +74,7 @@ public class DrainageEntryController : ControllerBase
         await _drainageEntryDataService.UpdateDrainageEntryAsync(request);
         var response = new DrainageEntryResponse
         {
-            EntryIds = request.DrainEntries.Select(e => e.EntryId).ToList(),
+            EntryIds = request.DrainEntries.Select(e => e.DrainId).ToList(),
             Message = $"{request.DrainEntries.Count} drainage entry/entries updated successfully",
         };
 
