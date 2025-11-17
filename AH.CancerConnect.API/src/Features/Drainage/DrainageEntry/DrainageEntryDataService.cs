@@ -245,8 +245,154 @@ public class DrainageEntryDataService : IDrainageEntryDataService
 
         await _dbContext.SaveChangesAsync();
 
+        
         _logger.LogDebug("Successfully archived drainage entry {EntryId}", entryId);
 
         return true;
+    }
+
+    /// <inheritdoc />
+    public async Task<DrainageGraphResponse> GetDrainageGraphAsync(DrainageGraphRequest request)
+    {
+        _logger.LogDebug(
+            "Retrieving drainage graph for patient {PatientId} from {StartDate} to {EndDate}",
+            request.PatientId,
+            request.StartDate,
+            request.EndDate);
+
+        // Get all drains for the patient through drainage setup
+        var drainageSetup = await _dbContext.DrainageSetups
+            .Include(ds => ds.Drains)
+            .FirstOrDefaultAsync(ds => ds.PatientId == request.PatientId);
+
+        if (drainageSetup == null)
+        {
+            throw new KeyNotFoundException($"No drainage setup found for patient {request.PatientId}");
+        }
+
+        var drainIds = drainageSetup.Drains.Select(d => d.Id).ToList();
+
+        // Get all entries for those drains within the date range (non-archived only)
+        var entries = await _dbContext.DrainageEntries
+            .Include(e => e.Drain)
+            .Where(e => drainIds.Contains(e.DrainId)
+                     && !e.IsArchived
+                     && DateOnly.FromDateTime(e.EmptyDate) >= request.StartDate
+                     && DateOnly.FromDateTime(e.EmptyDate) <= request.EndDate)
+            .OrderBy(e => e.EmptyDate)
+            .ToListAsync();
+
+        // Calculate total entries
+        var totalEntries = entries.Count;
+
+        // Group by date and sum amounts for graph data
+        var graphData = entries
+            .GroupBy(e => DateOnly.FromDateTime(e.EmptyDate))
+            .Select(g => new DrainageDataPoint
+            {
+                Date = g.Key,
+                Value = g.Sum(e => e.Amount),
+            })
+            .OrderBy(d => d.Date)
+            .ToList();
+
+        // Calculate alert level based on drainage conditions
+        var alert = CalculateDrainageAlert(graphData, drainageSetup);
+
+        // Get today's drainage sessions
+        var today = DateOnly.FromDateTime(DateTime.Now);
+        var todayEntries = entries
+            .Where(e => DateOnly.FromDateTime(e.EmptyDate) == today)
+            .GroupBy(e => new { e.EmptyDate, e.Note })
+            .Select(g => new DrainageSessionResponse
+            {
+                DrainageEntryId = g.First().Id,
+                PatientId = request.PatientId,
+                EmptyDate = g.Key.EmptyDate,
+                Note = g.Key.Note,
+                DrainEntries = g.Select(e => new DrainEntryDetail
+                {
+                    DrainId = e.DrainId,
+                    Amount = e.Amount,
+                    DrainName = e.Drain.Name,
+                    IsArchived = e.Drain.IsArchived,
+                }).ToList(),
+            })
+            .OrderByDescending(s => s.EmptyDate)
+            .ToList();
+
+        var response = new DrainageGraphResponse
+        {
+            TotalEntries = totalEntries,
+            Alert = alert,
+            DrainagesData = graphData,
+            TodayDrainageEntries = todayEntries,
+        };
+
+        _logger.LogDebug(
+            "Retrieved drainage graph with {TotalEntries} entries and {DataPoints} data points for patient {PatientId}",
+            totalEntries,
+            graphData.Count,
+            request.PatientId);
+
+        return response;
+    }
+
+    private DrainageAlert CalculateDrainageAlert(
+        List<DrainageDataPoint> dailyTotals,
+        DrainageSetup.DrainageSetup drainageSetup)
+    {
+        if (!dailyTotals.Any())
+        {
+            return DrainageAlert.NONE;
+        }
+
+        // Order by date to check conditions
+        var orderedData = dailyTotals.OrderBy(d => d.Date).ToList();
+
+        // Check for GOAL_REACHED (highest priority)
+        if (drainageSetup.HasProviderGoalAmount && drainageSetup.GoalDrainageAmount.HasValue)
+        {
+            var latestValue = orderedData.Last().Value;
+            if (latestValue <= drainageSetup.GoalDrainageAmount.Value)
+            {
+                return DrainageAlert.GOAL_REACHED;
+            }
+        }
+
+        // Check for LARGE_INCREASE (more than 50 mL in a single day)
+        if (orderedData.Count >= 2)
+        {
+            for (int i = 1; i < orderedData.Count; i++)
+            {
+                var previousDay = orderedData[i - 1];
+                var currentDay = orderedData[i];
+                var increase = currentDay.Value - previousDay.Value;
+
+                if (increase > 50)
+                {
+                    return DrainageAlert.LARGE_INCREASE;
+                }
+            }
+        }
+
+        // Check for TWO_CONSECUTIVE_DAYS_INCREASED
+        if (orderedData.Count >= 3)
+        {
+            for (int i = 2; i < orderedData.Count; i++)
+            {
+                var day1 = orderedData[i - 2];
+                var day2 = orderedData[i - 1];
+                var day3 = orderedData[i];
+
+                // Check if day2 > day1 AND day3 > day2
+                if (day2.Value > day1.Value && day3.Value > day2.Value)
+                {
+                    return DrainageAlert.TWO_CONSECUTIVE_DAYS_INCREASED;
+                }
+            }
+        }
+
+        return DrainageAlert.NONE;
     }
 }

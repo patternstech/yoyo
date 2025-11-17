@@ -32,4 +32,11 @@ public interface IDrainageEntryDataService
     /// <param name="entryId">ID of the drainage entry to delete.</param>
     /// <returns>True if deleted successfully.</returns>
     Task<bool> DeleteDrainageEntryAsync(int entryId);
+
+    /// <summary>
+    /// Gets drainage graph data for a patient within a date range.
+    /// </summary>
+    /// <param name="request">Drainage graph request with patient ID and date range.</param>
+    /// <returns>Drainage graph response with historical data and today's entries.</returns>
+    Task<DrainageGraphResponse> GetDrainageGraphAsync(DrainageGraphRequest request);
 }

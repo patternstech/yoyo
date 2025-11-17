@@ -147,4 +147,44 @@ public class DrainageEntryController : ControllerBase
         _logger.LogDebug("Drainage entry {EntryId} deleted successfully", entryId);
         return Ok(response);
     }
+    /// <summary>
+    /// Get drainage graph data for a patient within a date range
+    /// Example: GET /api/v1/drainage-entry/graph?patientId=123&amp;startDate=2025-01-01&amp;endDate=2025-01-31.
+    /// Returns:
+    /// - TotalEntries: Total number of drainage entries in the date range
+    /// - Alert: Alert enum (NONE=0, TWO_CONSECUTIVE_DAYS_INCREASED=1, LARGE_INCREASE=2, GOAL_REACHED=3)
+    ///   * TWO_CONSECUTIVE_DAYS_INCREASED: Drainage increased for two consecutive days
+    ///   * LARGE_INCREASE: Drainage increased more than 50 mL in a single day
+    ///   * GOAL_REACHED: Patient reached their drainage goal
+    /// - DrainagesData: Array of daily drainage totals (sum of all entries per day) for chart display
+    /// - TodayDrainageEntries: Today's drainage sessions (not included in chart, separate list).
+    /// </summary>
+    /// <param name="patientId">ID of the patient.</param>
+    /// <param name="startDate">Start date for the graph data range.</param>
+    /// <param name="endDate">End date for the graph data range.</param>
+    /// <returns>Drainage graph data including historical trends and today's entries.</returns>
+    [HttpGet("graph")]
+    [ProducesResponseType<DrainageGraphResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetDrainageGraph(
+        [FromQuery] int patientId,
+        [FromQuery] DateOnly startDate,
+        [FromQuery] DateOnly endDate)
+    {
+        var request = new DrainageGraphRequest
+        {
+            PatientId = patientId,
+            StartDate = startDate,
+            EndDate = endDate,
+        };
+
+        var graphData = await _drainageEntryDataService.GetDrainageGraphAsync(request);
+        _logger.LogDebug(
+            "Retrieved drainage graph for patient {PatientId} with {TotalEntries} entries",
+            patientId,
+            graphData.TotalEntries);
+        return Ok(graphData);
+    }
 }
