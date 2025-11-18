@@ -255,10 +255,8 @@ public class DrainageEntryDataService : IDrainageEntryDataService
     public async Task<DrainageGraphResponse> GetDrainageGraphAsync(DrainageGraphRequest request)
     {
         _logger.LogDebug(
-            "Retrieving drainage graph for patient {PatientId} from {StartDate} to {EndDate}",
-            request.PatientId,
-            request.StartDate,
-            request.EndDate);
+            "Retrieving drainage graph for patient {PatientId} (excluding today's data)",
+            request.PatientId);
 
         // Get all drains for the patient through drainage setup
         var drainageSetup = await _dbContext.DrainageSetups
@@ -272,15 +270,27 @@ public class DrainageEntryDataService : IDrainageEntryDataService
 
         var drainIds = drainageSetup.Drains.Select(d => d.Id).ToList();
 
-        // Get all entries for those drains within the date range (non-archived only)
+        // Get all entries for those drains excluding today (non-archived only)
+        var today = DateOnly.FromDateTime(DateTime.Now);
         var entries = await _dbContext.DrainageEntries
             .Include(e => e.Drain)
             .Where(e => drainIds.Contains(e.DrainId)
                      && !e.IsArchived
-                     && DateOnly.FromDateTime(e.EmptyDate) >= request.StartDate
-                     && DateOnly.FromDateTime(e.EmptyDate) <= request.EndDate)
+                     && DateOnly.FromDateTime(e.EmptyDate) < today)
             .OrderBy(e => e.EmptyDate)
             .ToListAsync();
+
+        if (!entries.Any())
+        {
+            // No entries found - return empty response
+            return new DrainageGraphResponse
+            {
+                TotalEntries = 0,
+                Alert = DrainageAlert.NONE,
+                DrainagesData = new List<DrainageDataPoint>(),
+                TodayDrainageEntries = new List<DrainageSessionResponse>(),
+            };
+        }
 
         // Calculate total entries
         var totalEntries = entries.Count;
@@ -296,30 +306,11 @@ public class DrainageEntryDataService : IDrainageEntryDataService
             .OrderBy(d => d.Date)
             .ToList();
 
-        // Calculate alert level based on drainage conditions
+        // Calculate alert level based on drainage conditions (today's entries already excluded)
         var alert = CalculateDrainageAlert(graphData, drainageSetup);
 
-        // Get today's drainage sessions
-        var today = DateOnly.FromDateTime(DateTime.Now);
-        var todayEntries = entries
-            .Where(e => DateOnly.FromDateTime(e.EmptyDate) == today)
-            .GroupBy(e => new { e.EmptyDate, e.Note })
-            .Select(g => new DrainageSessionResponse
-            {
-                DrainageEntryId = g.First().Id,
-                PatientId = request.PatientId,
-                EmptyDate = g.Key.EmptyDate,
-                Note = g.Key.Note,
-                DrainEntries = g.Select(e => new DrainEntryDetail
-                {
-                    DrainId = e.DrainId,
-                    Amount = e.Amount,
-                    DrainName = e.Drain.Name,
-                    IsArchived = e.Drain.IsArchived,
-                }).ToList(),
-            })
-            .OrderByDescending(s => s.EmptyDate)
-            .ToList();
+        // TodayDrainageEntries will always be empty since we exclude today's data
+        var todayEntries = new List<DrainageSessionResponse>();
 
         var response = new DrainageGraphResponse
         {

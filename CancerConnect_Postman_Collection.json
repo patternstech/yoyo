@@ -735,6 +735,92 @@
 							"body": "{\n  \"title\": \"Invalid operation.\",\n  \"status\": 400,\n  \"errors\": [\n    \"Drainage entry 1 is already archived\"\n  ]\n}"
 						}
 					]
+				},
+				{
+					"name": "Get Drainage Graph",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7080/api/v1/drainage-entry/graph?patientId=1",
+							"protocol": "https",
+							"host": ["localhost"],
+							"port": "7080",
+							"path": ["api", "v1", "drainage-entry", "graph"],
+							"query": [
+								{
+									"key": "patientId",
+									"value": "1",
+									"description": "Patient ID (required)"
+								}
+							]
+						},
+						"description": "Returns all drainage data for the patient excluding today's entries. Alert calculation excludes today's data."
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7080/api/v1/drainage-entry/graph?patientId=1",
+									"protocol": "https",
+									"host": ["localhost"],
+									"port": "7080",
+									"path": ["api", "v1", "drainage-entry", "graph"],
+									"query": [
+										{
+											"key": "patientId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"totalEntries\": 14,\n  \"alert\": 2,\n  \"drainagesData\": [\n    {\n      \"date\": \"2025-11-10\",\n      \"value\": 85.5\n    },\n    {\n      \"date\": \"2025-11-11\",\n      \"value\": 78.2\n    },\n    {\n      \"date\": \"2025-11-12\",\n      \"value\": 142.0\n    },\n    {\n      \"date\": \"2025-11-13\",\n      \"value\": 65.5\n    },\n    {\n      \"date\": \"2025-11-14\",\n      \"value\": 58.0\n    },\n    {\n      \"date\": \"2025-11-15\",\n      \"value\": 52.5\n    },\n    {\n      \"date\": \"2025-11-16\",\n      \"value\": 48.0\n    },\n    {\n      \"date\": \"2025-11-17\",\n      \"value\": 42.5\n    }\n  ],\n  \"todayDrainageEntries\": []\n}"
+						},
+						{
+							"name": "Alert Enums Reference",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7080/api/v1/drainage-entry/graph?patientId=1",
+									"protocol": "https",
+									"host": ["localhost"],
+									"port": "7080",
+									"path": ["api", "v1", "drainage-entry", "graph"],
+									"query": [
+										{
+											"key": "patientId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"_comment\": \"Alert enum values: NONE=0, TWO_CONSECUTIVE_DAYS_INCREASED=1, LARGE_INCREASE=2 (>50mL in a day), GOAL_REACHED=3 (highest priority)\",\n  \"totalEntries\": 10,\n  \"alert\": 3,\n  \"drainagesData\": [\n    {\n      \"date\": \"2025-11-17\",\n      \"value\": 28.5\n    }\n  ],\n  \"todayDrainageEntries\": []\n}"
+						}
+					]
 				}
 			]
 		},

@@ -148,36 +148,30 @@ public class DrainageEntryController : ControllerBase
         return Ok(response);
     }
     /// <summary>
-    /// Get drainage graph data for a patient within a date range
-    /// Example: GET /api/v1/drainage-entry/graph?patientId=123&amp;startDate=2025-01-01&amp;endDate=2025-01-31.
+    /// Get drainage graph data for a patient
+    /// Example: GET /api/v1/drainage-entry/graph?patientId=123.
+    /// Returns all drainage data for the patient excluding today's entries.
     /// Returns:
-    /// - TotalEntries: Total number of drainage entries in the date range
+    /// - TotalEntries: Total number of drainage entries (excluding today)
     /// - Alert: Alert enum (NONE=0, TWO_CONSECUTIVE_DAYS_INCREASED=1, LARGE_INCREASE=2, GOAL_REACHED=3)
     ///   * TWO_CONSECUTIVE_DAYS_INCREASED: Drainage increased for two consecutive days
     ///   * LARGE_INCREASE: Drainage increased more than 50 mL in a single day
     ///   * GOAL_REACHED: Patient reached their drainage goal
-    /// - DrainagesData: Array of daily drainage totals (sum of all entries per day) for chart display
-    /// - TodayDrainageEntries: Today's drainage sessions (not included in chart, separate list).
+    /// - DrainagesData: Array of daily drainage totals (sum of all entries per day) for chart display (excluding today)
+    /// - TodayDrainageEntries: Always empty (today's data is excluded).
     /// </summary>
     /// <param name="patientId">ID of the patient.</param>
-    /// <param name="startDate">Start date for the graph data range.</param>
-    /// <param name="endDate">End date for the graph data range.</param>
-    /// <returns>Drainage graph data including historical trends and today's entries.</returns>
+    /// <returns>Drainage graph data excluding today's entries.</returns>
     [HttpGet("graph")]
     [ProducesResponseType<DrainageGraphResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetDrainageGraph(
-        [FromQuery] int patientId,
-        [FromQuery] DateOnly startDate,
-        [FromQuery] DateOnly endDate)
+    public async Task<IActionResult> GetDrainageGraph([FromQuery] int patientId)
     {
         var request = new DrainageGraphRequest
         {
             PatientId = patientId,
-            StartDate = startDate,
-            EndDate = endDate,
         };
 
         var graphData = await _drainageEntryDataService.GetDrainageGraphAsync(request);

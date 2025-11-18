@@ -4,18 +4,13 @@ namespace AH.CancerConnect.API.Features.Drainage.DrainageEntry;
 
 /// <summary>
 /// Request model for drainage graph data.
+/// Returns all drainage data for the patient excluding today's entries.
 /// </summary>
 public class DrainageGraphRequest
 {
     [Required(ErrorMessage = "Patient ID is required.")]
     [Range(1, int.MaxValue, ErrorMessage = "Patient ID must be a positive integer.")]
     public int PatientId { get; set; }
-
-    [Required(ErrorMessage = "Start date is required.")]
-    public DateOnly StartDate { get; set; }
-
-    [Required(ErrorMessage = "End date is required.")]
-    public DateOnly EndDate { get; set; }
 }
 
 /// <summary>
@@ -29,6 +24,9 @@ public class DrainageGraphResponse
 
     public List<DrainageDataPoint> DrainagesData { get; set; } = new List<DrainageDataPoint>();
 
+    /// <summary>
+    /// Today's drainage entries - always empty as today's data is excluded from the graph.
+    /// </summary>
     public List<DrainageSessionResponse> TodayDrainageEntries { get; set; } = new List<DrainageSessionResponse>();
 }
 
