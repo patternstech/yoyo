@@ -341,11 +341,20 @@ public class DrainageEntryDataService : IDrainageEntryDataService
         // Order by date to check conditions
         var orderedData = dailyTotals.OrderBy(d => d.Date).ToList();
 
+        // Determine goal threshold (use provider goal or default 30 mL)
+        var goalThreshold = drainageSetup.HasProviderGoalAmount && drainageSetup.GoalDrainageAmount.HasValue
+            ? drainageSetup.GoalDrainageAmount.Value
+            : 30m;
+
         // Check for GOAL_REACHED (highest priority)
-        if (drainageSetup.HasProviderGoalAmount && drainageSetup.GoalDrainageAmount.HasValue)
+        // Must have at least 2 days of data to check for 2 consecutive days at or below goal
+        if (orderedData.Count >= 2)
         {
-            var latestValue = orderedData.Last().Value;
-            if (latestValue <= drainageSetup.GoalDrainageAmount.Value)
+            // Check if the last two consecutive days are at or below the goal
+            var secondToLast = orderedData[orderedData.Count - 2];
+            var last = orderedData[orderedData.Count - 1];
+
+            if (secondToLast.Value <= goalThreshold && last.Value <= goalThreshold)
             {
                 return DrainageAlert.GOAL_REACHED;
             }
