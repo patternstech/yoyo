@@ -150,18 +150,18 @@ public class DrainageEntryController : ControllerBase
     /// <summary>
     /// Get drainage graph data for a patient
     /// Example: GET /api/v1/drainage-entry/graph?patientId=123.
-    /// Returns all drainage data for the patient excluding today's entries.
+    /// Returns all drainage data for the patient. Graph data and alerts exclude today's entries.
     /// Returns:
     /// - TotalEntries: Total number of drainage entries (excluding today)
     /// - Alert: Alert enum (NONE=0, TWO_CONSECUTIVE_DAYS_INCREASED=1, LARGE_INCREASE=2, GOAL_REACHED=3)
     ///   * TWO_CONSECUTIVE_DAYS_INCREASED: Drainage increased for two consecutive days
     ///   * LARGE_INCREASE: Drainage increased more than 50 mL in a single day
-    ///   * GOAL_REACHED: Patient reached their drainage goal
+    ///   * GOAL_REACHED: Patient reached their drainage goal for 2 consecutive days
     /// - DrainagesData: Array of daily drainage totals (sum of all entries per day) for chart display (excluding today)
-    /// - TodayDrainageEntries: Always empty (today's data is excluded).
+    /// - TodayDrainageEntries: Today's drainage sessions (for list display, not included in graph or alerts).
     /// </summary>
     /// <param name="patientId">ID of the patient.</param>
-    /// <returns>Drainage graph data excluding today's entries.</returns>
+    /// <returns>Drainage graph data with today's entries excluded from graph and alerts.</returns>
     [HttpGet("graph")]
     [ProducesResponseType<DrainageGraphResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

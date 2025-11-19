@@ -309,8 +309,29 @@ public class DrainageEntryDataService : IDrainageEntryDataService
         // Calculate alert level based on drainage conditions (today's entries already excluded)
         var alert = CalculateDrainageAlert(graphData, drainageSetup);
 
-        // TodayDrainageEntries will always be empty since we exclude today's data
-        var todayEntries = new List<DrainageSessionResponse>();
+        // Get today's drainage sessions for display (not used in graph or alert calculation)
+        var todayEntries = await _dbContext.DrainageEntries
+            .Include(e => e.Drain)
+            .Where(e => drainIds.Contains(e.DrainId)
+                     && !e.IsArchived
+                     && DateOnly.FromDateTime(e.EmptyDate) == today)
+            .GroupBy(e => new { e.EmptyDate, e.Note })
+            .Select(g => new DrainageSessionResponse
+            {
+                DrainageEntryId = g.First().Id,
+                PatientId = request.PatientId,
+                EmptyDate = g.Key.EmptyDate,
+                Note = g.Key.Note,
+                DrainEntries = g.Select(e => new DrainEntryDetail
+                {
+                    DrainId = e.DrainId,
+                    Amount = e.Amount,
+                    DrainName = e.Drain.Name,
+                    IsArchived = e.Drain.IsArchived,
+                }).ToList(),
+            })
+            .OrderByDescending(s => s.EmptyDate)
+            .ToListAsync();
 
         var response = new DrainageGraphResponse
         {

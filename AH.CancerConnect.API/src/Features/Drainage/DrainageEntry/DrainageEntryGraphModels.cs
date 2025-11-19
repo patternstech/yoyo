@@ -25,7 +25,7 @@ public class DrainageGraphResponse
     public List<DrainageDataPoint> DrainagesData { get; set; } = new List<DrainageDataPoint>();
 
     /// <summary>
-    /// Today's drainage entries - always empty as today's data is excluded from the graph.
+    /// Today's drainage entries - provided for list display but not included in graph data or alert calculations.
     /// </summary>
     public List<DrainageSessionResponse> TodayDrainageEntries { get; set; } = new List<DrainageSessionResponse>();
 }
