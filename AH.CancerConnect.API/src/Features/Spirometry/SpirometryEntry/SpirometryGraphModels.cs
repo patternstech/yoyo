@@ -31,7 +31,7 @@ public class SpirometryGraphResponse
 
     public int TotalEntries { get; set; }
 
-    public List<SpirometryValuePoint> Values { get; set; } = new List<SpirometryValuePoint>();
+    public int DaysTracked { get; set; }
 
     public List<SpirometryEntryDetailResponse> TodaysEntries { get; set; } = new List<SpirometryEntryDetailResponse>();
 }

@@ -133,18 +133,18 @@ public class SpirometryEntryDataService : ISpirometryEntryDataService
             .ThenBy(e => e.TestTime)
             .ToListAsync();
 
-        // Group entries by date and get the latest entry for each day for the graph
-        var dailyEntries = entries
-            .GroupBy(e => e.TestDate)
-            .Select(g => g.OrderByDescending(e => e.TestTime).First())
-            .ToList();
-
         // Get today's entries (all entries for today, not just the latest)
         var todaysEntries = entries
             .Where(e => e.TestDate == today)
             .OrderByDescending(e => e.TestTime)
             .Select(e => e.ToDetailResponse())
             .ToList();
+
+        // Calculate days tracked (count of unique days with entries)
+        var daysTracked = entries
+            .Select(e => e.TestDate)
+            .Distinct()
+            .Count();
 
         // Build graph response
         var response = new SpirometryGraphResponse
@@ -154,11 +154,7 @@ public class SpirometryEntryDataService : ISpirometryEntryDataService
             CapacityGoal = spirometrySetup.CapacityGoal,
             ProviderInstructions = spirometrySetup.ProviderInstructions,
             TotalEntries = entries.Count,
-            Values = dailyEntries.Select(e => new SpirometryValuePoint
-            {
-                Date = e.TestDate,
-                NumberReached = e.NumberReached,
-            }).ToList(),
+            DaysTracked = daysTracked,
             TodaysEntries = todaysEntries,
         };
 

@@ -79,11 +79,11 @@ public class SpirometryEntryController : ControllerBase
     /// <summary>
     /// Get spirometry graph data for a patient with all screen information
     /// Example: GET /api/v1/spirometry-entry/patient/123?days=7
-    /// Returns everything needed for the graph screen: capacity goal, provider instructions, graph data, and today's entries.
+    /// Returns everything needed for the graph screen: capacity goal, provider instructions, days tracked count, and today's entries.
     /// </summary>
     /// <param name="patientId">ID of the patient.</param>
     /// <param name="days">Number of days to include in graph (default: 7, max: 365).</param>
-    /// <returns>Complete spirometry graph data with capacity goal, instructions, values, and today's entries.</returns>
+    /// <returns>Complete spirometry graph data with capacity goal, instructions, days tracked, and today's entries.</returns>
     [HttpGet("patient/{patientId}")]
     [ProducesResponseType<SpirometryGraphResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
