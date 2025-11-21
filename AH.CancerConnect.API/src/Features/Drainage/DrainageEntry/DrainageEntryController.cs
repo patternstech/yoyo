@@ -57,12 +57,12 @@ public class DrainageEntryController : ControllerBase
     }
 
     /// <summary>
-    /// Update multiple drainage entries in a session
+    /// Update a drainage entry session
     /// Example: PUT /api/v1/drainage-entry
-    /// Body: { "emptyDate": "2025-11-05T10:30:00", "drainEntries": [{"drainId": 1, "amount": 30.5}, {"drainId": 2, "amount": 25.0}], "note": "Updated measurement" }.
-    /// Note: Amount must be between 0 and 100 mL. Updates entries matching the drainId, emptyDate, and note.
+    /// Body: { "drainageEntryId": 45, "patientId": 1, "emptyDate": "2025-11-05T10:30:00", "drainEntries": [{"drainId": 1, "amount": 30.5}, {"drainId": 2, "amount": 25.0}], "note": "Updated measurement" }.
+    /// Note: Amount must be between 0 and 100 mL. Updates one drainage entry with multiple drain measurements.
     /// </summary>
-    /// <param name="request">Updated drainage entry data with multiple drain entries.</param>
+    /// <param name="request">Updated drainage entry data.</param>
     /// <returns>Success response.</returns>
     [HttpPut]
     [ProducesResponseType<DrainageEntryResponse>(StatusCodes.Status200OK)]
@@ -74,11 +74,11 @@ public class DrainageEntryController : ControllerBase
         await _drainageEntryDataService.UpdateDrainageEntryAsync(request);
         var response = new DrainageEntryResponse
         {
-            EntryIds = request.DrainEntries.Select(e => e.DrainId).ToList(),
-            Message = $"{request.DrainEntries.Count} drainage entry/entries updated successfully",
+            EntryIds = new List<int> { request.DrainageEntryId },
+            Message = "Drainage entry updated successfully",
         };
 
-        _logger.LogDebug("{Count} drainage entries updated successfully", request.DrainEntries.Count);
+        _logger.LogDebug("Drainage entry {DrainageEntryId} updated successfully", request.DrainageEntryId);
         return Ok(response);
     }
 

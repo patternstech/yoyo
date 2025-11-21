@@ -464,7 +464,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"emptyDate\": \"2025-11-05T10:30:00\",\n  \"drainEntries\": [\n    {\n      \"entryId\": 1,\n      \"amount\": 30.5\n    },\n    {\n      \"entryId\": 2,\n      \"amount\": 25.0\n    }\n  ],\n  \"note\": \"Updated measurement - patient recovering well\"\n}"
+							"raw": "{\n  \"drainageEntryId\": 45,\n  \"patientId\": 1,\n  \"emptyDate\": \"2025-11-05T10:30:00\",\n  \"drainEntries\": [\n    {\n      \"drainId\": 1,\n      \"amount\": 30.5\n    },\n    {\n      \"drainId\": 2,\n      \"amount\": 25.0\n    }\n  ],\n  \"note\": \"Updated measurement - patient recovering well\"\n}"
 						},
 						"url": {
 							"raw": "https://localhost:7080/api/v1/drainage-entry",
@@ -482,7 +482,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"emptyDate\": \"2025-11-05T10:30:00\",\n  \"drainEntries\": [\n    {\n      \"entryId\": 1,\n      \"amount\": 30.5\n    },\n    {\n      \"entryId\": 2,\n      \"amount\": 25.0\n    }\n  ],\n  \"note\": \"Updated measurement\"\n}",
+									"raw": "{\n  \"drainageEntryId\": 45,\n  \"patientId\": 1,\n  \"emptyDate\": \"2025-11-05T10:30:00\",\n  \"drainEntries\": [\n    {\n      \"drainId\": 1,\n      \"amount\": 30.5\n    },\n    {\n      \"drainId\": 2,\n      \"amount\": 25.0\n    }\n  ],\n  \"note\": \"Updated measurement\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"

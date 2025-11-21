@@ -20,39 +20,44 @@ public class DrainageEntryDataService : IDrainageEntryDataService
     /// <inheritdoc />
     public async Task<List<int>> CreateDrainageEntryAsync(DrainageEntryRequest request)
     {
-        _logger.LogDebug("Creating drainage entries for patient {PatientId} with {DrainCount} drains", 
+        _logger.LogDebug("Creating drainage entry for patient {PatientId} with {DrainCount} drains", 
             request.PatientId, request.DrainEntries.Count);
 
         // Validate request
         await ValidateDrainageEntryRequest(request);
 
-        var createdEntryIds = new List<int>();
+        // Create main drainage entry
+        var drainageEntry = new DrainageEntry
+        {
+            PatientId = request.PatientId,
+            EmptyDate = request.EmptyDate,
+            Note = request.Note,
+            IsArchived = false,
+            DateCreated = DateTime.Now,
+        };
 
-        // Create drainage entry for each drain
+        _dbContext.DrainageEntries.Add(drainageEntry);
+        await _dbContext.SaveChangesAsync();
+
+        // Create detail records for each drain
         foreach (var drainEntry in request.DrainEntries)
         {
-            var drainageEntry = new DrainageEntry
+            var detail = new DrainageEntryDetail
             {
+                DrainageEntryId = drainageEntry.Id,
                 DrainId = drainEntry.DrainId,
-                EmptyDate = request.EmptyDate,
                 Amount = drainEntry.Amount,
-                Note = request.Note,
-                IsArchived = false,
-                DateCreated = DateTime.Now,
             };
 
-            _dbContext.DrainageEntries.Add(drainageEntry);
-            await _dbContext.SaveChangesAsync();
-            
-            createdEntryIds.Add(drainageEntry.Id);
-            
-            _logger.LogDebug(
-                "Successfully created drainage entry {EntryId} for drain {DrainId}",
-                drainageEntry.Id,
-                drainEntry.DrainId);
+            _dbContext.DrainageEntryDetails.Add(detail);
         }
 
-        return createdEntryIds;
+        await _dbContext.SaveChangesAsync();
+
+        _logger.LogDebug("Successfully created drainage entry {EntryId} with {DetailCount} detail records", 
+            drainageEntry.Id, request.DrainEntries.Count);
+
+        return new List<int> { drainageEntry.Id };
     }
 
     /// <summary>
@@ -111,7 +116,7 @@ public class DrainageEntryDataService : IDrainageEntryDataService
     /// <inheritdoc />
     public async Task<bool> UpdateDrainageEntryAsync(DrainageEntryUpdateRequest request)
     {
-        _logger.LogDebug("Updating drainage entries for session");
+        _logger.LogDebug("Updating drainage entry {DrainageEntryId}", request.DrainageEntryId);
 
         // Validate empty date is not in the future
         if (request.EmptyDate > DateTime.Now.AddDays(1))
@@ -119,58 +124,78 @@ public class DrainageEntryDataService : IDrainageEntryDataService
             throw new ArgumentException("Empty date cannot be in the future");
         }
 
+        // Find the drainage entry
+        var entry = await _dbContext.DrainageEntries
+            .Include(e => e.DrainageEntryDetails)
+            .FirstOrDefaultAsync(e => e.Id == request.DrainageEntryId);
+
+        if (entry == null)
+        {
+            throw new KeyNotFoundException($"Drainage entry {request.DrainageEntryId} not found");
+        }
+
+        // Validate entry is not archived
+        if (entry.IsArchived)
+        {
+            throw new InvalidOperationException($"Cannot update archived drainage entry {entry.Id}");
+        }
+
+        // Validate patient owns this entry
+        if (entry.PatientId != request.PatientId)
+        {
+            throw new ArgumentException($"Drainage entry {request.DrainageEntryId} does not belong to patient {request.PatientId}");
+        }
+
         // Get all drain IDs from the request
         var drainIds = request.DrainEntries.Select(e => e.DrainId).Distinct().ToList();
 
-        // Find entries that match the drains, empty date, and note
-        var entries = await _dbContext.DrainageEntries
-            .Include(e => e.Drain)
-            .Where(e => drainIds.Contains(e.DrainId) 
-                     && e.EmptyDate == request.EmptyDate 
-                     && e.Note == request.Note)
-            .ToListAsync();
+        // Validate all drains belong to this patient
+        var drainageSetup = await _dbContext.DrainageSetups
+            .Include(ds => ds.Drains)
+            .FirstOrDefaultAsync(ds => ds.PatientId == request.PatientId);
 
-        // Validate all drains have corresponding entries
-        var foundDrainIds = entries.Select(e => e.DrainId).ToList();
-        var missingDrainIds = drainIds.Except(foundDrainIds).ToList();
-        
-        if (missingDrainIds.Any())
+        if (drainageSetup == null)
         {
-            throw new KeyNotFoundException($"No drainage entries found for drains: {string.Join(", ", missingDrainIds)} with the specified empty date and note");
+            throw new KeyNotFoundException($"No drainage setup found for patient {request.PatientId}");
         }
 
-        // Update each entry
+        var patientDrainIds = drainageSetup.Drains.Where(d => !d.IsArchived).Select(d => d.Id).ToList();
+        var invalidDrainIds = drainIds.Except(patientDrainIds).ToList();
+        
+        if (invalidDrainIds.Any())
+        {
+            throw new ArgumentException($"Drain IDs {string.Join(", ", invalidDrainIds)} do not belong to patient {request.PatientId} or are archived");
+        }
+
+        // Update main entry
+        entry.EmptyDate = request.EmptyDate;
+        entry.Note = request.Note;
+
+        // Remove existing details
+        _dbContext.DrainageEntryDetails.RemoveRange(entry.DrainageEntryDetails);
+
+        // Add new details
         foreach (var updateItem in request.DrainEntries)
         {
-            var entry = entries.First(e => e.DrainId == updateItem.DrainId);
-
-            // Validate that the entry is not archived
-            if (entry.IsArchived)
-            {
-                throw new InvalidOperationException($"Cannot update archived drainage entry {entry.Id}");
-            }
-
-            // Validate that the drain is not archived
-            if (entry.Drain.IsArchived)
-            {
-                throw new InvalidOperationException($"Cannot update drainage entry for archived drain {entry.DrainId}");
-            }
-
-            // Validate amount is between 0 and 100 mL
+            // Validate amount
             if (updateItem.Amount < 0 || updateItem.Amount > 100)
             {
                 throw new ArgumentException("Drainage entry amount must be between 0 and 100 mL");
             }
 
-            // Update the entry
-            entry.EmptyDate = request.EmptyDate;
-            entry.Amount = updateItem.Amount;
-            entry.Note = request.Note;
+            var detail = new DrainageEntryDetail
+            {
+                DrainageEntryId = entry.Id,
+                DrainId = updateItem.DrainId,
+                Amount = updateItem.Amount,
+            };
+
+            _dbContext.DrainageEntryDetails.Add(detail);
         }
 
         await _dbContext.SaveChangesAsync();
 
-        _logger.LogDebug("Successfully updated {Count} drainage entries", request.DrainEntries.Count);
+        _logger.LogDebug("Successfully updated drainage entry {DrainageEntryId}", request.DrainageEntryId);
 
         return true;
     }
@@ -178,43 +203,32 @@ public class DrainageEntryDataService : IDrainageEntryDataService
     /// <inheritdoc />
     public async Task<IEnumerable<DrainageSessionResponse>> GetDrainageSessionsByPatientAsync(int patientId)
     {
-        _logger.LogDebug("Retrieving grouped drainage sessions for patient {PatientId}", patientId);
+        _logger.LogDebug("Retrieving drainage sessions for patient {PatientId}", patientId);
 
-        // Get all drains for the patient through drainage setup
-        var drains = await _dbContext.Drains
-            .Include(d => d.DrainageSetup)
-            .Where(d => d.DrainageSetup.PatientId == patientId)
-            .ToListAsync();
-
-        var drainIds = drains.Select(d => d.Id).ToList();
-
-        // Get all entries for those drains (non-archived only)
+        // Get all entries for the patient (non-archived only) with details
         var entries = await _dbContext.DrainageEntries
-            .Include(e => e.Drain)
-            .Where(e => drainIds.Contains(e.DrainId) && !e.IsArchived)
+            .Include(e => e.DrainageEntryDetails)
+                .ThenInclude(d => d.Drain)
+            .Where(e => e.PatientId == patientId && !e.IsArchived)
             .OrderByDescending(e => e.EmptyDate)
             .ThenBy(e => e.DateCreated)
             .ToListAsync();
 
-        // Group entries by EmptyDate and Note to create sessions
-        var sessions = entries
-            .GroupBy(e => new { e.EmptyDate, e.Note })
-            .Select(g => new DrainageSessionResponse
+        // Map to response
+        var sessions = entries.Select(e => new DrainageSessionResponse
+        {
+            DrainageEntryId = e.Id,
+            PatientId = e.PatientId,
+            EmptyDate = e.EmptyDate,
+            Note = e.Note,
+            DrainEntries = e.DrainageEntryDetails.Select(d => new DrainEntryDetail
             {
-                DrainageEntryId = g.First().Id,
-                PatientId = patientId,
-                EmptyDate = g.Key.EmptyDate,
-                Note = g.Key.Note,
-                DrainEntries = g.Select(e => new DrainEntryDetail
-                {
-                    DrainId = e.DrainId,
-                    Amount = e.Amount,
-                    DrainName = e.Drain.Name,
-                    IsArchived = e.Drain.IsArchived,
-                }).ToList(),
-            })
-            .OrderByDescending(s => s.EmptyDate)
-            .ToList();
+                DrainId = d.DrainId,
+                Amount = d.Amount,
+                DrainName = d.Drain.Name,
+                IsArchived = d.Drain.IsArchived,
+            }).ToList(),
+        }).ToList();
 
         _logger.LogDebug("Retrieved {Count} drainage sessions for patient {PatientId}", sessions.Count, patientId);
 
@@ -268,13 +282,11 @@ public class DrainageEntryDataService : IDrainageEntryDataService
             throw new KeyNotFoundException($"No drainage setup found for patient {request.PatientId}");
         }
 
-        var drainIds = drainageSetup.Drains.Select(d => d.Id).ToList();
-
-        // Get all entries for those drains excluding today (non-archived only)
+        // Get all entries for the patient excluding today (non-archived only)
         var today = DateOnly.FromDateTime(DateTime.Now);
         var entries = await _dbContext.DrainageEntries
-            .Include(e => e.Drain)
-            .Where(e => drainIds.Contains(e.DrainId)
+            .Include(e => e.DrainageEntryDetails)
+            .Where(e => e.PatientId == request.PatientId
                      && !e.IsArchived
                      && DateOnly.FromDateTime(e.EmptyDate) < today)
             .OrderBy(e => e.EmptyDate)
@@ -301,7 +313,7 @@ public class DrainageEntryDataService : IDrainageEntryDataService
             .Select(g => new DrainageDataPoint
             {
                 Date = g.Key,
-                Value = g.Sum(e => e.Amount),
+                Value = g.Sum(e => e.DrainageEntryDetails.Sum(d => d.Amount)),
             })
             .OrderBy(d => d.Date)
             .ToList();
@@ -311,23 +323,23 @@ public class DrainageEntryDataService : IDrainageEntryDataService
 
         // Get today's drainage sessions for display (not used in graph or alert calculation)
         var todayEntries = await _dbContext.DrainageEntries
-            .Include(e => e.Drain)
-            .Where(e => drainIds.Contains(e.DrainId)
+            .Include(e => e.DrainageEntryDetails)
+                .ThenInclude(d => d.Drain)
+            .Where(e => e.PatientId == request.PatientId
                      && !e.IsArchived
                      && DateOnly.FromDateTime(e.EmptyDate) == today)
-            .GroupBy(e => new { e.EmptyDate, e.Note })
-            .Select(g => new DrainageSessionResponse
+            .Select(e => new DrainageSessionResponse
             {
-                DrainageEntryId = g.First().Id,
+                DrainageEntryId = e.Id,
                 PatientId = request.PatientId,
-                EmptyDate = g.Key.EmptyDate,
-                Note = g.Key.Note,
-                DrainEntries = g.Select(e => new DrainEntryDetail
+                EmptyDate = e.EmptyDate,
+                Note = e.Note,
+                DrainEntries = e.DrainageEntryDetails.Select(d => new DrainEntryDetail
                 {
-                    DrainId = e.DrainId,
-                    Amount = e.Amount,
-                    DrainName = e.Drain.Name,
-                    IsArchived = e.Drain.IsArchived,
+                    DrainId = d.DrainId,
+                    Amount = d.Amount,
+                    DrainName = d.Drain.Name,
+                    IsArchived = d.Drain.IsArchived,
                 }).ToList(),
             })
             .OrderByDescending(s => s.EmptyDate)

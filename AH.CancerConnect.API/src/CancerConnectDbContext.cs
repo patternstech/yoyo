@@ -80,6 +80,11 @@ public class CancerConnectDbContext : DbContext
     public DbSet<DrainageEntry> DrainageEntries { get; set; }
 
     /// <summary>
+    /// Gets or sets the drainage entry details table.
+    /// </summary>
+    public DbSet<DrainageEntryDetail> DrainageEntryDetails { get; set; }
+
+    /// <summary>
     /// Gets or sets the spirometry setups table.
     /// </summary>
     public DbSet<SpirometrySetup> SpirometrySetups { get; set; }
@@ -109,6 +114,7 @@ public class CancerConnectDbContext : DbContext
         modelBuilder.Entity<DrainageSetup>().ToTable("DrainageSetup", "dbo");
         modelBuilder.Entity<Drain>().ToTable("Drain", "dbo");
         modelBuilder.Entity<DrainageEntry>().ToTable("DrainageEntry", "dbo");
+        modelBuilder.Entity<DrainageEntryDetail>().ToTable("DrainageEntryDetail", "dbo");
         modelBuilder.Entity<SpirometrySetup>().ToTable("SpirometrySetup", "dbo");
         modelBuilder.Entity<SpirometryEntry>().ToTable("SpirometryEntry", "dbo");
 
@@ -284,23 +290,40 @@ public class CancerConnectDbContext : DbContext
         modelBuilder.Entity<DrainageEntry>(entity =>
         {
             entity.HasKey(de => de.Id);
-            entity.Property(de => de.DrainId).IsRequired();
+            entity.Property(de => de.PatientId).IsRequired();
             entity.Property(de => de.EmptyDate).IsRequired();
-            entity.Property(de => de.Amount).IsRequired().HasColumnType("decimal(7,2)");
             entity.Property(de => de.Note).HasMaxLength(1000);
             entity.Property(de => de.IsArchived).IsRequired().HasDefaultValue(false);
             entity.Property(de => de.DateCreated).IsRequired();
             entity.Property(de => de.DateArchived);
 
+            // Indexes for performance
+            entity.HasIndex(de => new { de.PatientId, de.EmptyDate });
+            entity.HasIndex(de => new { de.PatientId, de.IsArchived });
+        });
+
+        // Configure DrainageEntryDetail entity
+        modelBuilder.Entity<DrainageEntryDetail>(entity =>
+        {
+            entity.HasKey(ded => ded.Id);
+            entity.Property(ded => ded.DrainageEntryId).IsRequired();
+            entity.Property(ded => ded.DrainId).IsRequired();
+            entity.Property(ded => ded.Amount).IsRequired().HasColumnType("decimal(7,2)");
+
+            // Relationship with DrainageEntry
+            entity.HasOne(ded => ded.DrainageEntry)
+                  .WithMany(de => de.DrainageEntryDetails)
+                  .HasForeignKey(ded => ded.DrainageEntryId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
             // Relationship with Drain
-            entity.HasOne(de => de.Drain)
+            entity.HasOne(ded => ded.Drain)
                   .WithMany()
-                  .HasForeignKey(de => de.DrainId)
+                  .HasForeignKey(ded => ded.DrainId)
                   .OnDelete(DeleteBehavior.Restrict);
 
             // Indexes for performance
-            entity.HasIndex(de => new { de.DrainId, de.EmptyDate });
-            entity.HasIndex(de => new { de.DrainId, de.IsArchived });
+            entity.HasIndex(ded => new { ded.DrainageEntryId, ded.DrainId });
         });
 
         // Configure SpirometrySetup entity

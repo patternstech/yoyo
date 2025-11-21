@@ -4,17 +4,15 @@ using AH.CancerConnect.API.Features.Drainage.DrainageSetup;
 namespace AH.CancerConnect.API.Features.Drainage.DrainageEntry;
 
 /// <summary>
-/// Main drainage entry entity for tracking individual drain measurements.
+/// Main drainage entry entity representing one emptying session.
 /// </summary>
 public class DrainageEntry
 {
     public int Id { get; set; }
 
-    public int DrainId { get; set; }
+    public int PatientId { get; set; }
 
     public DateTime EmptyDate { get; set; }
-
-    public decimal Amount { get; set; }
 
     public string? Note { get; set; }
 
@@ -24,7 +22,26 @@ public class DrainageEntry
 
     public DateTime? DateArchived { get; set; }
 
-    // Navigation property
+    // Navigation properties
+    public ICollection<DrainageEntryDetail> DrainageEntryDetails { get; set; } = new List<DrainageEntryDetail>();
+}
+
+/// <summary>
+/// Detail entity storing individual drain measurements for an entry.
+/// </summary>
+public class DrainageEntryDetail
+{
+    public int Id { get; set; }
+
+    public int DrainageEntryId { get; set; }
+
+    public int DrainId { get; set; }
+
+    public decimal Amount { get; set; }
+
+    // Navigation properties
+    public DrainageEntry DrainageEntry { get; set; } = null!;
+
     public Drain Drain { get; set; } = null!;
 }
 
@@ -68,6 +85,7 @@ public class DrainEntryItem
 public class DrainEntryUpdateItem
 {
     [Required(ErrorMessage = "Drain ID is required.")]
+    [Range(1, int.MaxValue, ErrorMessage = "Drain ID must be a positive integer.")]
     public int DrainId { get; set; }
 
     [Required(ErrorMessage = "Amount is required.")]
@@ -76,10 +94,18 @@ public class DrainEntryUpdateItem
 }
 
 /// <summary>
-/// Request DTO for updating multiple drainage entries in a session.
+/// Request DTO for updating a drainage entry session.
 /// </summary>
 public class DrainageEntryUpdateRequest
 {
+    [Required(ErrorMessage = "Drainage Entry ID is required.")]
+    [Range(1, int.MaxValue, ErrorMessage = "Drainage Entry ID must be a positive integer.")]
+    public int DrainageEntryId { get; set; }
+
+    [Required(ErrorMessage = "Patient ID is required.")]
+    [Range(1, int.MaxValue, ErrorMessage = "Patient ID must be a positive integer.")]
+    public int PatientId { get; set; }
+
     [Required(ErrorMessage = "Empty date is required.")]
     public DateTime EmptyDate { get; set; }
 
