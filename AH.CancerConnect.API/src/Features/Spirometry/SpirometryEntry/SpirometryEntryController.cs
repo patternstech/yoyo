@@ -125,4 +125,41 @@ public class SpirometryEntryController : ControllerBase
         _logger.LogDebug("Spirometry entry {EntryId} deleted successfully", entryId);
         return Ok(response);
     }
+
+    /// <summary>
+    /// Get all spirometry entries for a patient
+    /// Example: GET /api/v1/spirometry-entry/all/patient/123
+    /// Returns all entries (today's and past) for the patient, ordered by newest first.
+    /// Example Response:
+    /// [
+    ///   {
+    ///     "id": 1,
+    ///     "patientId": 123,
+    ///     "testDate": "2025-11-19",
+    ///     "testTime": "08:30:00",
+    ///     "numberReached": 2800,
+    ///     "note": "Morning test"
+    ///   },
+    ///   {
+    ///     "id": 2,
+    ///     "patientId": 123,
+    ///     "testDate": "2025-11-18",
+    ///     "testTime": "14:00:00",
+    ///     "numberReached": 3000,
+    ///     "note": "Afternoon test"
+    ///   }
+    /// ].
+    /// </summary>
+    /// <param name="patientId">ID of the patient.</param>
+    /// <returns>List of all spirometry entries for the patient.</returns>
+    [HttpGet("all/patient/{patientId}")]
+    [ProducesResponseType<IEnumerable<SpirometryEntryDetailResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetAllEntriesByPatient(int patientId)
+    {
+        var entries = await _spirometryEntryDataService.GetAllEntriesByPatientAsync(patientId);
+        _logger.LogDebug("Retrieved all spirometry entries for patient {PatientId}", patientId);
+        return Ok(entries);
+    }
 }

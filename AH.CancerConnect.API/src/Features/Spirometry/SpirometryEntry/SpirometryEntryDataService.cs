@@ -188,4 +188,34 @@ public class SpirometryEntryDataService : ISpirometryEntryDataService
 
         return true;
     }
+
+    /// <inheritdoc />
+    public async Task<IEnumerable<SpirometryEntryDetailResponse>> GetAllEntriesByPatientAsync(int patientId)
+    {
+        _logger.LogDebug("Retrieving all spirometry entries for patient {PatientId}", patientId);
+
+        // Validate patient exists
+        var patientExists = await _dbContext.Patients
+            .AnyAsync(p => p.Id == patientId);
+
+        if (!patientExists)
+        {
+            throw new KeyNotFoundException($"Patient with ID {patientId} not found");
+        }
+
+        // Get all entries for the patient, ordered by date and time (newest first)
+        var entries = await _dbContext.SpirometryEntries
+            .Where(e => e.PatientId == patientId)
+            .OrderByDescending(e => e.TestDate)
+            .ThenByDescending(e => e.TestTime)
+            .Select(e => e.ToDetailResponse())
+            .ToListAsync();
+
+        _logger.LogDebug(
+            "Successfully retrieved {Count} spirometry entries for patient {PatientId}",
+            entries.Count,
+            patientId);
+
+        return entries;
+    }
 }

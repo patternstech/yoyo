@@ -33,4 +33,11 @@ public interface ISpirometryEntryDataService
     /// <param name="entryId">ID of the spirometry entry to delete.</param>
     /// <returns>True if deleted successfully.</returns>
     Task<bool> DeleteSpirometryEntryAsync(int entryId);
+
+    /// <summary>
+    /// Gets all spirometry entries for a patient.
+    /// </summary>
+    /// <param name="patientId">ID of the patient.</param>
+    /// <returns>List of all spirometry entries for the patient.</returns>
+    Task<IEnumerable<SpirometryEntryDetailResponse>> GetAllEntriesByPatientAsync(int patientId);
 }
