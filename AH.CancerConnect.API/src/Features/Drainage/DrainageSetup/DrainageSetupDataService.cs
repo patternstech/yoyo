@@ -129,8 +129,6 @@ public class DrainageSetupDataService : IDrainageSetupDataService
         drain.IsArchived = true;
         drain.DateArchived = DateTime.Now;
 
-        await _dbContext.SaveChangesAsync();
-
         _logger.LogDebug("Successfully archived drain {DrainId}", request.DrainId);
 
         return true;

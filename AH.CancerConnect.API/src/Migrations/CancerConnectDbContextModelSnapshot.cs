@@ -30,17 +30,11 @@ namespace AH.CancerConnect.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(7,2)");
-
                     b.Property<DateTime?>("DateArchived")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("DrainId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("EmptyDate")
                         .HasColumnType("datetime2");
@@ -54,13 +48,42 @@ namespace AH.CancerConnect.API.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("DrainId", "EmptyDate");
+                    b.HasIndex("PatientId", "EmptyDate");
 
-                    b.HasIndex("DrainId", "IsArchived");
+                    b.HasIndex("PatientId", "IsArchived");
 
                     b.ToTable("DrainageEntry", "dbo");
+                });
+
+            modelBuilder.Entity("AH.CancerConnect.API.Features.Drainage.DrainageEntry.DrainageEntryDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(7,2)");
+
+                    b.Property<int>("DrainId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DrainageEntryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DrainId");
+
+                    b.HasIndex("DrainageEntryId", "DrainId");
+
+                    b.ToTable("DrainageEntryDetail", "dbo");
                 });
 
             modelBuilder.Entity("AH.CancerConnect.API.Features.Drainage.DrainageSetup.Drain", b =>
@@ -87,8 +110,8 @@ namespace AH.CancerConnect.API.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("Id");
 
@@ -160,6 +183,93 @@ namespace AH.CancerConnect.API.Migrations
                     b.HasIndex("PatientId");
 
                     b.ToTable("Note", "dbo");
+                });
+
+            modelBuilder.Entity("AH.CancerConnect.API.Features.Questions.Question", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AnswerText")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("QuestionText")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("Question", "dbo");
+                });
+
+            modelBuilder.Entity("AH.CancerConnect.API.Features.Spirometry.SpirometryEntry.SpirometryEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<decimal>("NumberReached")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly>("TestDate")
+                        .HasColumnType("date");
+
+                    b.Property<TimeOnly>("TestTime")
+                        .HasColumnType("time");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PatientId", "TestDate", "TestTime");
+
+                    b.ToTable("SpirometryEntry", "dbo");
+                });
+
+            modelBuilder.Entity("AH.CancerConnect.API.Features.Spirometry.SpirometrySetup.SpirometrySetup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("CapacityGoal")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProviderInstructions")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PatientId")
+                        .IsUnique();
+
+                    b.ToTable("SpirometrySetup", "dbo");
                 });
 
             modelBuilder.Entity("AH.CancerConnect.API.Features.SymptomsTracking.Models.Symptom", b =>
@@ -438,7 +548,6 @@ namespace AH.CancerConnect.API.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Note")
-                        .IsRequired()
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
@@ -955,7 +1064,6 @@ namespace AH.CancerConnect.API.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Detail")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -971,6 +1079,7 @@ namespace AH.CancerConnect.API.Migrations
                         .HasColumnType("time");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
@@ -1020,15 +1129,33 @@ namespace AH.CancerConnect.API.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2025, 11, 3, 18, 36, 31, 374, DateTimeKind.Utc).AddTicks(7526),
+                            Created = new DateTime(2025, 11, 21, 17, 46, 14, 982, DateTimeKind.Utc).AddTicks(6960),
                             FirstName = "Test",
                             LastName = "User",
                             MychartLogin = "testuser",
                             Status = "Active"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Created = new DateTime(2025, 11, 21, 17, 46, 14, 982, DateTimeKind.Utc).AddTicks(6965),
+                            FirstName = "James",
+                            LastName = "Kirk",
+                            MychartLogin = "jtkirk",
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Created = new DateTime(2025, 11, 21, 17, 46, 14, 982, DateTimeKind.Utc).AddTicks(6968),
+                            FirstName = "Hikaru",
+                            LastName = "Sulu",
+                            MychartLogin = "hsulu",
+                            Status = "Active"
                         });
                 });
 
-            modelBuilder.Entity("AH.CancerConnect.API.Features.Drainage.DrainageEntry.DrainageEntry", b =>
+            modelBuilder.Entity("AH.CancerConnect.API.Features.Drainage.DrainageEntry.DrainageEntryDetail", b =>
                 {
                     b.HasOne("AH.CancerConnect.API.Features.Drainage.DrainageSetup.Drain", "Drain")
                         .WithMany()
@@ -1036,7 +1163,15 @@ namespace AH.CancerConnect.API.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("AH.CancerConnect.API.Features.Drainage.DrainageEntry.DrainageEntry", "DrainageEntry")
+                        .WithMany("DrainageEntryDetails")
+                        .HasForeignKey("DrainageEntryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Drain");
+
+                    b.Navigation("DrainageEntry");
                 });
 
             modelBuilder.Entity("AH.CancerConnect.API.Features.Drainage.DrainageSetup.Drain", b =>
@@ -1066,6 +1201,39 @@ namespace AH.CancerConnect.API.Migrations
                     b.HasOne("AH.CancerConnect.API.SharedModels.Patient", "Patient")
                         .WithMany("Notes")
                         .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("AH.CancerConnect.API.Features.Questions.Question", b =>
+                {
+                    b.HasOne("AH.CancerConnect.API.SharedModels.Patient", "Patient")
+                        .WithMany("Questions")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("AH.CancerConnect.API.Features.Spirometry.SpirometryEntry.SpirometryEntry", b =>
+                {
+                    b.HasOne("AH.CancerConnect.API.SharedModels.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("AH.CancerConnect.API.Features.Spirometry.SpirometrySetup.SpirometrySetup", b =>
+                {
+                    b.HasOne("AH.CancerConnect.API.SharedModels.Patient", "Patient")
+                        .WithOne("SpirometrySetup")
+                        .HasForeignKey("AH.CancerConnect.API.Features.Spirometry.SpirometrySetup.SpirometrySetup", "PatientId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -1140,6 +1308,11 @@ namespace AH.CancerConnect.API.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("AH.CancerConnect.API.Features.Drainage.DrainageEntry.DrainageEntry", b =>
+                {
+                    b.Navigation("DrainageEntryDetails");
+                });
+
             modelBuilder.Entity("AH.CancerConnect.API.Features.Drainage.DrainageSetup.DrainageSetup", b =>
                 {
                     b.Navigation("Drains");
@@ -1169,6 +1342,10 @@ namespace AH.CancerConnect.API.Migrations
                     b.Navigation("DrainageSetup");
 
                     b.Navigation("Notes");
+
+                    b.Navigation("Questions");
+
+                    b.Navigation("SpirometrySetup");
 
                     b.Navigation("SymptomEntries");
 

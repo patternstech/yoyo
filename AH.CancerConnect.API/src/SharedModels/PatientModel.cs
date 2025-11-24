@@ -1,5 +1,6 @@
 ﻿using AH.CancerConnect.API.Features.Drainage.DrainageSetup;
 using AH.CancerConnect.API.Features.Notes;
+using AH.CancerConnect.API.Features.Questions;
 using AH.CancerConnect.API.Features.Spirometry.SpirometrySetup;
 using AH.CancerConnect.API.Features.SymptomsTracking.Models;
 using AH.CancerConnect.API.Features.ToDo;
@@ -33,4 +34,6 @@ public class Patient
     public DrainageSetup? DrainageSetup { get; set; }
 
     public SpirometrySetup? SpirometrySetup { get; set; }
+
+    public ICollection<Question> Questions { get; set; } = new List<Question>();
 }

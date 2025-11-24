@@ -1,14 +1,15 @@
-﻿using AH.CancerConnect.API.Features.AuthToken;
+﻿using System.Text.Json.Serialization;
+using AH.CancerConnect.API.Features.AuthToken;
 using AH.CancerConnect.API.Features.Drainage.DrainageEntry;
 using AH.CancerConnect.API.Features.Drainage.DrainageSetup;
 using AH.CancerConnect.API.Features.Notes;
+using AH.CancerConnect.API.Features.Questions;
 using AH.CancerConnect.API.Features.Spirometry.SpirometryEntry;
 using AH.CancerConnect.API.Features.Spirometry.SpirometrySetup;
 using AH.CancerConnect.API.Features.SymptomsTracking;
 using AH.CancerConnect.API.Features.ToDo;
 using AH.CancerConnect.API.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json.Serialization;
 
 namespace AH.CancerConnect.API.Configurations;
 
@@ -23,16 +24,16 @@ public static class ServicesConfiguration
         {
             // Add global exception filter
             options.Filters.Add<GlobalExceptionFilter>();
-            
+
             // Add validation filter for HTTP 422 responses
             options.Filters.Add<ValidationFilter>();
         })
-            .AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.WriteIndented = true;
-                options.JsonSerializerOptions.PropertyNamingPolicy = null;
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            });
+        .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.WriteIndented = true;
+            options.JsonSerializerOptions.PropertyNamingPolicy = null;
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
 
         // Bind options (AuthSettings, XealthAppSettings)
         services.Configure<AuthSettings>(configuration.GetSection("AuthSettings"));
@@ -49,6 +50,7 @@ public static class ServicesConfiguration
         services.AddScoped<IDrainageEntryDataService, DrainageEntryDataService>();
         services.AddScoped<ISpirometrySetupDataService, SpirometrySetupDataService>();
         services.AddScoped<ISpirometryEntryDataService, SpirometryEntryDataService>();
+        services.AddScoped<IQuestionDataService, QuestionDataService>();
 
         // HttpClient factory
         services.AddHttpClient();
@@ -56,7 +58,7 @@ public static class ServicesConfiguration
         // Optional: if you ever need consistent 400 details, etc.
         services.Configure<ApiBehaviorOptions>(o =>
         {
-              o.SuppressModelStateInvalidFilter = true;
+            o.SuppressModelStateInvalidFilter = true;
         });
 
         return services;

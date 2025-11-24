@@ -1,15 +1,16 @@
 using AH.CancerConnect.API.Features.Drainage.DrainageEntry;
 using AH.CancerConnect.API.Features.Drainage.DrainageSetup;
 using AH.CancerConnect.API.Features.Notes;
+using AH.CancerConnect.API.Features.Questions;
 using AH.CancerConnect.API.Features.Spirometry.SpirometryEntry;
 using AH.CancerConnect.API.Features.Spirometry.SpirometrySetup;
 using AH.CancerConnect.API.Features.SymptomsTracking.Models;
 using AH.CancerConnect.API.Features.ToDo;
 using AH.CancerConnect.API.SharedModels;
 using Microsoft.EntityFrameworkCore;
-
+ 
 namespace AH.CancerConnect.API;
-
+ 
 /// <summary>
 /// Database context for Cancer Connect application.
 /// </summary>
@@ -23,77 +24,82 @@ public class CancerConnectDbContext : DbContext
         : base(options)
     {
     }
-
+ 
     /// <summary>
     /// Gets or sets the patients table.
     /// </summary>
     public DbSet<Patient> Patients { get; set; }
-
+ 
     /// <summary>
     /// Gets or sets the symptoms table.
     /// </summary>
     public DbSet<Symptom> Symptoms { get; set; }
-
+ 
     /// <summary>
     /// Gets or sets the symptom categories table.
     /// </summary>
     public DbSet<SymptomCategory> SymptomCategories { get; set; }
-
+ 
     /// <summary>
     /// Gets or sets the symptom ranges table.
     /// </summary>
     public DbSet<SymptomRange> SymptomRanges { get; set; }
-
+ 
     /// <summary>
     /// Gets or sets the symptom entries table.
     /// </summary>
     public DbSet<SymptomEntry> SymptomEntries { get; set; }
-
+ 
     /// <summary>
     /// Gets or sets the symptom details table.
     /// </summary>
     public DbSet<SymptomDetail> SymptomDetails { get; set; }
-
+ 
     /// <summary>
     /// Gets or sets the notes table.
     /// </summary>
     public DbSet<Note> Notes { get; set; }
-
+ 
     /// <summary>
     /// Gets or sets the todo items table.
     /// </summary>
     public DbSet<ToDo> ToDos { get; set; }
-
+ 
     /// <summary>
     /// Gets or sets the drainage setups table.
     /// </summary>
     public DbSet<DrainageSetup> DrainageSetups { get; set; }
-
+ 
     /// <summary>
     /// Gets or sets the drains table.
     /// </summary>
     public DbSet<Drain> Drains { get; set; }
-
+ 
     /// <summary>
     /// Gets or sets the drainage entries table.
     /// </summary>
     public DbSet<DrainageEntry> DrainageEntries { get; set; }
-
+ 
     /// <summary>
     /// Gets or sets the drainage entry details table.
     /// </summary>
     public DbSet<DrainageEntryDetail> DrainageEntryDetails { get; set; }
-
+ 
     /// <summary>
     /// Gets or sets the spirometry setups table.
     /// </summary>
     public DbSet<SpirometrySetup> SpirometrySetups { get; set; }
-
+ 
     /// <summary>
     /// Gets or sets the spirometry entries table.
     /// </summary>
     public DbSet<SpirometryEntry> SpirometryEntries { get; set; }
-
+ 
+    // /// <summary>
+    // /// Gets or sets the question table.
+    // /// </summary>
+    public DbSet<Question> Questions { get; set; }
+ 
     /// <summary>
     /// Configures the model relationships and constraints.
     /// </summary>
@@ -101,7 +107,7 @@ public class CancerConnectDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
+ 
         // Configure table names
         modelBuilder.Entity<Patient>().ToTable("Patient", "dbo");
         modelBuilder.Entity<Symptom>().ToTable("Symptom", "ref");
@@ -117,7 +123,8 @@ public class CancerConnectDbContext : DbContext
         modelBuilder.Entity<DrainageEntryDetail>().ToTable("DrainageEntryDetail", "dbo");
         modelBuilder.Entity<SpirometrySetup>().ToTable("SpirometrySetup", "dbo");
         modelBuilder.Entity<SpirometryEntry>().ToTable("SpirometryEntry", "dbo");
-
+        modelBuilder.Entity<Question>().ToTable("Question", "dbo");
+ 
         // Configure Patient entity
         modelBuilder.Entity<Patient>(entity =>
         {
@@ -128,7 +135,7 @@ public class CancerConnectDbContext : DbContext
             entity.Property(p => p.Status).IsRequired().HasMaxLength(250);
             entity.Property(p => p.Created).IsRequired();
         });
-
+ 
         // Configure Symptom entity (reference table)
         modelBuilder.Entity<Symptom>(entity =>
         {
@@ -138,7 +145,7 @@ public class CancerConnectDbContext : DbContext
             entity.Property(s => s.Description).IsRequired().HasMaxLength(500);
             entity.Property(s => s.Invalid).IsRequired();
         });
-
+ 
         // Configure SymptomCategory entity (reference table)
         modelBuilder.Entity<SymptomCategory>(entity =>
         {
@@ -146,7 +153,7 @@ public class CancerConnectDbContext : DbContext
             entity.Property(sc => sc.Name).IsRequired().HasMaxLength(250);
             entity.Property(sc => sc.DisplayValue).IsRequired().HasMaxLength(250);
         });
-
+ 
         // Configure SymptomRange entity (reference table)
         modelBuilder.Entity<SymptomRange>(entity =>
         {
@@ -154,18 +161,18 @@ public class CancerConnectDbContext : DbContext
             entity.Property(sr => sr.SymptomId).IsRequired();
             entity.Property(sr => sr.CategoryId).IsRequired();
             entity.Property(sr => sr.SymptomValue).IsRequired().HasMaxLength(255);
-
+ 
             // Relationships
             entity.HasOne(sr => sr.Symptom)
                   .WithMany(s => s.SymptomRanges)
                   .HasForeignKey(sr => sr.SymptomId)
                   .OnDelete(DeleteBehavior.Restrict);
-
+ 
             entity.HasOne(sr => sr.Category)
                   .WithMany(sc => sc.SymptomRanges)
                   .HasForeignKey(sr => sr.CategoryId)
                   .OnDelete(DeleteBehavior.Restrict);
-
+ 
             // Configure Note entity
             modelBuilder.Entity<Note>(entity =>
             {
@@ -174,7 +181,7 @@ public class CancerConnectDbContext : DbContext
                 entity.Property(n => n.Title).HasMaxLength(250);
                 entity.Property(n => n.NoteText).IsRequired().HasMaxLength(1000);
                 entity.Property(n => n.DateCreated).IsRequired();
-
+ 
                 // Relationship with Patient
                 entity.HasOne(n => n.Patient)
                       .WithMany(p => p.Notes)
@@ -182,7 +189,7 @@ public class CancerConnectDbContext : DbContext
                       .OnDelete(DeleteBehavior.Restrict);
             });
         });
-
+ 
         // Configure SymptomEntry entity
         modelBuilder.Entity<SymptomEntry>(entity =>
         {
@@ -191,14 +198,14 @@ public class CancerConnectDbContext : DbContext
             entity.Property(se => se.Note).HasMaxLength(2000);
             entity.Property(se => se.EntryDate).IsRequired();
             entity.Property(se => se.Created).IsRequired();
-
+ 
             // Relationship with Patient
             entity.HasOne(se => se.Patient)
                   .WithMany(p => p.SymptomEntries)
                   .HasForeignKey(se => se.PatientId)
                   .OnDelete(DeleteBehavior.Restrict);
         });
-
+ 
         // Configure SymptomDetail entity
         modelBuilder.Entity<SymptomDetail>(entity =>
         {
@@ -207,24 +214,24 @@ public class CancerConnectDbContext : DbContext
             entity.Property(sd => sd.SymptomId).IsRequired();
             entity.Property(sd => sd.CategoryId).IsRequired();
             entity.Property(sd => sd.SymptomValue).IsRequired().HasMaxLength(255);
-
+ 
             // Relationships
             entity.HasOne(sd => sd.SymptomEntry)
                   .WithMany(se => se.SymptomDetails)
                   .HasForeignKey(sd => sd.SymptomEntryId)
                   .OnDelete(DeleteBehavior.Cascade);
-
+ 
             entity.HasOne(sd => sd.Symptom)
                   .WithMany(s => s.SymptomDetails)
                   .HasForeignKey(sd => sd.SymptomId)
                   .OnDelete(DeleteBehavior.Restrict);
-
+ 
             entity.HasOne(sd => sd.Category)
                   .WithMany(sc => sc.SymptomDetails)
                   .HasForeignKey(sd => sd.CategoryId)
                   .OnDelete(DeleteBehavior.Restrict);
         });
-
+ 
         // Configure ToDo entity
         modelBuilder.Entity<ToDo>(entity =>
         {
@@ -237,14 +244,14 @@ public class CancerConnectDbContext : DbContext
             entity.Property(t => t.Alert).HasConversion<string>();
             entity.Property(t => t.IsCompleted).IsRequired().HasDefaultValue(false);
             entity.Property(t => t.DateCreated).IsRequired();
-
+ 
             // Relationship with Patient
             entity.HasOne(t => t.Patient)
                   .WithMany(p => p.ToDos)
                   .HasForeignKey(t => t.PatientId)
                   .OnDelete(DeleteBehavior.Restrict);
         });
-
+ 
         // Configure DrainageSetup entity
         modelBuilder.Entity<DrainageSetup>(entity =>
         {
@@ -255,17 +262,17 @@ public class CancerConnectDbContext : DbContext
             entity.Property(ds => ds.ProviderInstructions).HasMaxLength(1000);
             entity.Property(ds => ds.DateCreated).IsRequired();
             entity.Property(ds => ds.DateModified).IsRequired();
-
+ 
             // Relationship with Patient (one-to-one)
             entity.HasOne(ds => ds.Patient)
                   .WithOne(p => p.DrainageSetup)
                   .HasForeignKey<DrainageSetup>(ds => ds.PatientId)
                   .OnDelete(DeleteBehavior.Restrict);
-
+ 
             // Index for unique patient constraint
             entity.HasIndex(ds => ds.PatientId).IsUnique();
         });
-
+ 
         // Configure Drain entity
         modelBuilder.Entity<Drain>(entity =>
         {
@@ -275,17 +282,17 @@ public class CancerConnectDbContext : DbContext
             entity.Property(d => d.IsArchived).IsRequired().HasDefaultValue(false);
             entity.Property(d => d.DateCreated).IsRequired();
             entity.Property(d => d.DateArchived);
-
+ 
             // Relationship with DrainageSetup
             entity.HasOne(d => d.DrainageSetup)
                   .WithMany(ds => ds.Drains)
                   .HasForeignKey(d => d.DrainageSetupId)
                   .OnDelete(DeleteBehavior.Cascade);
-
+ 
             // Index for performance
             entity.HasIndex(d => new { d.DrainageSetupId, d.IsArchived });
         });
-
+ 
         // Configure DrainageEntry entity
         modelBuilder.Entity<DrainageEntry>(entity =>
         {
@@ -296,12 +303,12 @@ public class CancerConnectDbContext : DbContext
             entity.Property(de => de.IsArchived).IsRequired().HasDefaultValue(false);
             entity.Property(de => de.DateCreated).IsRequired();
             entity.Property(de => de.DateArchived);
-
+ 
             // Indexes for performance
             entity.HasIndex(de => new { de.PatientId, de.EmptyDate });
             entity.HasIndex(de => new { de.PatientId, de.IsArchived });
         });
-
+ 
         // Configure DrainageEntryDetail entity
         modelBuilder.Entity<DrainageEntryDetail>(entity =>
         {
@@ -309,23 +316,23 @@ public class CancerConnectDbContext : DbContext
             entity.Property(ded => ded.DrainageEntryId).IsRequired();
             entity.Property(ded => ded.DrainId).IsRequired();
             entity.Property(ded => ded.Amount).IsRequired().HasColumnType("decimal(7,2)");
-
+ 
             // Relationship with DrainageEntry
             entity.HasOne(ded => ded.DrainageEntry)
                   .WithMany(de => de.DrainageEntryDetails)
                   .HasForeignKey(ded => ded.DrainageEntryId)
                   .OnDelete(DeleteBehavior.Cascade);
-
+ 
             // Relationship with Drain
             entity.HasOne(ded => ded.Drain)
                   .WithMany()
                   .HasForeignKey(ded => ded.DrainId)
                   .OnDelete(DeleteBehavior.Restrict);
-
+ 
             // Indexes for performance
             entity.HasIndex(ded => new { ded.DrainageEntryId, ded.DrainId });
         });
-
+ 
         // Configure SpirometrySetup entity
         modelBuilder.Entity<SpirometrySetup>(entity =>
         {
@@ -333,17 +340,17 @@ public class CancerConnectDbContext : DbContext
             entity.Property(ss => ss.PatientId).IsRequired();
             entity.Property(ss => ss.CapacityGoal).HasColumnType("decimal(10,2)");
             entity.Property(ss => ss.ProviderInstructions).HasMaxLength(1000);
-
+ 
             // Relationship with Patient (one-to-one)
             entity.HasOne(ss => ss.Patient)
                   .WithOne(p => p.SpirometrySetup)
                   .HasForeignKey<SpirometrySetup>(ss => ss.PatientId)
                   .OnDelete(DeleteBehavior.Restrict);
-
+ 
             // Index for unique patient constraint
             entity.HasIndex(ss => ss.PatientId).IsUnique();
         });
-
+ 
         // Configure SpirometryEntry entity
         modelBuilder.Entity<SpirometryEntry>(entity =>
         {
@@ -353,31 +360,49 @@ public class CancerConnectDbContext : DbContext
             entity.Property(se => se.TestTime).IsRequired();
             entity.Property(se => se.NumberReached).IsRequired().HasColumnType("decimal(10,2)");
             entity.Property(se => se.Note).HasMaxLength(1000);
-
+ 
             // Relationship with Patient
             entity.HasOne(se => se.Patient)
                   .WithMany()
                   .HasForeignKey(se => se.PatientId)
                   .OnDelete(DeleteBehavior.Restrict);
-
+ 
             // Indexes for performance
             entity.HasIndex(se => new { se.PatientId, se.TestDate, se.TestTime });
         });
-
+ 
+        // // Configure Question entity
+         modelBuilder.Entity<Question>(entity =>
+         {
+             entity.HasKey(q => q.Id);
+             entity.Property(q => q.PatientId).IsRequired();
+             entity.Property(q => q.QuestionText).IsRequired().HasMaxLength(2000);
+             entity.Property(q => q.AnswerText).HasMaxLength(2000);
+             entity.Property(q => q.DateCreated).IsRequired();
+ 
+             // Relationship with Patient
+             entity.HasOne(q => q.Patient)
+                   .WithMany(q => q.Questions)
+                   .HasForeignKey(q => q.PatientId)
+                   .OnDelete(DeleteBehavior.Restrict);
+         });
+ 
         // Seed initial data
         SeedData(modelBuilder);
     }
-
+ 
     private static void SeedData(ModelBuilder modelBuilder)
     {
         // Seed test patient
         var patients = new[]
         {
             new Patient { Id = 1, FirstName = "Test", LastName = "User", MychartLogin = "testuser", Status = "Active", Created = DateTime.UtcNow },
+            new Patient { Id = 2, FirstName = "James", LastName = "Kirk", MychartLogin = "jtkirk", Status = "Active", Created = DateTime.UtcNow },
+            new Patient { Id = 3, FirstName = "Hikaru", LastName = "Sulu", MychartLogin = "hsulu", Status = "Active", Created = DateTime.UtcNow },
         };
-
+ 
         modelBuilder.Entity<Patient>().HasData(patients);
-
+ 
         // Seed symptoms (reference table)
         var symptoms = new[]
         {
@@ -401,9 +426,9 @@ public class CancerConnectDbContext : DbContext
             new Symptom { Id = 18, Name = "Mouth Sores", DisplayTitle = "Mouth Sores", Description = "Oral cavity sores", Invalid = false },
             new Symptom { Id = 19, Name = "Level of Emotional Distress", DisplayTitle = "Emotional Distress", Description = "Overall emotional distress level", Invalid = false },
         };
-
+ 
         modelBuilder.Entity<Symptom>().HasData(symptoms);
-
+ 
         // Seed symptom categories (reference table)
         var categories = new[]
         {
@@ -411,17 +436,17 @@ public class CancerConnectDbContext : DbContext
             new SymptomCategory { Id = 2, Name = "YesNo", DisplayValue = "Yes/No" },
             new SymptomCategory { Id = 3, Name = "Scale1To10", DisplayValue = "1-10 Scale" },
         };
-
+ 
         modelBuilder.Entity<SymptomCategory>().HasData(categories);
-
+ 
         // Seed symptom ranges (reference table)
         var symptomRanges = new List<SymptomRange>();
-
+ 
         // MildModerateSevere symptoms (category 1)
         var mildModerateSevereSymptoms = new[] { 1, 2, 4, 5, 6, 7, 8, 9, 11, 13, 14 };
         var mildModerateSevereValues = new[] { "Mild", "Moderate", "Severe" };
         int rangeId = 1;
-
+ 
         foreach (var symptomId in mildModerateSevereSymptoms)
         {
             foreach (var value in mildModerateSevereValues)
@@ -429,11 +454,11 @@ public class CancerConnectDbContext : DbContext
                 symptomRanges.Add(new SymptomRange { Id = rangeId++, SymptomId = symptomId, CategoryId = 1, SymptomValue = value });
             }
         }
-
+ 
         // YesNo symptoms (category 2)
         var yesNoSymptoms = new[] { 3, 10, 15, 16, 17, 18 };
         var yesNoValues = new[] { "No", "Yes" };
-
+ 
         foreach (var symptomId in yesNoSymptoms)
         {
             foreach (var value in yesNoValues)
@@ -441,11 +466,11 @@ public class CancerConnectDbContext : DbContext
                 symptomRanges.Add(new SymptomRange { Id = rangeId++, SymptomId = symptomId, CategoryId = 2, SymptomValue = value });
             }
         }
-
+ 
         // Scale1To10 symptoms (category 3)
         var scale1To10Symptoms = new[] { 12, 19 };
         var scale1To10Values = new[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" };
-
+ 
         foreach (var symptomId in scale1To10Symptoms)
         {
             foreach (var value in scale1To10Values)
@@ -453,7 +478,7 @@ public class CancerConnectDbContext : DbContext
                 symptomRanges.Add(new SymptomRange { Id = rangeId++, SymptomId = symptomId, CategoryId = 3, SymptomValue = value });
             }
         }
-
+ 
         modelBuilder.Entity<SymptomRange>().HasData(symptomRanges);
     }
 }
