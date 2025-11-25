@@ -35,12 +35,16 @@ public class SymptomDataService : ISymptomDataService
 
         foreach (var symptom in symptoms)
         {
+            // Only include description (help text) for specific symptoms
+            var symptomsWithHelpText = new[] { "Anxiety", "Constipation", "Depression", "Fever" };
+            var includeDescription = symptomsWithHelpText.Contains(symptom.Name, StringComparer.OrdinalIgnoreCase);
+
             var symptomResponse = new SymptomResponse
             {
                 Id = symptom.Id,
                 Name = symptom.Name,
                 DisplayTitle = symptom.DisplayTitle,
-                Description = symptom.Description,
+                Description = includeDescription ? symptom.Description : string.Empty,
             };
 
             // Get available symptom ranges for this symptom
@@ -356,13 +360,21 @@ public class SymptomDataService : ISymptomDataService
                 Values = new List<SymptomValuePoint>(),
             };
 
-            // Get all values for this symptom, ordered by date
+            // Get all values for this symptom, convert them, and group by date
             var symptomValues = symptomGroup
                 .Select(sd => new
                 {
-                    Date = sd.SymptomEntry.EntryDate,
+                    Date = sd.SymptomEntry.EntryDate.Date,
                     Value = ConvertSymptomValueToGraphValue(sd.SymptomValue, sd.Category.Name),
+                    NumericValue = GetNumericValueForComparison(sd.SymptomValue, sd.Category.Name),
                     CategoryName = sd.Category.Name
+                })
+                .GroupBy(sv => sv.Date)
+                .Select(g => new
+                {
+                    Date = g.Key,
+                    // Get the entry with the maximum numeric value for this date
+                    MaxEntry = g.OrderByDescending(x => x.NumericValue).First()
                 })
                 .OrderBy(sv => sv.Date)
                 .ToList();
@@ -372,7 +384,7 @@ public class SymptomDataService : ISymptomDataService
                 symptomData.Values.Add(new SymptomValuePoint
                 {
                     Date = DateOnly.FromDateTime(value.Date),
-                    Value = value.Value
+                    Value = value.MaxEntry.Value
                 });
             }
 
@@ -432,6 +444,35 @@ public class SymptomDataService : ISymptomDataService
             },
             "scale1to10" => symptomValue,
             _ => symptomValue
+        };
+    }
+
+    /// <summary>
+    /// Gets numeric value for comparison to determine max value per day.
+    /// Higher number = more severe.
+    /// </summary>
+    /// <param name="symptomValue">Original symptom value.</param>
+    /// <param name="categoryName">Category name to determine conversion logic.</param>
+    /// <returns>Numeric value for comparison.</returns>
+    private static int GetNumericValueForComparison(string symptomValue, string categoryName)
+    {
+        return categoryName.ToLowerInvariant() switch
+        {
+            "yesno" => symptomValue.ToLowerInvariant() switch
+            {
+                "yes" => 2,
+                "no" => 1,
+                _ => 0
+            },
+            "mildmoderatesevere" => symptomValue.ToLowerInvariant() switch
+            {
+                "mild" => 1,
+                "moderate" => 2,
+                "severe" => 3,
+                _ => 0
+            },
+            "scale1to10" => int.TryParse(symptomValue, out var numValue) ? numValue : 0,
+            _ => 0
         };
     }
 }
