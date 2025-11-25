@@ -35,16 +35,12 @@ public class SymptomDataService : ISymptomDataService
 
         foreach (var symptom in symptoms)
         {
-            // Only include description (help text) for specific symptoms
-            var symptomsWithHelpText = new[] { "Anxiety", "Constipation", "Depression", "Fever" };
-            var includeDescription = symptomsWithHelpText.Contains(symptom.Name, StringComparer.OrdinalIgnoreCase);
-
             var symptomResponse = new SymptomResponse
             {
                 Id = symptom.Id,
                 Name = symptom.Name,
                 DisplayTitle = symptom.DisplayTitle,
-                Description = includeDescription ? symptom.Description : string.Empty,
+                Description = symptom.Description,
             };
 
             // Get available symptom ranges for this symptom
